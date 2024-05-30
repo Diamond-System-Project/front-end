@@ -1,0 +1,30 @@
+.transition-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .transition-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+  }
+  
+  .transition-item.slide-enter {
+    transform: translateX(100%);
+  }
+  
+  .transition-item.slide-enter-active {
+    transform: translateX(0%);
+  }
+  
+  .transition-item.slide-exit {
+    transform: translateX(0%);
+  }
+  
+  .transition-item.slide-exit-active {
+    transform: translateX(-100%);
+  }
+  
