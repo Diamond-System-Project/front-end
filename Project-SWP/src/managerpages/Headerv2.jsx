@@ -19,7 +19,7 @@ const menu = (
   </Menu>
 );
 
-const Headerv3 = () => {
+const Headerv2 = () => {
   return (
     <div className="flex justify-end items-center p-4 bg-white shadow-md h-24 w-full sticky right-0">
       <Search
@@ -38,11 +38,11 @@ const Headerv3 = () => {
           onClick={(e) => e.preventDefault()}
         >
           <UserOutlined style={{ fontSize: "20px", marginRight: "8px" }} />
-          <span>ADMIN</span>
+          <span>MANAGER</span>
         </Button>
       </Dropdown>
     </div>
   );
 };
 
-export default Headerv3;
+export default Headerv2;

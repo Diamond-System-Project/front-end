@@ -1,13 +1,13 @@
-import { Button, Table } from "antd";
+import React from "react";
+import { Button, Table, Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "antd";
 
 const handleAction = (record) => {
-  console.log("Button clicked for record: ", record);
+  console.log("Edit button clicked for record: ", record);
 };
 
 const handleDelete = (record) => {
-  console.log("Button clicked for record: ", record);
+  console.log("Delete button clicked for record: ", record);
 };
 
 const ManagementStaff = () => {
@@ -17,14 +17,21 @@ const ManagementStaff = () => {
       userName: "John Doe",
       gender: "Male",
       dob: "01/01/1990",
-      role: "Manager",
+      role: "Sale Staff",
     },
     {
       key: "2",
       userName: "Jane Smith",
-      gender: "Male",
+      gender: "Female",
       dob: "01/01/1990",
       role: "Manager",
+    },
+    {
+      key: "3",
+      userName: "Jane Smith",
+      gender: "Female",
+      dob: "01/01/1990",
+      role: "Delivery Staff",
     },
   ];
 
@@ -48,6 +55,21 @@ const ManagementStaff = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      filters: [
+        {
+          text: "Manager",
+          value: "Manager",
+        },
+        {
+          text: "Sale Staff",
+          value: "Sale Staff",
+        },
+        {
+          text: "Delivery Staff",
+          value: "Delivery Staff",
+        },
+      ],
+      onFilter: (value, record) => record.role.includes(value),
     },
     {
       title: "Edit",
