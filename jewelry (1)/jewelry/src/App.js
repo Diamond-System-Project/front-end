@@ -1,33 +1,39 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Home from './components/Home';
-import Register from './components/Register';
-import Login from './components/Login';
-import Checkout from './components/Checkout';
-import ProductDetail from './components/ProductDetail';
-import Cart from './components/Cart';
-import PaymentMethod from './components/PaymentMethod';
-import PaymentSuccess from './components/PaymentSuccess';
-import SideBar from './staffpages/SideBar';
-import Headerv2 from './staffpages/Headerv2';
-import DashBoard from './staffpages/DashBoard';
-import AllProduct from './staffpages/AllProduct';
-import AddProduct from './staffpages/AddProduct';
-import UpdateProduct from './staffpages/UpdateProduct';
-import ManagementUser from './staffpages/ManagementUser';
-import UserDetail from './staffpages/UserDetail';
-import UserOrders from './staffpages/UserOrders';
-import OrderList from './staffpages/OrderList';
-import OrderDetail from './staffpages/OrderDetail';
+import Header from './userpages/Header';
+import Footer from './userpages/Footer';
+import Home from './userpages/Home';
+import Register from './userpages/Register';
+import Login from './userpages/Login';
+import Checkout from './userpages/Checkout';
+import ProductDetail from './userpages/ProductDetail';
+import Cart from './userpages/Cart';
+import PaymentMethod from './userpages/PaymentMethod';
+import PaymentSuccess from './userpages/PaymentSuccess';
+import SideBar from './managerpages/SideBar';
+import Headerv2 from './managerpages/Headerv2';
+import DashBoard from './managerpages/DashBoard';
+import ListProduct from './managerpages/ListProduct';
+import AddProduct from './managerpages/AddProduct';
+import UpdateProduct from './managerpages/UpdateProduct';
+import ManagementUser from './managerpages/ManagementUser';
+import UserDetail from './managerpages/UserDetail';
+import UserOrders from './managerpages/UserOrders';
+import OrderList from './managerpages/OrderList';
+import OrderDetail from './managerpages/OrderDetail';
+import ManagementVoucher from './managerpages/ManagementVoucher';
 import SideBarv2 from './adminpages/SideBarv2';
-import Dashboard from './adminpages/Dashboard';
 import ManagementStaff from './adminpages/ManagementStaff';
 import StaffDetail from './adminpages/StaffDetail';
-import Headerv3 from './adminpages/Headerv3';
-
+import SideBarv3 from './salestaffpages/SideBarv3';
+import ListDiamond from './salestaffpages/ListDiamond';
+import ListMountDiamond from './salestaffpages/ListMountDiamond';
+import StockList from './salestaffpages/StockList';
+import ListDelivered from './deliverystaffpage/ListDelivered';
+import OrderListForSaleStaff from './salestaffpages/OrderListForSaleStaff';
+import OrderDetailForSaleStaff from './salestaffpages/OrderDetailForSaleStaff';
+import Carousel from './userpages/Carousel';
 function App() {
   return (
     <Router>
@@ -38,6 +44,7 @@ function App() {
           element={
             <>
               <Header />
+              <Carousel />
               <Home />
               <Footer />
             </>
@@ -114,9 +121,9 @@ function App() {
           }
         />
 
-        {/* Staff routes */}
+        {/* Manager routes */}
         <Route
-          path="/staff/dashboard"
+          path="/manager/dashboard"
           element={
             <div className="flex">
               <SideBar />
@@ -128,19 +135,19 @@ function App() {
           }
         />
         <Route
-          path="/staff/all-products"
+          path="/manager/list-products"
           element={
             <div className="flex">
               <SideBar />
               <div className="flex-1">
                 <Headerv2 />
-                <AllProduct />
+                <ListProduct />
               </div>
             </div>
           }
         />
         <Route
-          path="/staff/add-product"
+          path="/manager/add-product"
           element={
             <div className="flex">
               <SideBar />
@@ -152,7 +159,7 @@ function App() {
           }
         />
         <Route
-          path="/staff/update-product/:id"
+          path="/manager/update-product/:id"
           element={
             <div className="flex">
               <SideBar />
@@ -164,7 +171,7 @@ function App() {
           }
         />
         <Route
-          path="/staff/management-user"
+          path="/manager/management-user"
           element={
             <div className="flex">
               <SideBar />
@@ -176,7 +183,7 @@ function App() {
           }
         />
         <Route
-          path="/staff/management-user/user-detail/:id"
+          path="/manager/management-user/user-detail/:id"
           element={
             <div className="flex">
               <SideBar />
@@ -188,7 +195,7 @@ function App() {
           }
         />
         <Route
-          path="/staff/management-user/user-orders/:id"
+          path="/manager/management-user/user-orders/:id"
           element={
             <div className="flex">
               <SideBar />
@@ -200,7 +207,7 @@ function App() {
           }
         />
         <Route
-          path="/staff/order-list"
+          path="/manager/order-list"
           element={
             <div className="flex">
               <SideBar />
@@ -212,7 +219,7 @@ function App() {
           }
         />
         <Route
-          path="/staff/order-list/order-detail/:id"
+          path="/manager/order-list/order-detail/:id"
           element={
             <div className="flex">
               <SideBar />
@@ -223,7 +230,92 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/manager/management-voucher"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <ManagementVoucher />
+              </div>
+            </div>
+          }
+        />
+        {/* Sale Staff routes */}
+        <Route
+          path="/staff/list-diamond"
+          element={
+            <div className="flex">
+              <SideBarv3 />
+              <div className="flex-1">
+                <Headerv2 />
+                <ListDiamond />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/staff/list-mount-diamond"
+          element={
+            <div className="flex">
+              <SideBarv3 />
+              <div className="flex-1">
+                <Headerv2 />
 
+                <ListMountDiamond />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/staff/stock-list"
+          element={
+            <div className="flex">
+              <SideBarv3 />
+              <div className="flex-1">
+                <Headerv2 />
+
+                <StockList />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/staff/order-list"
+          element={
+            <div className="flex">
+              <SideBarv3 />
+              <div className="flex-1">
+                <Headerv2 />
+                <OrderListForSaleStaff />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/staff/order-list/order-detail/:id"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <OrderDetailForSaleStaff />
+              </div>
+            </div>
+          }
+        />
+        {/* Delivery Staff routes */}
+        <Route
+          path="/delivery"
+          element={
+            <div className="flex flex-col">
+              <Headerv2 />
+              <ListDelivered />
+              <OrderList />
+            </div>
+          }
+        />
         {/* Admin routes */}
         <Route
           path="/admin/dashboard"
@@ -231,8 +323,8 @@ function App() {
             <div className="flex">
               <SideBarv2 />
               <div className="flex-1">
-                <Headerv3 />
-                <Dashboard />
+                <Headerv2 />
+                <DashBoard />
               </div>
             </div>
           }
@@ -243,7 +335,7 @@ function App() {
             <div className="flex">
               <SideBarv2 />
               <div className="flex-1">
-                <Headerv3 />
+                <Headerv2 />
                 <ManagementStaff />
               </div>
             </div>
@@ -255,7 +347,7 @@ function App() {
             <div className="flex">
               <SideBarv2 />
               <div className="flex-1">
-                <Headerv3 />
+                <Headerv2 />
                 <StaffDetail />
               </div>
             </div>
@@ -265,5 +357,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
