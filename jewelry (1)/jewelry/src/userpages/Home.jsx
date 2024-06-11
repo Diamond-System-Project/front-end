@@ -205,7 +205,7 @@ export default function Home() {
       <div className="container mx-auto py-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">TRANG SỨC CƯỚI</h2>
-          <a href="/products" className="text-blue-500">
+          <a href="/list-product" className="text-blue-500">
             Xem tất cả &gt;
           </a>
         </div>

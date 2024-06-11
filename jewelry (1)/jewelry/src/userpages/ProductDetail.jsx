@@ -1,13 +1,24 @@
 import React, { useState } from "react";
-import { Button, InputNumber, Row, Col, Divider, Typography } from "antd";
+import {
+  Button,
+  InputNumber,
+  Row,
+  Col,
+  Divider,
+  Typography,
+  Rate,
+  Input,
+  Upload,
+  Card,
+  Badge,
+} from "antd";
 import {
   PhoneOutlined,
   MessageOutlined,
   InfoCircleOutlined,
+  CameraOutlined,
 } from "@ant-design/icons";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Rate, Input, Upload, Card, Badge } from "antd";
-import { CameraOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/Cart/cartSlice";
@@ -17,6 +28,7 @@ const { TextArea } = Input;
 
 export default function ProductDetail() {
   const [value, setValue] = useState("");
+  const dispatch = useDispatch();
 
   const RelatedProducts = [
     {
@@ -93,8 +105,6 @@ export default function ProductDetail() {
     },
   ];
 
-  const dispatch = useDispatch();
-
   const handleAddToCart = (product) => {
     const productToSave = {
       ...product,
@@ -126,46 +136,32 @@ export default function ProductDetail() {
           </div>
         </div>
         <div className="w-1/2 p-4">
-          <div className="flex flex-col">
-            <Title level={3} className="w-fit">
-              MẶT DÂY KIM CƯƠNG AFPB000040F2HA1
-            </Title>
-            <Text type="secondary" className="w-fit text-lg">
-              Mã sản phẩm: AFPB000040F2HA1
-            </Text>
-          </div>
-          <div className="flex flex-col my-2">
-            <Title level={2} className="text-red-500 w-fit ">
+          <Title level={3}>MẶT DÂY KIM CƯƠNG AFPB000040F2HA1</Title>
+          <Text type="secondary">Mã sản phẩm: AFPB000040F2HA1</Text>
+          <div className="my-2">
+            <Title level={2} className="text-red-500">
               41,454,000₫
             </Title>
-            <Text delete className="w-fit">
-              46,060,000₫
+            <Text delete>46,060,000₫</Text>
+          </div>
+          <div className="my-2">
+            <Text>
+              Giá có thể thay đổi tuỳ thuộc vào kích thước và trọng lượng thực
+              tế của sản phẩm. Vui lòng gọi 1800 1168 để được hỗ trợ.
             </Text>
           </div>
-          <div className="flex flex-col my-2">
-            <Text className="w-fit text-lg">
-              Giá có thể thay đổi ty thuộc vào kích thước và trọng lượng thực tế
-              của sản phẩm.
-            </Text>
-            <Text className="w-fit text-lg">
-              Vui lòng gọi 1800 1168 để được hỗ trợ.
-            </Text>
-          </div>
-          <div className="flex flex-col items-start my-2">
-            <Text strong className="w-fit">
+          <div className="my-2">
+            <Text strong>
               <CheckCircleIcon className="text-green-500" /> CÒN 5 SẢN PHẨM
             </Text>
           </div>
           <div className="my-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <Text>Số lượng:</Text>
-              <InputNumber min={1} max={10} defaultValue={1} className="ml-2" />
-            </div>
-            <a href="/size-guide" className="text-blue-500">
+            <Text>Số lượng:</Text>
+            <InputNumber min={1} max={10} defaultValue={1} className="ml-2" />
+            <a href="/size-guide" className="text-blue-500 ml-4">
               Hướng dẫn đo size →
             </a>
           </div>
-
           <div className="my-4 flex items-center justify-between">
             <Link to="/payment-method" className="w-full mr-2">
               <Button type="primary" className="w-full">
@@ -192,213 +188,135 @@ export default function ProductDetail() {
         </div>
       </div>
       <Divider />
-      <Title level={4} className="w-fit ">
-        CHI TIẾT SẢN PHẨM
-      </Title>
+      <Title level={4}>CHI TIẾT SẢN PHẨM</Title>
       <Row gutter={16}>
-        <Col span={16} className="text-lg">
-          <div className="w-fit ">
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Loại sản phẩm:
-              </Text>{" "}
-              Mặt dây
-            </p>
-            <p className="w-fit ">
-              <Text strong className="text-lg">
-                Màu:
-              </Text>{" "}
-              Vàng trắng
-            </p>
+        <Col span={12}>
+          <div>
+            <Text strong>Loại sản phẩm:</Text> Mặt dây
+          </div>
+          <div>
+            <Text strong>Màu:</Text> Vàng trắng
           </div>
           <Divider />
           <div>
-            <div className="w-fit">
-              <p className="w-fit">
-                <Text strong className="text-lg">
-                  Hình dáng:
-                </Text>{" "}
-                Round
-              </p>
-              <p className="w-fit">
-                <Text strong className="text-lg">
-                  Chế tác: Button{" "}
-                  <InfoCircleOutlined className="text-red-500" />{" "}
-                </Text>{" "}
-                Excellent
-              </p>
-              <p className="w-fit">
-                <Text strong className="text-lg">
-                  Độ tinh khiết: Button{" "}
-                  <InfoCircleOutlined className="text-red-500" />
-                </Text>{" "}
-                VS2
-              </p>
-              <p className="w-fit">
-                <Text strong className="text-lg">
-                  Độ bóng:Button <InfoCircleOutlined className="text-red-500" />
-                </Text>{" "}
-                EX
-              </p>
-
-              <p className="w-fit">
-                <Text strong className="text-lg">
-                  Thắt lưng:
-                </Text>{" "}
-                Medium, Faceted, 3.0%
-              </p>
-              <p className="w-fit">
-                <Text strong className="text-lg">
-                  Phát quang: Button{" "}
-                  <InfoCircleOutlined className="text-red-500" />
-                </Text>{" "}
-                FNT
-              </p>
-            </div>
+            <Text strong>Hình dáng:</Text> Round
+          </div>
+          <div>
+            <Text strong>Chế tác:</Text> Excellent{" "}
+            <InfoCircleOutlined className="text-red-500" />
+          </div>
+          <div>
+            <Text strong>Độ tinh khiết:</Text> VS2{" "}
+            <InfoCircleOutlined className="text-red-500" />
+          </div>
+          <div>
+            <Text strong>Độ bóng:</Text> EX{" "}
+            <InfoCircleOutlined className="text-red-500" />
+          </div>
+          <div>
+            <Text strong>Thắt lưng:</Text> Medium, Faceted, 3.0%
+          </div>
+          <div>
+            <Text strong>Phát quang:</Text> FNT{" "}
+            <InfoCircleOutlined className="text-red-500" />
           </div>
         </Col>
-        <Col className="text-lg">
-          <div className="w-fit">
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Đá chính:
-              </Text>{" "}
-              Kim cương 8 Hearts & 8 Arrows
-            </p>
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Chất liệu:
-              </Text>{" "}
-              Vàng 14k
-            </p>
+        <Col span={12}>
+          <div>
+            <Text strong>Đá chính:</Text> Kim cương 8 Hearts & 8 Arrows
+          </div>
+          <div>
+            <Text strong>Chất liệu:</Text> Vàng 14k
           </div>
           <Divider />
-          <div className="w-fit">
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Trọng lượng (cts): Button{" "}
-                <InfoCircleOutlined className="text-red-500" />
-              </Text>{" "}
-              0.46
-            </p>
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Cấp màu:Button <InfoCircleOutlined className="text-red-500" />
-              </Text>{" "}
-              D
-            </p>
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Kiểm định:
-              </Text>{" "}
-              GIA
-            </p>
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Kích thước (mm): Button{" "}
-                <InfoCircleOutlined className="text-red-500" />
-              </Text>{" "}
-              4.4
-            </p>
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Tim đáy:
-              </Text>{" "}
-              None
-            </p>
-            <p className="w-fit">
-              <Text strong className="text-lg">
-                Độ đối xứng: Button{" "}
-                <InfoCircleOutlined className="text-red-500" />
-              </Text>{" "}
-              EX
-            </p>
+          <div>
+            <Text strong>Trọng lượng (cts):</Text> 0.46{" "}
+            <InfoCircleOutlined className="text-red-500" />
+          </div>
+          <div>
+            <Text strong>Cấp màu:</Text> D{" "}
+            <InfoCircleOutlined className="text-red-500" />
+          </div>
+          <div>
+            <Text strong>Kiểm định:</Text> GIA
+          </div>
+          <div>
+            <Text strong>Kích thước (mm):</Text> 4.4{" "}
+            <InfoCircleOutlined className="text-red-500" />
+          </div>
+          <div>
+            <Text strong>Tim đáy:</Text> None
+          </div>
+          <div>
+            <Text strong>Độ đối xứng:</Text> EX{" "}
+            <InfoCircleOutlined className="text-red-500" />
           </div>
         </Col>
       </Row>
       <Divider />
-      <div className="container mx-auto">
-        <Title level={4} className="w-fit">
-          ĐÁNH GIÁ
-        </Title>
-
-        <div className="my-4 flex items-start justify-start space-x-2">
-          <p>Chọn đánh giá của bạn</p>
-          <Rate />
-        </div>
-        <Row gutter={[16, 16]}>
-          <div className="my-4 flex items-start justify-start space-x-2">
-            <Col span={24} className="w-4" style={{ position: "relative" }}>
-              <TextArea
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="Viết đánh giá của bạn..."
-                autoSize={{ minRows: 4, maxRows: 4 }}
-              />
-              <Upload style={{ position: "absolute", bottom: 8, left: 8 }}>
-                <Button
-                  icon={<CameraOutlined />}
-                  type="link"
-                  style={{ color: "red" }}
-                >
-                  Đính kèm ảnh
-                </Button>
-              </Upload>
-            </Col>
-
-            <Col span={12}>
-              <Input placeholder="Họ và tên *" className="mb-4" />
-              <Input placeholder="Điện thoại *" className="mt-4" />
-            </Col>
-            <Col span={12}>
-              <Input placeholder="Email *" className="mb-4" />
-              <Button type="primary" className="w-full mt-4">
-                GỬI ĐÁNH GIÁ
-              </Button>
-            </Col>
-          </div>
-        </Row>
-        <Divider />
-        <div className="container mx-auto">
-          <Title level={4} className="w-fit">
-            BÌNH LUẬN
-          </Title>
-          <Divider />
-          <div className="container mx-auto">
-            <Title level={4}>SẢN PHẨM CÙNG LOẠI</Title>
-            <Row gutter={[16, 16]}>
-              {RelatedProducts.map((product) => (
-                <Col span={6} key={product.id}>
-                  <Badge.Ribbon
-                    text={product.badge}
-                    color={product.badge === "MỚI" ? "red" : "volcano"}
-                  >
-                    <Card
-                      hoverable
-                      cover={<img alt={product.name} src={product.image} />}
-                    >
-                      <Card.Meta
-                        title={product.name}
-                        description={product.code}
-                      />
-                      <div className="mt-2">
-                        <Text strong style={{ color: "red" }}>
-                          {product.price}
-                        </Text>
-                        {product.oldPrice && (
-                          <Text delete className="ml-2">
-                            {product.oldPrice}
-                          </Text>
-                        )}
-                      </div>
-                    </Card>
-                  </Badge.Ribbon>
-                </Col>
-              ))}
-            </Row>
-          </div>
-        </div>
+      <Title level={4}>ĐÁNH GIÁ</Title>
+      <div className="my-4 flex items-center">
+        <Text>Chọn đánh giá của bạn</Text>
+        <Rate className="ml-2" />
       </div>
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <TextArea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Viết đánh giá của bạn..."
+            autoSize={{ minRows: 4, maxRows: 4 }}
+          />
+          <Upload>
+            <Button
+              icon={<CameraOutlined />}
+              type="link"
+              style={{ color: "red" }}
+            >
+              Đính kèm ảnh
+            </Button>
+          </Upload>
+        </Col>
+        <Col span={12}>
+          <Input placeholder="Họ và tên *" className="mb-4" />
+          <Input placeholder="Điện thoại *" className="mt-4" />
+        </Col>
+        <Col span={12}>
+          <Input placeholder="Email *" className="mb-4" />
+          <Button type="primary" className="w-full mt-4">
+            GỬI ĐÁNH GIÁ
+          </Button>
+        </Col>
+      </Row>
+      <Divider />
+      <Title level={4}>SẢN PHẨM CÙNG LOẠI</Title>
+      <Row gutter={[16, 16]}>
+        {RelatedProducts.map((product) => (
+          <Col span={6} key={product.id}>
+            <Badge.Ribbon
+              text={product.badge}
+              color={product.badge === "MỚI" ? "red" : "volcano"}
+            >
+              <Card
+                hoverable
+                cover={<img alt={product.name} src={product.image} />}
+              >
+                <Card.Meta title={product.name} description={product.code} />
+                <div className="mt-2">
+                  <Text strong style={{ color: "red" }}>
+                    {product.price}
+                  </Text>
+                  {product.oldPrice && (
+                    <Text delete className="ml-2">
+                      {product.oldPrice}
+                    </Text>
+                  )}
+                </div>
+              </Card>
+            </Badge.Ribbon>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 }

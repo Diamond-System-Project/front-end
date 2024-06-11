@@ -1,14 +1,11 @@
 import React from "react";
-import { Button, Form, Input, Radio, Select, Checkbox, message } from "antd";
+import { Button, Form, Input, Radio, Select, Checkbox } from "antd";
 import { LockOutlined, MailOutlined, UserOutlined, PhoneOutlined, HomeOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import AuthAPI from "../api/AuthAPI";
-import moment from "moment";
-import openNotificationWithIcon from "../components/notification";
+
 const { Option } = Select;
 
 export default function Register() {
-    const navigate = useNavigate();
+
     const handleKeyPress = (e) => {
         const charCode = e.which ? e.which : e.keyCode;
         if (charCode < 48 || charCode > 57) {
@@ -16,27 +13,10 @@ export default function Register() {
         }
     };
 
-    const onFinish = async (values) => {
+    const onFinish = (values) => {
         console.log("Received values of form: ", values);
-        try {
-            const { fullName,password,phone, email,   gender, dob } = values;
-            const formattedDob = moment([dob.year, dob.month - 1, dob.day]).format("YYYY-MM-DD");
-            const response = await AuthAPI.Register(fullName, password, phone, email, gender, formattedDob);
-            if (response.data.success) {
-                openNotificationWithIcon("success", "Registration successful!")
-                // Redirect to login page after 2 seconds
-                setTimeout(() => {
-                    navigate("/login");
-                }, 2000);
-            } else {
-                openNotificationWithIcon("error", "Registration successful!", response.data.message)
-                console.log("Registration failed", response.data);
-            }
-        } catch (error) {
-            message.error("An error occurred during registration.");
-            console.error("Registration error: ", error);
-        }
     };
+
     const years = [];
     for (let i = 1900; i <= new Date().getFullYear(); i++) {
         years.push(<Option key={i} value={i}>{i}</Option>);
@@ -97,7 +77,7 @@ export default function Register() {
                 >
                     <Form.Item
                         className="mb-4"
-                        name="fullName"
+                        name="name"
                         rules={[
                             {
                                 required: true,

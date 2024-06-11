@@ -48,7 +48,7 @@ export default function Header() {
         </div>
         <Divider />
         <nav className="flex justify-center items-center space-x-10 mb-6 bg-white-100 w-full">
-          <a href="/trang-suc" className="text-black">
+          <a href="/list-product" className="text-black">
             TRANG SỨC
           </a>
           <a href="/trang-suc-cuoi" className="text-black">

@@ -34,6 +34,7 @@ import ListDelivered from './deliverystaffpage/ListDelivered';
 import OrderListForSaleStaff from './salestaffpages/OrderListForSaleStaff';
 import OrderDetailForSaleStaff from './salestaffpages/OrderDetailForSaleStaff';
 import Carousel from './userpages/Carousel';
+import ListProductForUser from './userpages/ListProductForUser';
 function App() {
   return (
     <Router>
@@ -54,9 +55,7 @@ function App() {
           path="/register"
           element={
             <>
-              <Header />
               <Register />
-              <Footer />
             </>
           }
         />
@@ -64,9 +63,7 @@ function App() {
           path="/login"
           element={
             <>
-              <Header />
               <Login />
-              <Footer />
             </>
           }
         />
@@ -76,6 +73,16 @@ function App() {
             <>
               <Header />
               <Checkout />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/list-product"
+          element={
+            <>
+              <Header />
+              <ListProductForUser />
               <Footer />
             </>
           }
