@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Form, Input, Checkbox } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import AuthAPI from "../api/AuthAPI";
-import openNotificationWithIcon from "../components/notification";
+import openNotificationWithIcon from "../notification";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -12,7 +12,7 @@ export default function Login() {
     try {
       const response = await AuthAPI.Login(values.email, values.password);
       if (response.data.success) {
-        openNotificationWithIcon("success", "Login Successfully")
+        openNotificationWithIcon("success", "Login Successfully");
         localStorage.setItem("accessToken", response.data.data.token);
 
         // Redirect to home after 2 seconds
@@ -20,15 +20,13 @@ export default function Login() {
           navigate("/");
         }, 2000);
       } else {
-
-        openNotificationWithIcon("error", "Login Failed!", response.data.data)
+        openNotificationWithIcon("error", "Login Failed!", response.data.data);
       }
     } catch (error) {
-      openNotificationWithIcon("error", "Login Failed!", error.data)
-
+      openNotificationWithIcon("error", "Login Failed!", error.data);
     }
   };
-
+  // eslint-disable-next-line
   const validatePassword = (_, value) => {
     if (!value || value.length < 8) {
       return Promise.reject(

@@ -35,6 +35,10 @@ import OrderListForSaleStaff from './salestaffpages/OrderListForSaleStaff';
 import OrderDetailForSaleStaff from './salestaffpages/OrderDetailForSaleStaff';
 import Carousel from './userpages/Carousel';
 import ListProductForUser from './userpages/ListProductForUser';
+import UserInfo from './userpages/UserInfo';
+import OrderHistory from './userpages/OrderHistory';
+import Knowledge from './userpages/Knowledge';
+import Promotion from './userpages/Promotion'
 function App() {
   return (
     <Router>
@@ -64,6 +68,16 @@ function App() {
           element={
             <>
               <Login />
+            </>
+          }
+        />
+        <Route
+          path="/order-history"
+          element={
+            <>
+              <Header />
+              <OrderHistory />
+              <Footer />
             </>
           }
         />
@@ -123,6 +137,36 @@ function App() {
             <>
               <Header />
               <PaymentSuccess />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/user-info"
+          element={
+            <>
+              <Header />
+              <UserInfo />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/knowledge"
+          element={
+            <>
+              <Header />
+              <Knowledge />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/promotions"
+          element={
+            <>
+              <Header />
+              <Promotion />
               <Footer />
             </>
           }
@@ -249,6 +293,7 @@ function App() {
             </div>
           }
         />
+
         {/* Sale Staff routes */}
         <Route
           path="/staff/list-diamond"

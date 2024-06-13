@@ -27,6 +27,10 @@ export default function Header() {
             </span>
           </div>
           <div className="flex space-x-20 mx-10">
+            <Link to="/order-history" className="flex items-center space-x-1">
+              <LocalMallIcon />
+              <span>ĐƠN HÀNG</span>
+            </Link>
             <Link to="/login" className="flex items-center space-x-1">
               <AccountCircleIcon />
               <span>TÀI KHOẢN</span>
@@ -54,17 +58,17 @@ export default function Header() {
           <a href="/trang-suc-cuoi" className="text-black">
             TRANG SỨC CƯỚI
           </a>
-          <a href="/qua-tang" className="text-black">
-            QUÀ TẶNG
+          <a href="/bang-gia" className="text-black">
+            BẢNG GIÁ
           </a>
           <a href="/bo-suu-tap" className="text-black">
             BỘ SƯU TẬP MỚI
           </a>
-          <a href="/discount" className="text-black">
+          <a href="/promotions" className="text-black">
             KHUYẾN MÃI
           </a>
-          <a href="/news" className="text-black">
-            TIN TỨC
+          <a href="/knowledge" className="text-black">
+            KIẾN THỨC
           </a>
         </nav>
       </header>

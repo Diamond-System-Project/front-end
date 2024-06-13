@@ -17,6 +17,8 @@ import {
   MessageOutlined,
   InfoCircleOutlined,
   CameraOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
@@ -28,7 +30,14 @@ const { TextArea } = Input;
 
 export default function ProductDetail() {
   const [value, setValue] = useState("");
+  const [currentImage, setCurrentImage] = useState(0);
   const dispatch = useDispatch();
+
+  const productImages = [
+    "https://i.pinimg.com/564x/17/8e/14/178e14293034ec225552f4f76b84c01b.jpg",
+    "https://i.pinimg.com/564x/4b/b5/8a/4bb58a58e84b1ceca193306e428e82a2.jpg",
+    "https://i.pinimg.com/736x/c1/54/90/c154904234fffb1b4c6688a8d9c6a76e.jpg",
+  ];
 
   const RelatedProducts = [
     {
@@ -113,26 +122,45 @@ export default function ProductDetail() {
     dispatch(addToCart({ product: productToSave }));
   };
 
+  const handlePrevImage = () => {
+    setCurrentImage((prev) => (prev > 0 ? prev - 1 : productImages.length - 1));
+  };
+
+  const handleNextImage = () => {
+    setCurrentImage((prev) => (prev < productImages.length - 1 ? prev + 1 : 0));
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex">
         <div className="w-1/2 p-4">
-          <img
-            src="https://via.placeholder.com/300"
-            alt="Product"
-            className="w-full"
-          />
+          <div className="relative flex justify-center">
+            <img
+              src={productImages[currentImage]}
+              alt="Product"
+              className="w-1/2 "
+            />
+            <Button
+              icon={<LeftOutlined />}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white"
+              onClick={handlePrevImage}
+            />
+            <Button
+              icon={<RightOutlined />}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white"
+              onClick={handleNextImage}
+            />
+          </div>
           <div className="flex justify-center mt-4">
-            <img
-              src="https://via.placeholder.com/80"
-              alt="Thumbnail"
-              className="w-20 h-20 mx-2"
-            />
-            <img
-              src="https://via.placeholder.com/80"
-              alt="Thumbnail"
-              className="w-20 h-20 mx-2"
-            />
+            {productImages.map((src, index) => (
+              <img
+                key={index}
+                src={src}
+                alt={`Thumbnail ${index}`}
+                className="w-20 h-20 mx-2 cursor-pointer"
+                onClick={() => setCurrentImage(index)}
+              />
+            ))}
           </div>
         </div>
         <div className="w-1/2 p-4">
@@ -277,16 +305,9 @@ export default function ProductDetail() {
             </Button>
           </Upload>
         </Col>
-        <Col span={12}>
-          <Input placeholder="Họ và tên *" className="mb-4" />
-          <Input placeholder="Điện thoại *" className="mt-4" />
-        </Col>
-        <Col span={12}>
-          <Input placeholder="Email *" className="mb-4" />
-          <Button type="primary" className="w-full mt-4">
-            GỬI ĐÁNH GIÁ
-          </Button>
-        </Col>
+        <Button type="primary" className="w-full mt-4">
+          GỬI ĐÁNH GIÁ
+        </Button>
       </Row>
       <Divider />
       <Title level={4}>SẢN PHẨM CÙNG LOẠI</Title>

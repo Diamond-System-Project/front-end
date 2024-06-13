@@ -165,6 +165,7 @@ const categories = [
 ];
 
 export default function ListProduct() {
+  // eslint-disable-next-line
   const [products, setProducts] = useState(product);
   const [filteredProducts, setFilteredProducts] = useState(product);
   const [selectedCategories, setSelectedCategories] = useState([]);
