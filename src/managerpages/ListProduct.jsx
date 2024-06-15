@@ -1,22 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, Modal } from "antd";
 // import { Link } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
+import ProductAPI from "../api/ProductAPI";
 
 const ListProduct = () => {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      image: <img src="https://via.placeholder.com/150" alt="Product" />,
-      name: "Product's name",
-      description: "Product's description",
-      price: "$11.40",
-      available: 150,
-      stock: 200,
-    },
-  ]);
+  const [products, setProducts] = useState([]);
+    console.log(products)
+  useEffect(() => {
+    (async ()=>{
+      const response = await ProductAPI.products();
+      if(response.data.success){
+        const data = response.data;
+        setProducts(data.data);
+      }
+    })()
+  }, []);
 
   const [sortedInfo, setSortedInfo] = useState({});
   const [isAddProductModalVisible, setIsAddProductModalVisible] =
@@ -32,13 +33,13 @@ const ListProduct = () => {
   const columns = [
     {
       title: "Image",
-      dataIndex: "image",
+      dataIndex: "imageUrl",
       key: "image",
       render: (image) => <div className="w-20 h-auto">{image}</div>,
     },
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "productName",
       key: "name",
     },
     {
@@ -53,7 +54,7 @@ const ListProduct = () => {
     },
     {
       title: "Stock",
-      dataIndex: "stock",
+      dataIndex: "status",
       key: "stock",
       sorter: (a, b) => a.stock - b.stock,
       sortOrder: sortedInfo.columnKey === "stock" && sortedInfo.order,
@@ -102,18 +103,26 @@ const ListProduct = () => {
   };
 
   const handleCreateProduct = (product) => {
-    setProducts([
-      ...products,
-      {
-        ...product,
-        id: products.length + 1,
-        image: <img src={product.image} alt="Product" />,
-      },
-    ]);
+    (async ()=>{
+      const response = await ProductAPI.addProduct(product);
+      console.log("response",response);
+      setProducts([
+        ...products,
+        {
+          ...product,
+          id: products.length + 1,
+          image: <img src={product.image} alt="Product" />,
+        },
+      ]);
+    })()
     setIsAddProductModalVisible(false);
   };
 
   const handleUpdateExistingProduct = (updatedProduct) => {
+    (async()=>{
+      const response = await ProductAPI.updateProduct(updatedProduct);
+      console.log("response",response);
+    })()
     setProducts(
       products.map((product) =>
         product.id === updatedProduct.id ? updatedProduct : product
@@ -123,6 +132,10 @@ const ListProduct = () => {
   };
 
   const handleDeleteProduct = (productId) => {
+    (async()=>{
+      const response = await ProductAPI.deleteProduct(productId);
+      console.log("response",response);
+    })()
     setProducts(products.filter((product) => product.id !== productId));
     setIsUpdateProductModalVisible(false);
   };

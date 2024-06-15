@@ -1,40 +1,34 @@
-import React, { useState } from "react";
-import { Table, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Select, message } from "antd";
 import { Link } from "react-router-dom";
+import OrderAPI from "../api/OrderAPI";
 
 const { Option } = Select;
 
 const OrderList = () => {
-  const [data, setData] = useState([
-    {
-      orderId: "1",
-      date: "2022-01-01",
-      customerName: "John Doe",
-      status: "Delivered",
-      amount: "$100",
-    },
-    {
-      orderId: "2",
-      date: "2022-01-02",
-      customerName: "Jane Smith",
-      status: "Delivering",
-      amount: "$200",
-    },
-    {
-      orderId: "3",
-      date: "2022-01-03",
-      customerName: "Bob Johnson",
-      status: "Cancelled",
-      amount: "$300",
-    },
-    {
-      orderId: "4",
-      date: "2022-01-03",
-      customerName: "Bo son",
-      status: "Processing",
-      amount: "$300",
-    },
-  ]);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await OrderAPI.getAllOrders();
+        console.log(response)
+        const orders = response.data.data.map(order => ({
+          orderId: order.orderId,
+          date: new Date(order.order_date).toLocaleDateString(),
+          customerName: order.cname,
+          status: order.status,
+          amount: `$${order.payment.toFixed(2)}`,
+        }));
+        setData(orders);
+      } catch (error) {
+        console.log(error)
+        message.error("Failed to fetch orders");
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const handleChangeStatus = (value, record) => {
     const updatedData = data.map((item) => {
@@ -84,7 +78,7 @@ const OrderList = () => {
       filters: [
         {
           text: "Pending",
-          value: "processing",
+          value: "pending",
         },
         {
           text: "Processing",
@@ -100,7 +94,7 @@ const OrderList = () => {
         },
         {
           text: "Cancelled",
-          value: "cancelled",
+          value: "Cancelled",
         },
       ],
       onFilter: (value, record) => record.status.indexOf(value) === 0,

@@ -11,7 +11,7 @@ const SideBarv2 = () => {
           <img
             src="/assets/images/Song long diamond.png"
             alt="Logo"
-            className="h-auto w-52"
+            className="h-auto w-32"
           />
         </Link>
       </div>
@@ -21,7 +21,7 @@ const SideBarv2 = () => {
         </Menu.Item>
 
         <Menu.Item key="2" icon={<AppstoreOutlined />}>
-          <Link to="/admin/management-staff">Management Staff</Link>
+          <Link to="/admin/management-employees">Management employees</Link>
         </Menu.Item>
       </Menu>
     </div>

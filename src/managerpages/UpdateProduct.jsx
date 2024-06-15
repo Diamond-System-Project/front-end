@@ -24,7 +24,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
         discount: product.discount,
         discountRange: product.discountRange,
       });
-      setImagePreview(product.image.props.src);
+      setImagePreview(product?.image?.props?.src);
     }
   }, [product, form]);
 
@@ -67,7 +67,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   };
 
   const handleDelete = () => {
-    onDelete(product.id);
+    onDelete(product.productId);
   };
 
   return (
@@ -77,7 +77,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <Form.Item
-                name="name"
+                name="productName"
                 label="Product Name"
                 rules={[
                   { required: true, message: "Please input the product name!" },
@@ -104,7 +104,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
               </Form.Item>
 
               <Form.Item
-                name="category"
+                name="mountId"
                 label="Category"
                 rules={[
                   { required: true, message: "Please input the category!" },

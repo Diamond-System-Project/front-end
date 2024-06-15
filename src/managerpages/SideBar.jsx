@@ -17,7 +17,7 @@ const SideBar = () => {
           <img
             src="/assets/images/Song long diamond.png"
             alt="Logo"
-            className="h-auto w-52"
+            className="h-auto w-32"
           />
         </Link>
       </div>
@@ -35,7 +35,13 @@ const SideBar = () => {
         <Menu.Item key="4" icon={<UserOutlined />}>
           <Link to="/manager/management-user"> Customers</Link>
         </Menu.Item>
-        <Menu.Item key="5" icon={<WalletOutlined />}>
+        <Menu.Item key="5" icon={<UserOutlined />}>
+          <Link to="/manager/management-staff"> Management Staff</Link>
+        </Menu.Item>
+        <Menu.Item key="6" icon={<UserOutlined />}>
+          <Link to="/manager/diamond-mount"> Diamond Mount</Link>
+        </Menu.Item>
+        <Menu.Item key="7" icon={<WalletOutlined />}>
           <Link to="/manager/management-voucher"> Voucher</Link>
         </Menu.Item>
       </Menu>

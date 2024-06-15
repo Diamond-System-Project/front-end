@@ -15,7 +15,7 @@ const SideBar = () => {
           <img
             src="/assets/images/Song long diamond.png"
             alt="Logo"
-            className="h-auto w-52"
+            className="h-auto w-32"
           />
         </Link>
       </div>

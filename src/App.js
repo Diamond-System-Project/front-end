@@ -24,7 +24,7 @@ import OrderList from './managerpages/OrderList';
 import OrderDetail from './managerpages/OrderDetail';
 import ManagementVoucher from './managerpages/ManagementVoucher';
 import SideBarv2 from './adminpages/SideBarv2';
-import ManagementStaff from './adminpages/ManagementStaff';
+import ManagementEmployees from './adminpages/ManagementEmployees';
 import StaffDetail from './adminpages/StaffDetail';
 import SideBarv3 from './salestaffpages/SideBarv3';
 import ListDiamond from './salestaffpages/ListDiamond';
@@ -36,9 +36,12 @@ import OrderDetailForSaleStaff from './salestaffpages/OrderDetailForSaleStaff';
 import Carousel from './userpages/Carousel';
 import ListProductForUser from './userpages/ListProductForUser';
 import UserInfo from './userpages/UserInfo';
-import OrderHistory from './userpages/OrderHistory';
+import OrderDetailForUser from './userpages/OrderDetailForUser';
 import Knowledge from './userpages/Knowledge';
 import Promotion from './userpages/Promotion'
+import ManagementStaff from './managerpages/ManagementStaff';
+import DiamondMount from './managerpages/DiamondMount';
+import OrderHistory from './userpages/OrderHistory';
 function App() {
   return (
     <Router>
@@ -77,6 +80,16 @@ function App() {
             <>
               <Header />
               <OrderHistory />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/order-detail/:id"
+          element={
+            <>
+              <Header />
+              <OrderDetailForUser />
               <Footer />
             </>
           }
@@ -293,6 +306,30 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/manager/management-staff"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <ManagementStaff />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/manager/diamond-mount"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <DiamondMount />
+              </div>
+            </div>
+          }
+        />
 
         {/* Sale Staff routes */}
         <Route
@@ -382,19 +419,19 @@ function App() {
           }
         />
         <Route
-          path="/admin/management-staff"
+          path="/admin/management-employees"
           element={
             <div className="flex">
               <SideBarv2 />
               <div className="flex-1">
                 <Headerv2 />
-                <ManagementStaff />
+                <ManagementEmployees />
               </div>
             </div>
           }
         />
         <Route
-          path="/admin/staff-detail/:id"
+          path="/admin/employees-detail/:id"
           element={
             <div className="flex">
               <SideBarv2 />
@@ -407,6 +444,9 @@ function App() {
         />
       </Routes>
     </Router>
+
   );
+
 }
+
 export default App;

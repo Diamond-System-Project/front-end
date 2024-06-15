@@ -36,7 +36,7 @@ const AddProduct = ({ onCreate }) => {
     }
     return isPng;
   };
-
+  console.log(setImagePreview)
   const [form] = Form.useForm();
 
   const handleFinish = (values) => {
@@ -51,7 +51,7 @@ const AddProduct = ({ onCreate }) => {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <Form.Item
-                name="name"
+                name="productName"
                 label="Product Name"
                 rules={[
                   { required: true, message: "Please input the product name!" },
@@ -71,8 +71,8 @@ const AddProduct = ({ onCreate }) => {
               </Form.Item>
 
               <Form.Item
-                name="category"
-                label="Category"
+                name="mountId"
+                label="Mount"
                 rules={[
                   { required: true, message: "Please input the category!" },
                 ]}
@@ -80,42 +80,27 @@ const AddProduct = ({ onCreate }) => {
                 <Input placeholder="Type category here" />
               </Form.Item>
 
-              <Form.Item
-                name="brandName"
-                label="Brand Name"
-                rules={[
-                  { required: true, message: "Please input the brand name!" },
-                ]}
-              >
-                <Input placeholder="Type brand name here" />
-              </Form.Item>
 
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
-                  name="sku"
-                  label="SKU"
-                  rules={[{ required: true, message: "Please input the SKU!" }]}
-                >
-                  <Input placeholder="123-456" />
-                </Form.Item>
-                <Form.Item
-                  name="stock"
-                  label="Stock Quantity"
+                  name="laborFee"
+                  label="Labor Fee"
                   rules={[
                     {
                       required: true,
-                      message: "Please input the stock quantity!",
+                      message: "Please input the regular price!",
                     },
                   ]}
                 >
-                  <Input />
+                  <Input placeholder="$" />
                 </Form.Item>
+                
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
-                  name="regularPrice"
-                  label="Regular Price"
+                  name="components_price"
+                  label="Components Price"
                   rules={[
                     {
                       required: true,
