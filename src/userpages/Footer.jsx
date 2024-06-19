@@ -1,5 +1,3 @@
-import React from "react";
-import "../styles/tailwind.css";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -25,7 +23,7 @@ export default function Footer() {
           </div>
           <div className="flex justify-center">
             <img
-              src="/assets/images/Song long diamond.png"
+              src="src/assets/images/Songlong.png"
               alt="Song Long Diamond"
               className="mx-auto max-w-xs"
             />

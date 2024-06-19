@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Form, Input, Checkbox } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import AuthAPI from "../api/AuthAPI";
@@ -15,7 +14,6 @@ export default function Login() {
         openNotificationWithIcon("success", "Login Successfully");
         localStorage.setItem("accessToken", response.data.data.token);
 
-        // Redirect to home after 2 seconds
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -120,7 +118,7 @@ export default function Login() {
                 Forgot password?
               </a>
               <a href="/register" className="text-blue-500">
-                Don't have an account? Sign Up
+                Do not have an account? Sign Up
               </a>
             </div>
           </Form.Item>

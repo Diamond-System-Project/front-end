@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Form, Input, Radio, Select, Checkbox, message } from "antd";
 import {
   LockOutlined,

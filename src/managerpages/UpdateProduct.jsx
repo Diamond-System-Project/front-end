@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button, Input, Card, Upload, message, DatePicker, Form } from "antd";
+import { Button, Input, Card, Upload, message, Form, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { storage, ref, uploadBytes, getDownloadURL } from "../firebase"; // Import necessary Firebase functions
 
+const { Option } = Select;
 const { Dragger } = Upload;
 const { TextArea } = Input;
-const { RangePicker } = DatePicker;
 
 const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   const [imagePreview, setImagePreview] = useState(null);
@@ -13,55 +14,43 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   useEffect(() => {
     if (product) {
       form.setFieldsValue({
-        name: product.name,
-        description: product.description,
-        category: product.category,
-        brandName: product.brandName,
-        sku: product.sku,
-        stockQuantity: product.stock,
-        regularPrice: product.regularPrice,
-        salePrice: product.price,
-        discount: product.discount,
-        discountRange: product.discountRange,
+        imageUrl: product.imageUrl || "",
+        productName: product.productName || "",
+        description: product.description || "",
+        componentsPrice: product.componentsPrice || "",
+        laborFee: product.laborFee || "",
+        price: product.price || "",
+        status: product.status || "",
       });
-      setImagePreview(product?.image?.props?.src);
+      setImagePreview(product?.imageUrl || "");
     }
   }, [product, form]);
 
-  const handleImageUpload = (info) => {
+  const handleImageUpload = async (info) => {
     const { file } = info;
-    if (file.status !== "uploading") {
-      console.log(file, info);
-    }
+    try {
+      // Upload file to Firebase Storage
+      const storageRef = ref(storage, file.name);
+      const snapshot = await uploadBytes(storageRef, file.originFileObj);
 
-    if (file.status === "done" || file.status === "uploading") {
-      if (file.type === "image/png") {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => {
-          setImagePreview(reader.result);
-        };
-      } else {
-        message.error("You can only upload PNG files!");
-      }
-    } else if (file.status === "error") {
-      console.error("Error uploading file:", file.error);
-    }
-  };
+      // Get download URL from Firebase Storage
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-  const beforeUpload = (file) => {
-    const isPng = file.type === "image/png";
-    if (!isPng) {
-      message.error("You can only upload PNG files!");
+      // Set image preview state to display uploaded image
+      setImagePreview(downloadURL);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      message.error(
+        "Failed to upload image. Ensure you have proper permissions."
+      );
     }
-    return isPng;
   };
 
   const handleFinish = (values) => {
     const updatedProduct = {
       ...product,
       ...values,
-      image: <img src={imagePreview} alt="Product" />,
+      imageUrl: imagePreview,
     };
     onUpdate(updatedProduct);
   };
@@ -88,7 +77,6 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                   className="mb-4"
                 />
               </Form.Item>
-
               <Form.Item
                 name="description"
                 label="Description"
@@ -105,75 +93,44 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
 
               <Form.Item
                 name="mountId"
-                label="Category"
-                rules={[
-                  { required: true, message: "Please input the category!" },
-                ]}
+                label="Mount"
+                rules={[{ required: true, message: "Please input the mount!" }]}
               >
-                <Input placeholder="Type category here" className="mb-4" />
-              </Form.Item>
-
-              <Form.Item
-                name="brandName"
-                label="Brand Name"
-                rules={[
-                  { required: true, message: "Please input the brand name!" },
-                ]}
-              >
-                <Input placeholder="Type brand name here" className="mb-4" />
+                <Input placeholder="Type mount here" className="mb-4" />
               </Form.Item>
 
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
-                  name="sku"
-                  label="SKU"
-                  rules={[{ required: true, message: "Please input the SKU!" }]}
-                >
-                  <Input placeholder="123-456" className="mb-4" />
-                </Form.Item>
-                <Form.Item
-                  name="stockQuantity"
-                  label="Stock Quantity"
+                  name="laborFee"
+                  label="Label Fee"
                   rules={[
-                    {
-                      required: true,
-                      message: "Please input the stock quantity!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="" className="mb-4" />
-                </Form.Item>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Form.Item
-                  name="regularPrice"
-                  label="Regular Price"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input the regular price!",
-                    },
+                    { required: true, message: "Please input the label fee!" },
                   ]}
                 >
                   <Input placeholder="$" className="mb-4" />
                 </Form.Item>
                 <Form.Item
-                  name="salePrice"
-                  label="Sale Price"
+                  name="status"
+                  label="Status"
                   rules={[
-                    { required: true, message: "Please input the sale price!" },
+                    {
+                      required: true,
+                      message: "Please select the product status!",
+                    },
                   ]}
                 >
-                  <Input placeholder="$" className="mb-4" />
+                  <Select placeholder="Select status">
+                    <Option value="inStock">In Stock</Option>
+                    <Option value="outStock">Out of Stock</Option>
+                  </Select>
                 </Form.Item>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Form.Item name="discount" label="Discount">
-                  <Input placeholder="%" className="mb-4" />
+                <Form.Item name="componentsPrice" label="Components Price">
+                  <Input placeholder="$" className="mb-4" />
                 </Form.Item>
-                <Form.Item name="discountRange" label="Discount Range">
-                  <RangePicker className="w-full" />
+                <Form.Item name="price" label="Sale Price">
+                  <Input placeholder="$" className="mb-4" />
                 </Form.Item>
               </div>
             </div>
@@ -187,19 +144,13 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                       className="h-full object-contain"
                     />
                   ) : (
-                    <img
-                      src="https://i.pinimg.com/564x/02/49/98/024998a77547072bda7d81bc688be196.jpg"
-                      alt="Default Product Preview"
-                      className="h-full object-contain"
-                    />
+                    <span>Image Preview</span>
                   )}
                 </div>
                 <Form.Item label="Product Gallery">
                   <Dragger
                     name="files"
-                    accept=".png"
                     className="mb-4"
-                    beforeUpload={beforeUpload}
                     onChange={handleImageUpload}
                     showUploadList={false}
                   >
@@ -209,7 +160,9 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                     <p className="ant-upload-text">
                       Drop your image here, or browse
                     </p>
-                    <p className="ant-upload-hint">Only png are allowed</p>
+                    <p className="ant-upload-hint">
+                      Only PNG files are allowed
+                    </p>
                   </Dragger>
                 </Form.Item>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   InputNumber,
@@ -11,181 +11,93 @@ import {
   Upload,
   Card,
   Badge,
+  message,
 } from "antd";
 import {
   PhoneOutlined,
   MessageOutlined,
   InfoCircleOutlined,
   CameraOutlined,
-  LeftOutlined,
-  RightOutlined,
 } from "@ant-design/icons";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/Cart/cartSlice";
-
+import ProductAPI from "../api/ProductAPI";
+import notification from "../notification";
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 export default function ProductDetail() {
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const [value, setValue] = useState("");
-  const [currentImage, setCurrentImage] = useState(0);
   const dispatch = useDispatch();
 
-  const productImages = [
-    "https://i.pinimg.com/564x/17/8e/14/178e14293034ec225552f4f76b84c01b.jpg",
-    "https://i.pinimg.com/564x/4b/b5/8a/4bb58a58e84b1ceca193306e428e82a2.jpg",
-    "https://i.pinimg.com/736x/c1/54/90/c154904234fffb1b4c6688a8d9c6a76e.jpg",
-  ];
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const response = await ProductAPI.getProductById(id);
 
-  const RelatedProducts = [
-    {
-      id: 1,
-      name: "Bông tai kim cương",
-      code: "AFEB902073F2HM1",
-      price: "40,480,000₫",
-      oldPrice: "",
-      image: "https://via.placeholder.com/150",
-      badge: "MỚI",
-    },
-    {
-      id: 2,
-      name: "Bông tai kim cương",
-      code: "AFEB002079F2HM1",
-      price: "36,828,000₫",
-      oldPrice: "40,920,000₫",
-      image: "https://via.placeholder.com/150",
-      badge: "-10%",
-    },
-    {
-      id: 3,
-      name: "Nhẫn nữ 14K",
-      code: "AFRB000147F2HA1",
-      price: "40,930,000₫",
-      oldPrice: "",
-      image: "https://via.placeholder.com/150",
-      badge: "",
-    },
-    {
-      id: 4,
-      name: "Bông tai kim cương",
-      code: "AFEB002074F2HM1",
-      price: "41,090,000₫",
-      oldPrice: "",
-      image: "https://via.placeholder.com/150",
-      badge: "",
-    },
-    {
-      id: 5,
-      name: "Nhẫn nữ 18K",
-      code: "AFRB002004D2DA1",
-      price: "41,110,000₫",
-      oldPrice: "",
-      image: "https://via.placeholder.com/150",
-      badge: "",
-    },
-    {
-      id: 6,
-      name: "Bông tai kim cương",
-      code: "AFEB902080F2HM1",
-      price: "42,050,000₫",
-      oldPrice: "",
-      image: "https://via.placeholder.com/150",
-      badge: "MỚI",
-    },
-    {
-      id: 7,
-      name: "Nhẫn nữ 18K",
-      code: "AFRB002360D3DA1",
-      price: "42,300,000₫",
-      oldPrice: "",
-      image: "https://via.placeholder.com/150",
-      badge: "",
-    },
-    {
-      id: 8,
-      name: "Nhẫn nữ 14K",
-      code: "AFRB000131F2HA1",
-      price: "38,079,000₫",
-      oldPrice: "42,310,000₫",
-      image: "https://via.placeholder.com/150",
-      badge: "-10%",
-    },
-  ];
+        if (response.data.success) {
+          setProduct(response.data.data);
+        }
+      } catch (error) {}
+    }
+    fetchProduct();
+  }, [id]);
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = () => {
+    const price = product.price
+      ? String(product.price).replace(/[^0-9]/g, "")
+      : "0";
     const productToSave = {
       ...product,
-      price: product.price ? product.price.replace(/[^0-9]/g, "") : "0",
+      price,
+      quantity,
     };
-    dispatch(addToCart({ product: productToSave }));
+    dispatch(addToCart(productToSave));
+    notification("success", "Đã thêm vào giỏ hàng thành công");
   };
 
-  const handlePrevImage = () => {
-    setCurrentImage((prev) => (prev > 0 ? prev - 1 : productImages.length - 1));
-  };
-
-  const handleNextImage = () => {
-    setCurrentImage((prev) => (prev < productImages.length - 1 ? prev + 1 : 0));
-  };
+  if (!product) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex">
         <div className="w-1/2 p-4">
           <div className="relative flex justify-center">
-            <img
-              src={productImages[currentImage]}
-              alt="Product"
-              className="w-1/2 "
-            />
-            <Button
-              icon={<LeftOutlined />}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white"
-              onClick={handlePrevImage}
-            />
-            <Button
-              icon={<RightOutlined />}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white"
-              onClick={handleNextImage}
-            />
-          </div>
-          <div className="flex justify-center mt-4">
-            {productImages.map((src, index) => (
-              <img
-                key={index}
-                src={src}
-                alt={`Thumbnail ${index}`}
-                className="w-20 h-20 mx-2 cursor-pointer"
-                onClick={() => setCurrentImage(index)}
-              />
-            ))}
+            <img src={product.image ?? ""} alt="Product" className="w-1/2" />
           </div>
         </div>
         <div className="w-1/2 p-4">
-          <Title level={3}>MẶT DÂY KIM CƯƠNG AFPB000040F2HA1</Title>
-          <Text type="secondary">Mã sản phẩm: AFPB000040F2HA1</Text>
+          <Title level={3}>{product.name}</Title>
+          <Text type="secondary">Mã sản phẩm: {product.code}</Text>
           <div className="my-2">
             <Title level={2} className="text-red-500">
-              41,454,000₫
+              {product.price}
             </Title>
-            <Text delete>46,060,000₫</Text>
+            {product.oldPrice && <Text delete>{product.oldPrice}</Text>}
           </div>
           <div className="my-2">
-            <Text>
-              Giá có thể thay đổi tuỳ thuộc vào kích thước và trọng lượng thực
-              tế của sản phẩm. Vui lòng gọi 1800 1168 để được hỗ trợ.
-            </Text>
+            <Text>{product.description}</Text>
           </div>
           <div className="my-2">
             <Text strong>
-              <CheckCircleIcon className="text-green-500" /> CÒN 5 SẢN PHẨM
+              <CheckCircleIcon className="text-green-500" /> CÒN {product.stock}{" "}
+              SẢN PHẨM
             </Text>
           </div>
           <div className="my-4 flex items-center justify-between">
             <Text>Số lượng:</Text>
-            <InputNumber min={1} max={10} defaultValue={1} className="ml-2" />
+            <InputNumber
+              min={1}
+              max={product.stock}
+              value={quantity}
+              onChange={(value) => setQuantity(value)}
+              className="ml-2"
+            />
             <a href="/size-guide" className="text-blue-500 ml-4">
               Hướng dẫn đo size →
             </a>
@@ -196,10 +108,7 @@ export default function ProductDetail() {
                 MUA NGAY
               </Button>
             </Link>
-            <Button
-              onClick={() => handleAddToCart(RelatedProducts)}
-              className="w-full ml-2"
-            >
+            <Button onClick={handleAddToCart} className="w-full ml-2">
               THÊM VÔ GIỎ HÀNG
             </Button>
           </div>
@@ -215,72 +124,32 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
-      <Divider />
+      {/* <Divider />
       <Title level={4}>CHI TIẾT SẢN PHẨM</Title>
       <Row gutter={16}>
         <Col span={12}>
-          <div>
-            <Text strong>Loại sản phẩm:</Text> Mặt dây
-          </div>
-          <div>
-            <Text strong>Màu:</Text> Vàng trắng
-          </div>
+          <div><Text strong>Loại sản phẩm:</Text> {product.category}</div>
+          <div><Text strong>Màu:</Text> {product.color}</div>
           <Divider />
-          <div>
-            <Text strong>Hình dáng:</Text> Round
-          </div>
-          <div>
-            <Text strong>Chế tác:</Text> Excellent{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
-          <div>
-            <Text strong>Độ tinh khiết:</Text> VS2{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
-          <div>
-            <Text strong>Độ bóng:</Text> EX{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
-          <div>
-            <Text strong>Thắt lưng:</Text> Medium, Faceted, 3.0%
-          </div>
-          <div>
-            <Text strong>Phát quang:</Text> FNT{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
+          <div><Text strong>Hình dáng:</Text> {product.shape}</div>
+          <div><Text strong>Chế tác:</Text> {product.craftsmanship} <InfoCircleOutlined className="text-red-500" /></div>
+          <div><Text strong>Độ tinh khiết:</Text> {product.clarity} <InfoCircleOutlined className="text-red-500" /></div>
+          <div><Text strong>Độ bóng:</Text> {product.polish} <InfoCircleOutlined className="text-red-500" /></div>
+          <div><Text strong>Thắt lưng:</Text> {product.girdle}</div>
+          <div><Text strong>Phát quang:</Text> {product.fluorescence} <InfoCircleOutlined className="text-red-500" /></div>
         </Col>
         <Col span={12}>
-          <div>
-            <Text strong>Đá chính:</Text> Kim cương 8 Hearts & 8 Arrows
-          </div>
-          <div>
-            <Text strong>Chất liệu:</Text> Vàng 14k
-          </div>
+          <div><Text strong>Đá chính:</Text> {product.mainStone}</div>
+          <div><Text strong>Chất liệu:</Text> {product.material}</div>
           <Divider />
-          <div>
-            <Text strong>Trọng lượng (cts):</Text> 0.46{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
-          <div>
-            <Text strong>Cấp màu:</Text> D{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
-          <div>
-            <Text strong>Kiểm định:</Text> GIA
-          </div>
-          <div>
-            <Text strong>Kích thước (mm):</Text> 4.4{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
-          <div>
-            <Text strong>Tim đáy:</Text> None
-          </div>
-          <div>
-            <Text strong>Độ đối xứng:</Text> EX{" "}
-            <InfoCircleOutlined className="text-red-500" />
-          </div>
+          <div><Text strong>Trọng lượng (cts):</Text> {product.carat} <InfoCircleOutlined className="text-red-500" /></div>
+          <div><Text strong>Cấp màu:</Text> {product.colorGrade} <InfoCircleOutlined className="text-red-500" /></div>
+          <div><Text strong>Kiểm định:</Text> {product.certification}</div>
+          <div><Text strong>Kích thước (mm):</Text> {product.size} <InfoCircleOutlined className="text-red-500" /></div>
+          <div><Text strong>Tim đáy:</Text> {product.culet}</div>
+          <div><Text strong>Độ đối xứng:</Text> {product.symmetry} <InfoCircleOutlined className="text-red-500" /></div>
         </Col>
-      </Row>
+      </Row> */}
       <Divider />
       <Title level={4}>ĐÁNH GIÁ</Title>
       <div className="my-4 flex items-center">
@@ -312,24 +181,29 @@ export default function ProductDetail() {
       <Divider />
       <Title level={4}>SẢN PHẨM CÙNG LOẠI</Title>
       <Row gutter={[16, 16]}>
-        {RelatedProducts.map((product) => (
-          <Col span={6} key={product.id}>
+        {product.relatedProducts?.map((relatedProduct) => (
+          <Col span={6} key={relatedProduct.id}>
             <Badge.Ribbon
-              text={product.badge}
-              color={product.badge === "MỚI" ? "red" : "volcano"}
+              text={relatedProduct.badge}
+              color={relatedProduct.badge === "MỚI" ? "red" : "volcano"}
             >
               <Card
                 hoverable
-                cover={<img alt={product.name} src={product.image} />}
+                cover={
+                  <img alt={relatedProduct.name} src={relatedProduct.image} />
+                }
               >
-                <Card.Meta title={product.name} description={product.code} />
+                <Card.Meta
+                  title={relatedProduct.name}
+                  description={relatedProduct.code}
+                />
                 <div className="mt-2">
                   <Text strong style={{ color: "red" }}>
-                    {product.price}
+                    {relatedProduct.price}
                   </Text>
-                  {product.oldPrice && (
+                  {relatedProduct.oldPrice && (
                     <Text delete className="ml-2">
-                      {product.oldPrice}
+                      {relatedProduct.oldPrice}
                     </Text>
                   )}
                 </div>

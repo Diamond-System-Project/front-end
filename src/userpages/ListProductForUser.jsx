@@ -1,10 +1,7 @@
-// ListProduct.js
 import React, { useState, useEffect } from "react";
-import { Checkbox, Collapse, Pagination } from "antd";
+import { Pagination } from "antd";
 import { Link } from "react-router-dom";
-import ProductAPI from "../api/ProductAPI"; // Adjust the import path as per your project structure
-
-const { Panel } = Collapse;
+import ProductAPI from "../api/ProductAPI";
 
 const ListProduct = () => {
   const [products, setProducts] = useState([]);
@@ -17,10 +14,9 @@ const ListProduct = () => {
     const fetchProducts = async () => {
       try {
         const data = await ProductAPI.products();
-        setProducts(data.data.data); // Assuming data is an array of products from the API
+        setProducts(data.data.data);
       } catch (error) {
         console.error("Failed to fetch products:", error.message);
-        // Handle error state or display a message to the user
       }
     };
 
@@ -60,19 +56,13 @@ const ListProduct = () => {
 
   return (
     <div className="flex">
-      <div className="w-1/4 p-4">
-        <h2 className="text-lg font-semibold mb-4">Filter by Mount</h2>
-        <Collapse>
-          {/* Category filter UI */}
-          { /* ... */}
-        </Collapse>
-      </div>
+      <div className="w-1/4 p-4"></div>
       <div className="w-3/4 p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {/* Display products */}
           {paginatedProducts.map((product) => (
-            <Link to={`/product-detail/${product.id}`} key={product.id}>
+            <Link to={`/product-detail/${product.productId}`} key={product.productId}>
               <div className="border p-4 rounded-lg shadow-lg cursor-pointer">
+                {console.log(product)}
                 <img
                   src={product.imageUrl}
                   alt={product.productName}
@@ -86,7 +76,6 @@ const ListProduct = () => {
           ))}
         </div>
         <div className="mt-4 flex justify-center">
-          {/* Pagination */}
           <Pagination
             current={currentPage}
             pageSize={pageSize}

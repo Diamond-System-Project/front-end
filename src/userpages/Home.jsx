@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { Link } from "react-router-dom";
@@ -212,7 +212,7 @@ export default function Home() {
         <div className="flex">
           <div className="w-1/3 pr-4">
             <img
-              src="/assets/images/home-tsc.png.png"
+              src="src/assets/images/home-tsc.png.png"
               alt="Khuyến mãi"
               className="w-full h-full object-cover"
             />
@@ -223,6 +223,7 @@ export default function Home() {
                 .slice(currentProduct, currentProduct + itemsPerPageProduct)
                 .map((product) => (
                   <Link
+                    key={product.id}
                     to={`/product-detail/${product.id}`}
                     className="border p-4 rounded-lg transition duration-300 ease-in-out hover:scale-105"
                   >
@@ -277,7 +278,7 @@ export default function Home() {
             </div>
             <div>
               <img
-                src="/assets/images/banner-right.png.png"
+                src="src/assets/images/banner-right.png.png"
                 alt="Ưu Đãi"
                 className="w-48 h-auto object-cover"
               />

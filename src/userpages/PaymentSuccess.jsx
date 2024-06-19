@@ -2,7 +2,11 @@ import React from 'react';
 import { Button, Divider } from 'antd';
 import { Card } from "antd";
 import CheckCircleOutlineTwoToneIcon from '@mui/icons-material/CheckCircleOutlineTwoTone';
+import { useLocation } from 'react-router-dom';
+
 export default function PaymentSuccess() {
+    const location = useLocation();
+    const { orderData, cartItems, discount, finalPrice } = location.state || {};
 
     return (
         <div className="flex justify-center p-4">
@@ -22,17 +26,15 @@ export default function PaymentSuccess() {
                                 </div>
                                 <h3 className='w-fit'>Thông tin đơn hàng</h3>
                                 <p className='w-fit'><strong>Thông tin giao hàng</strong></p>
-                                <p className='w-fit'>Trần Công Danh</p>
-                                <p className='w-fit'>0379750637</p>
-                                <p className='w-fit'>220/9 đường số Nguyễn Văn Khối Phường 9</p>
-                                <p className='w-fit'>Quận Gò Vấp</p>
-                                <p className='w-fit'>Hồ Chí Minh</p>
-                                <p className='w-fit'>Vietnam</p>
+                                <p className='w-fit'>{orderData.order.cname}</p>
+                                <p className='w-fit'>{orderData.order.phone}</p>
+                                <p className='w-fit'>{orderData.order.address}</p>
+                                <p className='w-fit'>{orderData.order.email}</p>
                             </div>
                             <Divider />
                             <div className='w-fit'>
                                 <p className='w-fit'><strong>Phương thức thanh toán</strong></p>
-                                <p className='w-fit'>Thanh toán khi giao hàng (COD)</p>
+                                <p className='w-fit'>{orderData.order.payment_method === "cod" ? "Thanh toán khi giao hàng (COD)" : "Chuyển khoản qua Paypal"}</p>
                             </div>
                             <Divider />
                             <div className="flex justify-between items-center">
@@ -40,35 +42,43 @@ export default function PaymentSuccess() {
                                 <Button type="primary">Tiếp tục mua hàng</Button>
                             </div>
                         </Card>
-
                     </div>
-
                 </div>
                 <Card className="w-1/2 h-3/4 ml-4">
-                    <div className="flex justify-between items-center mb-2">
-                        <img src="https://via.placeholder.com/50" alt="Product" className="w-16 h-16" />
-                        <div className="flex-1 ml-4">
-                            <p className="w-44">Kim cương viên LUCKY STAR 4.4ly H VS1 EX M2B47001</p>
-                            <p className="text-gray-500 w-20">H / VS1 / EX</p>
+                    {cartItems.map((item) => (
+                        <div key={`${item.id}-${item.code}-${item.price}-${item.quantity}`} className="flex justify-between items-center mb-2">
+                            <img
+                                src={item.image}
+                                alt="Product"
+                                className="w-16 h-16"
+                            />
+                            <div className="flex-1 ml-4">
+                                <p className="w-44">{item.productName}</p>
+                                <p className="text-gray-500 w-20">Quantity: {item.quantity}</p>
+                            </div>
+                            <p>{item.price.toLocaleString()}đ</p>
                         </div>
-                        <p>27,034,000₫</p>
-                    </div>
+                    ))}
                     <div className="border-b my-4"></div>
                     <div className="flex justify-between mb-2">
                         <p>Tạm tính</p>
-                        <p>27,034,000₫</p>
+                        <p>{finalPrice.toLocaleString()}đ</p>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                        <p>Giảm giá</p>
+                        <p>{discount.toLocaleString()}đ</p>
                     </div>
                     <div className="flex justify-between mb-2">
                         <p>Phí vận chuyển</p>
-                        <p>-</p>
+                        <p>0đ</p>
                     </div>
                     <div className="border-b my-4"></div>
                     <div className="flex justify-between mb-2">
                         <p className='text-xl font-bold'>Tổng cộng</p>
-                        <p className='text-xl font-bold'>27,034,000₫</p>
+                        <p className='text-xl font-bold'>{finalPrice.toLocaleString()}đ</p>
                     </div>
                 </Card>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

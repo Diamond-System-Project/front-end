@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Table, Button, Modal, Input, DatePicker, message } from "antd";
-import "tailwindcss/tailwind.css";
 import dayjs from "dayjs";
 
 const ManagementVoucher = () => {

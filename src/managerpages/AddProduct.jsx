@@ -1,28 +1,42 @@
 import { useState } from "react";
-import { Button, Input, Upload, message, Form } from "antd";
+import { Button, Input, Upload, message, Form, Select, Card } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { Card } from "antd";
+import { storage, ref, uploadBytes, getDownloadURL } from "../firebase"; // Import necessary Firebase functions
 
+const { Option } = Select;
 const { TextArea } = Input;
 const { Dragger } = Upload;
 
 const AddProduct = ({ onCreate }) => {
   const [imagePreview, setImagePreview] = useState(null);
-  const handleImageUpload = (info) => {
-    const { file } = info;
-    if (file.status !== "uploading") {
-      console.log(file, info);
-    }
+  const [imageUrl, setImageUrl] = useState(null);
+  const [form] = Form.useForm();
 
+  const handleImageUpload = async (info) => {
+    const { file } = info;
     if (file.status === "done" || file.status === "uploading") {
-      if (file.type === "image/png") {
+      if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.readAsDataURL(file.originFileObj);
         reader.onload = () => {
           setImagePreview(reader.result);
         };
+
+        // Upload file to Firebase Storage
+        try {
+          const storageRef = ref(storage, file.name);
+          const snapshot = await uploadBytes(storageRef, file.originFileObj);
+          const downloadURL = await getDownloadURL(snapshot.ref);
+
+          // Set image URL
+          setImageUrl(downloadURL);
+          message.success("Image uploaded successfully");
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          message.error("Failed to upload image. Please try again.");
+        }
       } else {
-        message.error("You can only upload PNG files!");
+        message.error("You can only upload image files!");
       }
     } else if (file.status === "error") {
       console.error("Error uploading file:", file.error);
@@ -30,18 +44,24 @@ const AddProduct = ({ onCreate }) => {
   };
 
   const beforeUpload = (file) => {
-    const isPng = file.type === "image/png";
-    if (!isPng) {
-      message.error("You can only upload PNG files!");
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("You can only upload image files!");
     }
-    return isPng;
+    return isImage;
   };
-  console.log(setImagePreview)
-  const [form] = Form.useForm();
 
   const handleFinish = (values) => {
-    console.log("Form values:", values);
-    onCreate({ ...values, image: imagePreview });
+    if (!imageUrl) {
+      message.error("Please upload an image!");
+      return;
+    }
+    const newProduct = { ...values, imageUrl }; // Ensure image URL is included
+    console.log("Form values:", newProduct);
+    onCreate(newProduct);
+    form.resetFields();
+    setImagePreview(null);
+    setImageUrl(null);
   };
 
   return (
@@ -59,7 +79,6 @@ const AddProduct = ({ onCreate }) => {
               >
                 <Input placeholder="Type product's name here" />
               </Form.Item>
-
               <Form.Item
                 name="description"
                 label="Description"
@@ -73,13 +92,10 @@ const AddProduct = ({ onCreate }) => {
               <Form.Item
                 name="mountId"
                 label="Mount"
-                rules={[
-                  { required: true, message: "Please input the category!" },
-                ]}
+                rules={[{ required: true, message: "Please input the mount!" }]}
               >
-                <Input placeholder="Type category here" />
+                <Input placeholder="Type mount here" />
               </Form.Item>
-
 
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
@@ -88,23 +104,37 @@ const AddProduct = ({ onCreate }) => {
                   rules={[
                     {
                       required: true,
-                      message: "Please input the regular price!",
+                      message: "Please input the labor fee!",
                     },
                   ]}
                 >
                   <Input placeholder="$" />
                 </Form.Item>
-                
+                <Form.Item
+                  name="status"
+                  label="Status"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select the product status!",
+                    },
+                  ]}
+                >
+                  <Select placeholder="Select status">
+                    <Option value="inStock">In Stock</Option>
+                    <Option value="outStock">Out of Stock</Option>
+                  </Select>
+                </Form.Item>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
-                  name="components_price"
+                  name="componentsPrice"
                   label="Components Price"
                   rules={[
                     {
                       required: true,
-                      message: "Please input the regular price!",
+                      message: "Please input the components price!",
                     },
                   ]}
                 >
@@ -137,7 +167,7 @@ const AddProduct = ({ onCreate }) => {
                 <label className="block text-gray-700">Product Gallery</label>
                 <Dragger
                   name="files"
-                  accept=".png"
+                  accept="image/*"
                   className="mb-4"
                   beforeUpload={beforeUpload}
                   onChange={handleImageUpload}
@@ -149,18 +179,16 @@ const AddProduct = ({ onCreate }) => {
                   <p className="ant-upload-text">
                     Drop your image here, or browse
                   </p>
-                  <p className="ant-upload-hint">Only png are allowed</p>
+                  <p className="ant-upload-hint">
+                    Only image files are allowed
+                  </p>
                 </Dragger>
               </div>
             </div>
           </div>
           <div className="flex justify-between space-x-4 mt-6">
             <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="bg-green-500 "
-              >
+              <Button type="primary" htmlType="submit" className="bg-green-500">
                 ADD NEW PRODUCT
               </Button>
             </Form.Item>

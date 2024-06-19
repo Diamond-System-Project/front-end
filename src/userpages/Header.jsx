@@ -1,13 +1,15 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/tailwind.css";
+import { useSelector } from "react-redux";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import { Divider } from "antd";
+
 export default function Header() {
+  const cartSize = useSelector((state) => state.cart.items.length);
+
   return (
     <>
       <header className="w-full bg-white border-b">
@@ -37,14 +39,14 @@ export default function Header() {
             </Link>
             <Link to="/cart" className="flex items-center space-x-1">
               <LocalMallIcon />
-              <span>GIỎ HÀNG (0)</span>
+              <span>GIỎ HÀNG ({cartSize})</span>
             </Link>
           </div>
         </div>
         <div className="text-center py-4">
           <Link to="/">
             <img
-              src="/assets/images/Song long diamond.png"
+              src="src/assets/images/Songlong.png"
               alt="Song Long Diamond"
               className="mx-auto max-w-xs"
             />

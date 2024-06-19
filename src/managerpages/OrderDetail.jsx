@@ -1,6 +1,4 @@
 import { Card, Col, Row, Table, Typography } from "antd";
-import { ProfileOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -9,28 +7,24 @@ const OrderDetail = () => {
     {
       key: "1",
       productName: "Lorem Ipsum",
-
       quantity: 2,
       total: "$40",
     },
     {
       key: "2",
       productName: "Lorem Ipsum",
-
       quantity: 2,
       total: "$40",
     },
     {
       key: "3",
       productName: "Lorem Ipsum",
-
       quantity: 2,
       total: "$40",
     },
     {
       key: "4",
       productName: "Lorem Ipsum",
-
       quantity: 2,
       total: "$40",
     },
@@ -59,8 +53,8 @@ const OrderDetail = () => {
       <Card className="mb-6 shadow">
         <Row gutter={16} justify="space-between" align="middle">
           <Col>
-            <Title level={4}>Orders ID: 001</Title>
-            <Text>Feb 16, 2022 - Feb 20, 2022</Text>
+            <Title level={4}>Order ID: </Title>
+            <Text>Date:</Text>
           </Col>
           <Col>
             <Text>Status: Completed</Text>
@@ -68,45 +62,24 @@ const OrderDetail = () => {
         </Row>
       </Card>
 
-      <Row gutter={16} className="mb-6">
+      <Row gutter={16} className="mb-6 h-fit">
         <Col span={8}>
-          <Card
-            title="Customer"
-            extra={
-              <Link
-                to="/manager/management-user/user-detail/:id"
-                type="link"
-                icon={<ProfileOutlined />}
-              >
-                View Profile
-              </Link>
-            }
-            className="shadow"
-          >
-            <p>Full Name: Shristi Singh</p>
-            <p>Email: shristi@gmail.com</p>
-            <p>Phone: +91 904 231 1212</p>
+          <Card title="Customer" className="shadow">
+            <p>Full Name: </p>
+            <p>Email: </p>
+            <p>Phone: </p>
           </Card>
         </Col>
         <Col span={8}>
           <Card title="Order Info" className="shadow">
             <p>Shipping: Delivery</p>
-            <p>Payment Method: VN PAY</p>
-            <p>Status: Completed</p>
+            <p>Payment Method: VN PAY / COD</p>
+            <p>Status: </p>
           </Card>
         </Col>
         <Col span={8}>
-          <Card title="Deliver to" className="shadow">
-            <p>Address: Dharam Colony, Palam Vihar, Gurgaon, Haryana</p>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={16} className="mb-6">
-        <Col span={12}>
-          <Card title="Payment Info" className="shadow">
-            <p>VN PAY: **** 6557</p>
-            <p>Phone: +91 904 231 1212</p>
+          <Card title="Deliver to" className="shadow h-fit">
+            <p>Address: </p>
           </Card>
         </Col>
       </Row>

@@ -16,5 +16,11 @@ const ProductAPI = {
     const url = `product/delete/${productId}`;
     return axiosClient.delete(url);
   },
+
+  getProductById: (id) => {
+    const url = `product/${id}`;
+    return axiosClient.get(url);
+  },
+
 };
 export default ProductAPI;

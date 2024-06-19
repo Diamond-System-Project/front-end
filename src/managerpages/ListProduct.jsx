@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { Table, Button, Modal } from "antd";
-// import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Modal, message } from "antd";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
@@ -8,17 +7,6 @@ import ProductAPI from "../api/ProductAPI";
 
 const ListProduct = () => {
   const [products, setProducts] = useState([]);
-    console.log(products)
-  useEffect(() => {
-    (async ()=>{
-      const response = await ProductAPI.products();
-      if(response.data.success){
-        const data = response.data;
-        setProducts(data.data);
-      }
-    })()
-  }, []);
-
   const [sortedInfo, setSortedInfo] = useState({});
   const [isAddProductModalVisible, setIsAddProductModalVisible] =
     useState(false);
@@ -26,8 +14,86 @@ const ListProduct = () => {
     useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await ProductAPI.products();
+      if (response.data.success) {
+        setProducts(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
+  };
+
+  const handleAddProduct = async (product) => {
+    try {
+      const response = await ProductAPI.addProduct(product);
+      if (response.data.success) {
+        message.success("Product added successfully");
+        setProducts([...products, response.data.data]);
+        setIsAddProductModalVisible(false);
+      } else {
+        message.error(response.data.message || "Failed to add product");
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+      message.error("Failed to add product");
+    }
+  };
+
+  const handleUpdateProduct = (updatedProduct) => {
+    setSelectedProduct(updatedProduct);
+    setIsUpdateProductModalVisible(true);
+  };
+
+  const handleUpdateExistingProduct = async (updatedProduct) => {
+    try {
+      const response = await ProductAPI.updateProduct(updatedProduct);
+      if (response.data.success) {
+        message.success("Product updated successfully");
+        setProducts((prevProducts) => {
+          const updatedIndex = prevProducts.findIndex(
+            (p) => p.id === updatedProduct.id
+          );
+          if (updatedIndex !== -1) {
+            const updatedProducts = [...prevProducts];
+            updatedProducts[updatedIndex] = updatedProduct;
+            return updatedProducts;
+          }
+          return prevProducts;
+        });
+        setIsUpdateProductModalVisible(false);
+      } else {
+        message.error(response.data.message || "Failed to update product");
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      message.error("Failed to update product");
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      const response = await ProductAPI.deleteProduct(productId);
+      if (response.data.success) {
+        message.success("Product deleted successfully");
+        setProducts(products.filter((p) => p.id !== productId));
+        setIsUpdateProductModalVisible(false);
+      } else {
+        message.error(response.data.message || "Failed to delete product");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      message.error("Failed to delete product");
+    }
   };
 
   const columns = [
@@ -35,7 +101,9 @@ const ListProduct = () => {
       title: "Image",
       dataIndex: "imageUrl",
       key: "image",
-      render: (image) => <div className="w-20 h-auto">{image}</div>,
+      render: (image) => (
+        <img src={image} alt="Product" className="w-20 h-auto" />
+      ),
     },
     {
       title: "Name",
@@ -70,76 +138,6 @@ const ListProduct = () => {
     },
   ];
 
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-    },
-    getCheckboxProps: (record) => ({
-      disabled: record.name === "Disabled User",
-      name: record.name,
-    }),
-  };
-
-  const showAddProductModal = () => {
-    setIsAddProductModalVisible(true);
-  };
-
-  const handleAddProductCancel = () => {
-    setIsAddProductModalVisible(false);
-  };
-
-  const handleUpdateProduct = (product) => {
-    setSelectedProduct(product);
-    setIsUpdateProductModalVisible(true);
-  };
-
-  const handleUpdateProductCancel = () => {
-    setIsUpdateProductModalVisible(false);
-    setSelectedProduct(null);
-  };
-
-  const handleCreateProduct = (product) => {
-    (async ()=>{
-      const response = await ProductAPI.addProduct(product);
-      console.log("response",response);
-      setProducts([
-        ...products,
-        {
-          ...product,
-          id: products.length + 1,
-          image: <img src={product.image} alt="Product" />,
-        },
-      ]);
-    })()
-    setIsAddProductModalVisible(false);
-  };
-
-  const handleUpdateExistingProduct = (updatedProduct) => {
-    (async()=>{
-      const response = await ProductAPI.updateProduct(updatedProduct);
-      console.log("response",response);
-    })()
-    setProducts(
-      products.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
-    setIsUpdateProductModalVisible(false);
-  };
-
-  const handleDeleteProduct = (productId) => {
-    (async()=>{
-      const response = await ProductAPI.deleteProduct(productId);
-      console.log("response",response);
-    })()
-    setProducts(products.filter((product) => product.id !== productId));
-    setIsUpdateProductModalVisible(false);
-  };
-
   return (
     <div className="mx-6 p-4 my-4">
       <div className="flex justify-between items-center mb-4">
@@ -149,7 +147,7 @@ const ListProduct = () => {
         <Button
           type="primary"
           className="bg-black text-white mr-2"
-          onClick={showAddProductModal}
+          onClick={() => setIsAddProductModalVisible(true)}
         >
           + ADD NEW PRODUCT
         </Button>
@@ -157,7 +155,9 @@ const ListProduct = () => {
       <Table
         rowSelection={{
           type: "checkbox",
-          ...rowSelection,
+          onChange: (_, selectedRows) => {
+            console.log("Selected rows:", selectedRows);
+          },
         }}
         columns={columns}
         dataSource={products}
@@ -168,16 +168,16 @@ const ListProduct = () => {
         title="Add New Product"
         visible={isAddProductModalVisible}
         footer={null}
-        onCancel={handleAddProductCancel}
+        onCancel={() => setIsAddProductModalVisible(false)}
         width={1800}
       >
-        <AddProduct onCreate={handleCreateProduct} />
+        <AddProduct onCreate={handleAddProduct} />
       </Modal>
       <Modal
         title="Update Product"
         visible={isUpdateProductModalVisible}
         footer={null}
-        onCancel={handleUpdateProductCancel}
+        onCancel={() => setIsUpdateProductModalVisible(false)}
         width={1800}
       >
         <UpdateProduct
