@@ -15,14 +15,14 @@ const OrderList = () => {
 
   const fetchOrders = async () => {
     try {
-      const deliveryStaffId = 1;
+      const deliveryStaffId = localStorage.getItem("userId");
       const response = await OrderAPI.getOrdersByDeliveryStaffId(
         deliveryStaffId
       );
       const orders = response.data.data.map((order) => ({
         key: order.orderId,
         orderId: order.orderId,
-        date: new Date(order.order_date).toLocaleDateString(),
+        date: order.status === "Delivered" ? order.delivery : order.order_date,
         customerName: order.cname,
         status: order.status,
         amount: `$${order.payment.toFixed(2)}`,
@@ -84,10 +84,10 @@ const OrderList = () => {
           style={{ width: 120 }}
           disabled={loading}
         >
-          <Option value="pending">Pending</Option>
-          <Option value="processing">Processing</Option>
-          <Option value="shipping">Shipping</Option>
-          <Option value="delivered">Delivered</Option>
+          <Option value="Pending">Pending</Option>
+          <Option value="Processing">Processing</Option>
+          <Option value="Shipping">Shipping</Option>
+          <Option value="Delivered">Delivered</Option>
         </Select>
       ),
       filters: [

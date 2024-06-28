@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { Table, message, Button, Popconfirm } from "antd";
+import { Table, message, Button, Popconfirm, Select } from "antd";
 import { Link } from "react-router-dom";
 import OrderAPI from "../api/OrderAPI";
+import GetUserByRoleAPI from "../api/GetUserByRoleAPI";
+
+const { Option } = Select;
 
 const OrderList = () => {
   const [data, setData] = useState([]);
+  const [deliveryStaffList, setDeliveryStaffList] = useState([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await OrderAPI.getAllOrders();
-        console.log(response);
         const orders = response.data.data.map((order) => ({
           orderId: order.orderId,
           date: new Date(order.order_date).toLocaleDateString(),
@@ -18,23 +21,32 @@ const OrderList = () => {
           status: order.status,
           deliveryStaff: order.deliveryStaff
             ? order.deliveryStaff.fullName
-            : "N/A",
+            : null,
           amount: `$${order.payment.toFixed(2)}`,
         }));
         setData(orders);
-        console.log(orders);
       } catch (error) {
         console.log(error);
         message.error("Failed to fetch orders");
       }
     };
 
+    const fetchDeliveryStaff = async () => {
+      try {
+        const response = await GetUserByRoleAPI.getAllDeliveryStaff();
+        setDeliveryStaffList(response.data.data);
+      } catch (error) {
+        console.log(error);
+        message.error("Failed to fetch delivery staff");
+      }
+    };
+
     fetchOrders();
+    fetchDeliveryStaff();
   }, []);
 
   const handleCancelOrder = async (record) => {
     try {
-      // Convert record.status to lowercase for case-insensitive comparison
       const statusLowerCase = record.status.toLowerCase();
 
       if (
@@ -62,6 +74,40 @@ const OrderList = () => {
     }
   };
 
+  const handleDeliveryStaffChange = async (value, record) => {
+    try {
+      // Find the delivery staff ID based on the selected fullName
+      const selectedStaff = deliveryStaffList.find(
+        (staff) => staff.fullName === value
+      );
+
+
+      if (selectedStaff) {
+        await GetUserByRoleAPI.assignOrderToDelivery(
+          record.orderId,
+          selectedStaff.userId
+        );
+
+        const updatedData = data.map((item) => {
+          if (item.orderId === record.orderId) {
+            item.deliveryStaff = value;
+          }
+          return item;
+        });
+
+        setData(updatedData);
+        message.success(
+          `Order ${record.orderId} has been assigned to ${value}.`
+        );
+      } else {
+        message.error("Selected delivery staff not found.");
+      }
+    } catch (error) {
+      console.error("Failed to assign delivery staff:", error);
+      message.error("Failed to assign delivery staff. Please try again later.");
+    }
+  };
+
   const columns = [
     {
       title: "Order ID",
@@ -82,35 +128,33 @@ const OrderList = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-
       filters: [
-        {
-          text: "Pending",
-          value: "pending",
-        },
-        {
-          text: "Processing",
-          value: "processing",
-        },
-        {
-          text: "Shipping",
-          value: "Shipping",
-        },
-        {
-          text: "Delivered",
-          value: "delivered",
-        },
-        {
-          text: "Cancelled",
-          value: "Cancelled",
-        },
+        { text: "Pending", value: "Pending" },
+        { text: "Processing", value: "Processing" },
+        { text: "Shipping", value: "Shipping" },
+        { text: "Delivered", value: "Delivered" },
+        { text: "Cancelled", value: "Cancelled" },
       ],
-      onFilter: (value, record) => record.status.indexOf(value) === 0,
+      onFilter: (value, record) => record.status.toLowerCase() === value,
     },
     {
       title: "Delivery Staff",
       dataIndex: "deliveryStaff",
       key: "deliveryStaff",
+      render: (text, record) => (
+        <Select
+          style={{ width: 200 }}
+          placeholder="Select Delivery Staff"
+          value={record.deliveryStaff}
+          onChange={(value) => handleDeliveryStaffChange(value, record)}
+        >
+          {deliveryStaffList.map((staff) => (
+            <Option key={staff.fullName} value={staff.fullName}>
+              {staff.fullName}
+            </Option>
+          ))}
+        </Select>
+      ),
     },
     {
       title: "Amount",

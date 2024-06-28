@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient";
 const ProductAPI = {
   products: () => {
-    const url = `product/allproduct`;
+    const url = `product/all`;
     return axiosClient.get(url);
   },
   addProduct: (product) => {
@@ -18,9 +18,10 @@ const ProductAPI = {
   },
 
   getProductById: (id) => {
-    const url = `product/${id}`;
+    const url = `product/showProduct/${id}`;
     return axiosClient.get(url);
   },
+  
 
 };
 export default ProductAPI;

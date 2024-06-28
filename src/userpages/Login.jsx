@@ -13,7 +13,7 @@ export default function Login() {
       if (response.data.success) {
         openNotificationWithIcon("success", "Login Successfully");
         localStorage.setItem("accessToken", response.data.data.token);
-
+        localStorage.setItem("userId", response.data.data.userId);
         setTimeout(() => {
           navigate("/");
         }, 2000);

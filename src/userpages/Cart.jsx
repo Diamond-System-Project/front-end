@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect  } from "react";
 import { Button, Divider, InputNumber, message } from "antd";
 import { Typography } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -31,6 +31,10 @@ export default function Cart() {
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discount = 0; // Update this based on your discount logic
   const finalPrice = totalPrice - discount;
+
+  useEffect(() => {
+    console.log(cartItems);
+  }, [cartItems])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
