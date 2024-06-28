@@ -34,8 +34,7 @@ const OrderList = () => {
     const fetchDeliveryStaff = async () => {
       try {
         const response = await GetUserByRoleAPI.getAllDeliveryStaff();
-        setDeliveryStaffList(response.data);
-        // console.log(response.data);
+        setDeliveryStaffList(response.data.data);
       } catch (error) {
         console.log(error);
         message.error("Failed to fetch delivery staff");
@@ -75,14 +74,38 @@ const OrderList = () => {
     }
   };
 
-  const handleDeliveryStaffChange = (value, record) => {
-    const updatedData = data.map((item) => {
-      if (item.orderId === record.orderId) {
-        item.deliveryStaff = value;
+  const handleDeliveryStaffChange = async (value, record) => {
+    try {
+      // Find the delivery staff ID based on the selected fullName
+      const selectedStaff = deliveryStaffList.find(
+        (staff) => staff.fullName === value
+      );
+
+
+      if (selectedStaff) {
+        await GetUserByRoleAPI.assignOrderToDelivery(
+          record.orderId,
+          selectedStaff.userId
+        );
+
+        const updatedData = data.map((item) => {
+          if (item.orderId === record.orderId) {
+            item.deliveryStaff = value;
+          }
+          return item;
+        });
+
+        setData(updatedData);
+        message.success(
+          `Order ${record.orderId} has been assigned to ${value}.`
+        );
+      } else {
+        message.error("Selected delivery staff not found.");
       }
-      return item;
-    });
-    setData(updatedData);
+    } catch (error) {
+      console.error("Failed to assign delivery staff:", error);
+      message.error("Failed to assign delivery staff. Please try again later.");
+    }
   };
 
   const columns = [
@@ -106,11 +129,11 @@ const OrderList = () => {
       dataIndex: "status",
       key: "status",
       filters: [
-        { text: "Pending", value: "pending" },
-        { text: "Processing", value: "processing" },
-        { text: "Shipping", value: "shipping" },
-        { text: "Delivered", value: "delivered" },
-        { text: "Cancelled", value: "cancelled" },
+        { text: "Pending", value: "Pending" },
+        { text: "Processing", value: "Processing" },
+        { text: "Shipping", value: "Shipping" },
+        { text: "Delivered", value: "Delivered" },
+        { text: "Cancelled", value: "Cancelled" },
       ],
       onFilter: (value, record) => record.status.toLowerCase() === value,
     },

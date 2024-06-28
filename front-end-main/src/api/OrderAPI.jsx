@@ -11,13 +11,18 @@ const OrderAPI = {
     return axiosClient.post("/order/createWithDetails", orderData);
   },
   cancelOrder: (id) => {
-    return axiosClient.put(`/order/cancel/${id}`);
+    return axiosClient.put(`/order/cancel/${id}`, {
+      reason : "Bom hàng"
+    });
   },
   getOrdersByDeliveryStaffId: (id) => {
     return axiosClient.get(`/order/delivery/${id}`);
   },
   updateOrderStatusByDelivery: (orderId, status) => {
-    return axiosClient.put(`/order/delivery/status/${orderId}`, { status });
+    return axiosClient.put(`/order/delivery/status`, {
+      orderId,
+      status,
+    });
   },
 };
 

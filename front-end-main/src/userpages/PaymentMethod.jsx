@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Divider, Radio, message } from "antd";
 import { Typography } from "@mui/material";
 import { Card, Input } from "antd";
@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import VoucherAPI from "../api/VoucherAPI";
 import AddOrderAPI from "../api/OrderAPI";
+import PaymentAPI from "../api/PaymentAPI";
 import { clearCart } from "../features/Cart/cartSlice";
 
 export default function PaymentMethod() {
@@ -85,6 +86,16 @@ export default function PaymentMethod() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const redirectToVnPay = async (orderId) => {
+    const bankCode = "NCB"; // You can make this dynamic based on user selection
+    try {
+      const paymentUrl = await PaymentAPI.redirectToVnPay(orderId, bankCode);
+      window.location.href = paymentUrl;
+    } catch (error) {
+      message.error("Failed to initiate VNPay payment");
+    }
+  };
+
   const onCompleteOrder = async () => {
     if (!validateCustomerInfo()) {
       return;
@@ -109,7 +120,16 @@ export default function PaymentMethod() {
       if (response.data.success) {
         message.success("Order created successfully");
         dispatch(clearCart());
-        navigate('/payment-success', { state: { orderData, cartItems, discount, finalPrice } }); // Pass order data to success page
+        const orderId = response.data.data.orderId;
+        if (paymentMethod === "vnpay") {
+          localStorage.setItem("orderData", JSON.stringify(orderData));
+          localStorage.setItem("cartItems", JSON.stringify(cartItems));
+          localStorage.setItem("discount", JSON.stringify(discount));
+          localStorage.setItem("finalPrice", JSON.stringify(finalPrice));
+          redirectToVnPay(orderId);
+        } else {
+          navigate('/payment-success', { state: { orderData, cartItems, discount, finalPrice } }); // Pass order data to success page
+        }
       } else {
         message.error(response.data.message || "Failed to create order");
       }
@@ -118,6 +138,40 @@ export default function PaymentMethod() {
       message.error("Failed to create order");
     }
   };
+
+  useEffect(() => {
+    const handleVnPayResponse = async (orderData, cartItems, discount, finalPrice) => {
+      // Get return URL from VNPAY
+      const urlParams = new URLSearchParams(window.location.search);
+      const vnp_ResponseCode = urlParams.get("vnp_ResponseCode");
+      const vnp_OrderInfo = urlParams.get("vnp_OrderInfo");
+      const orderDataLocal = JSON.parse(localStorage.getItem("orderData"));
+      const cartItemsLocal = JSON.parse(localStorage.getItem("cartItems"));
+      const discountLocal = JSON.parse(localStorage.getItem("discount"));
+      const finalPriceLocal = JSON.parse(localStorage.getItem("finalPrice"));
+      if (vnp_ResponseCode && vnp_OrderInfo) {
+        const response = await PaymentAPI.sendToDatabase(
+          vnp_OrderInfo,
+          vnp_ResponseCode
+        );
+        // Reset url
+        window.history.pushState({}, document.title, window.location.pathname);
+        console.log(response);
+        if (response.code === "00") {
+          message.success("Payment successful");
+          localStorage.removeItem("orderData");
+          localStorage.removeItem("cartItems");
+          localStorage.removeItem("discount");
+          localStorage.removeItem("finalPrice");
+          navigate('/payment-success', { state: { orderData: orderDataLocal, cartItems: cartItemsLocal, discount:discountLocal, finalPrice: finalPriceLocal } });
+        } else {
+          message.error("Payment failed");
+        }
+      }
+    };
+
+    handleVnPayResponse();
+  }, []);
 
   return (
     <div className="min-h-screen flex justify-center p-4">
@@ -158,6 +212,12 @@ export default function PaymentMethod() {
               <Radio value="bank">
                 <AccountBalanceTwoToneIcon />
                 Chuyển khoản qua Paypal
+              </Radio>
+            </div>
+            <div className="flex justify-between items-center border p-2 rounded w-[700px] h-14 my-4">
+              <Radio value="vnpay">
+                <AccountBalanceTwoToneIcon />
+                Chuyển khoản qua VNPay
               </Radio>
             </div>
           </Radio.Group>
@@ -213,7 +273,7 @@ export default function PaymentMethod() {
             <Button
               type="primary"
               className="bg-blue-500 text-white w-[400px] h-10 mr-3"
-              onClick={onCompleteOrder}
+              onClick={() => onCompleteOrder()}
             >
               Hoàn tất đơn hàng
             </Button>

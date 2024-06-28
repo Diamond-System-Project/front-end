@@ -18,7 +18,7 @@ const ProductAPI = {
   },
 
   getProductById: (id) => {
-    const url = `product/${id}`;
+    const url = `product/showProduct/${id}`;
     return axiosClient.get(url);
   },
 
