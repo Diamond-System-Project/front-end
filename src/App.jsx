@@ -153,7 +153,7 @@ function App() {
           }
         />
         <Route
-          path="/user-info"
+          path="/profile"
           element={
             <>
               <Header />

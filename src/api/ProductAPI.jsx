@@ -21,7 +21,5 @@ const ProductAPI = {
     const url = `product/showProduct/${id}`;
     return axiosClient.get(url);
   },
-  
-
 };
 export default ProductAPI;

@@ -6,32 +6,23 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const onFinish = async (values) => {
     console.log("Received values of form: ", values);
     try {
       const response = await AuthAPI.Login(values.email, values.password);
       if (response.data.success) {
         openNotificationWithIcon("success", "Login Successfully");
-        localStorage.setItem("accessToken", response.data.data.token);
+        localStorage.setItem("token", response.data.data.token);
         localStorage.setItem("userId", response.data.data.userId);
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        localStorage.setItem("fullName", response.data.data.fullName);
+        navigate("/");
       } else {
         openNotificationWithIcon("error", "Login Failed!", response.data.data);
       }
     } catch (error) {
       openNotificationWithIcon("error", "Login Failed!", error.data);
     }
-  };
-  // eslint-disable-next-line
-  const validatePassword = (_, value) => {
-    if (!value || value.length < 8) {
-      return Promise.reject(
-        new Error("Password needs to be at least 8 characters.")
-      );
-    }
-    return Promise.resolve();
   };
 
   return (
@@ -82,15 +73,11 @@ export default function Login() {
 
           <Form.Item
             name="password"
-            // extra="Password needs to be at least 8 characters."
             rules={[
               {
                 required: true,
                 message: "Please input your Password!",
               },
-              // {
-              //   validator: validatePassword,
-              // },
             ]}
           >
             <Input.Password

@@ -1,7 +1,41 @@
-import React from "react";
-import { Table, Button } from "antd";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Table, Button, message } from "antd";
+import OrderDetailAPI from "../api/OrderDetailAPI";
 
 export default function OrderDetails() {
+  const { id } = useParams();
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        const response = await OrderDetailAPI.getOrderDetailsByOrderId(id);
+        if (response.data.success) {
+          const fetchedDetails = response.data.data;
+          const formattedDetails = fetchedDetails.map((detail) => ({
+            key: detail.productId,
+            productName: detail.productId.productName,
+            quantity: detail.quantity,
+            totalPrice: detail.price?.toLocaleString() ?? "N/A",
+          }));
+          setOrderDetails(formattedDetails);
+        } else {
+          message.error(
+            "Failed to fetch order details: " + response.data.message
+          );
+        }
+      } catch (error) {
+        message.error("Failed to fetch order details: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [id]);
+
   const columns = [
     {
       title: "Tên sản phẩm",
@@ -21,7 +55,7 @@ export default function OrderDetails() {
     {
       title: "Actions",
       key: "actions",
-      render: (text, record) => (
+      render: () => (
         <div className="flex space-x-2">
           <Button type="link">Gửi chứng nhận</Button>
           <Button type="link">Giấy bảo hành</Button>
@@ -31,58 +65,18 @@ export default function OrderDetails() {
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      productName: "SP01",
-      quantity: 1,
-      totalPrice: "100,000,000",
-      status: "Completed",
-    },
-    {
-      key: "2",
-      productName: "SP02",
-      quantity: 2,
-      totalPrice: "50,000,000",
-      status: "Pending",
-    },
-    {
-      key: "3",
-      productName: "SP03",
-      quantity: 1,
-      totalPrice: "30,000,000",
-      status: "Cancelled",
-    },
-    {
-      key: "4",
-      productName: "SP04",
-      quantity: 3,
-      totalPrice: "150,000,000",
-      status: "Processing",
-    },
-    {
-      key: "5",
-      productName: "SP05",
-      quantity: 4,
-      totalPrice: "200,000,000",
-      status: "Delivered",
-    },
-    {
-      key: "6",
-      productName: "SP06",
-      quantity: 1,
-      totalPrice: "70,000,000",
-      status: "Delivering",
-    },
-  ];
-
   return (
     <div className="flex flex-col items-center justify-center my-10">
       <div className="w-full max-w-6xl">
         <h1 className="text-3xl justify-center flex w-full font-bold mb-4">
           Chi tiết đơn hàng
         </h1>
-        <Table columns={columns} dataSource={data} pagination={false} />
+        <Table
+          columns={columns}
+          dataSource={orderDetails}
+          loading={loading}
+          pagination={false}
+        />
       </div>
     </div>
   );

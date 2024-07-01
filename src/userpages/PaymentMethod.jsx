@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Divider, Radio, message } from "antd";
 import { Typography } from "@mui/material";
 import { Card, Input } from "antd";
@@ -36,7 +36,10 @@ export default function PaymentMethod() {
     setCustomerInfo({ ...customerInfo, [name]: value });
   };
 
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalPrice = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
   const finalPrice = totalPrice - discount;
 
   const handleVoucherChange = (e) => {
@@ -54,7 +57,9 @@ export default function PaymentMethod() {
       if (response.data.success) {
         const voucher = response.data.data;
         setDiscount(totalPrice * voucher.discount);
-        message.success(`Voucher applied. Discount: ${voucher.discount * 100}%`);
+        message.success(
+          `Voucher applied. Discount: ${voucher.discount * 100}%`
+        );
       } else {
         message.error("Invalid voucher ID");
       }
@@ -77,9 +82,13 @@ export default function PaymentMethod() {
     if (!phone || !phoneRegex.test(phone)) {
       newErrors.phone = "Phone number must be 10 digits";
     }
+    if (!address) {
+      newErrors.address = "Address is required";
+    }
 
     if (!email || !emailRegex.test(email)) {
-      newErrors.email = "Email must be a valid Gmail address and should not start with a digit";
+      newErrors.email =
+        "Email must be a valid Gmail address and should not start with a digit";
     }
 
     setErrors(newErrors);
@@ -87,7 +96,7 @@ export default function PaymentMethod() {
   };
 
   const redirectToVnPay = async (orderId) => {
-    const bankCode = "NCB"; // You can make this dynamic based on user selection
+    const bankCode = "NCB";
     try {
       const paymentUrl = await PaymentAPI.redirectToVnPay(orderId, bankCode);
       window.location.href = paymentUrl;
@@ -128,7 +137,9 @@ export default function PaymentMethod() {
           localStorage.setItem("finalPrice", JSON.stringify(finalPrice));
           redirectToVnPay(orderId);
         } else {
-          navigate('/payment-success', { state: { orderData, cartItems, discount, finalPrice } }); // Pass order data to success page
+          navigate("/payment-success", {
+            state: { orderData, cartItems, discount, finalPrice },
+          }); // Pass order data to success page
         }
       } else {
         message.error(response.data.message || "Failed to create order");
@@ -140,15 +151,11 @@ export default function PaymentMethod() {
   };
 
   useEffect(() => {
-    const handleVnPayResponse = async (orderData, cartItems, discount, finalPrice) => {
+    const handleVnPayResponse = async () => {
       // Get return URL from VNPAY
       const urlParams = new URLSearchParams(window.location.search);
       const vnp_ResponseCode = urlParams.get("vnp_ResponseCode");
       const vnp_OrderInfo = urlParams.get("vnp_OrderInfo");
-      const orderDataLocal = JSON.parse(localStorage.getItem("orderData"));
-      const cartItemsLocal = JSON.parse(localStorage.getItem("cartItems"));
-      const discountLocal = JSON.parse(localStorage.getItem("discount"));
-      const finalPriceLocal = JSON.parse(localStorage.getItem("finalPrice"));
       if (vnp_ResponseCode && vnp_OrderInfo) {
         const response = await PaymentAPI.sendToDatabase(
           vnp_OrderInfo,
@@ -163,7 +170,14 @@ export default function PaymentMethod() {
           localStorage.removeItem("cartItems");
           localStorage.removeItem("discount");
           localStorage.removeItem("finalPrice");
-          navigate('/payment-success', { state: { orderData: orderDataLocal, cartItems: cartItemsLocal, discount:discountLocal, finalPrice: finalPriceLocal } });
+          navigate("/payment-success", {
+            state: {
+              orderData: JSON.parse(localStorage.getItem("orderData")),
+              cartItems: JSON.parse(localStorage.getItem("cartItems")),
+              discount: JSON.parse(localStorage.getItem("discount")),
+              finalPrice: JSON.parse(localStorage.getItem("finalPrice")),
+            },
+          });
         } else {
           message.error("Payment failed");
         }
@@ -171,7 +185,7 @@ export default function PaymentMethod() {
     };
 
     handleVnPayResponse();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex justify-center p-4">
@@ -209,12 +223,6 @@ export default function PaymentMethod() {
               </Radio>
             </div>
             <div className="flex justify-between items-center border p-2 rounded w-[700px] h-14 my-4">
-              <Radio value="bank">
-                <AccountBalanceTwoToneIcon />
-                Chuyển khoản qua Paypal
-              </Radio>
-            </div>
-            <div className="flex justify-between items-center border p-2 rounded w-[700px] h-14 my-4">
               <Radio value="vnpay">
                 <AccountBalanceTwoToneIcon />
                 Chuyển khoản qua VNPay
@@ -234,7 +242,11 @@ export default function PaymentMethod() {
               value={customerInfo.cname}
               onChange={handleCustomerInfoChange}
             />
-            {errors.cname && <Typography variant="body2" color="error">{errors.cname}</Typography>}
+            {errors.cname && (
+              <Typography variant="body2" color="error">
+                {errors.cname}
+              </Typography>
+            )}
           </div>
           <div className="mb-4">
             <Input
@@ -245,7 +257,11 @@ export default function PaymentMethod() {
               value={customerInfo.phone}
               onChange={handleCustomerInfoChange}
             />
-            {errors.phone && <Typography variant="body2" color="error">{errors.phone}</Typography>}
+            {errors.phone && (
+              <Typography variant="body2" color="error">
+                {errors.phone}
+              </Typography>
+            )}
           </div>
           <div className="mb-4">
             <Input
@@ -266,7 +282,11 @@ export default function PaymentMethod() {
               value={customerInfo.email}
               onChange={handleCustomerInfoChange}
             />
-            {errors.email && <Typography variant="body2" color="error">{errors.email}</Typography>}
+            {errors.email && (
+              <Typography variant="body2" color="error">
+                {errors.email}
+              </Typography>
+            )}
           </div>
           <div className="flex justify-between">
             <Button type="link">Giỏ hàng</Button>
@@ -281,12 +301,11 @@ export default function PaymentMethod() {
         </div>
         <Card className="w-1/2 ml-4">
           {cartItems.map((item) => (
-            <div key={`${item.id}-${item.code}-${item.price}-${item.quantity}`} className="flex justify-between items-center mb-2">
-              <img
-                src={item.image}
-                alt="Product"
-                className="w-16 h-16"
-              />
+            <div
+              key={`${item.id}-${item.code}-${item.price}-${item.quantity}`}
+              className="flex justify-between items-center mb-2"
+            >
+              <img src={item.image} alt="Product" className="w-16 h-16" />
               <div className="flex-1 ml-4">
                 <p className="w-44">{item.productName}</p>
                 <p className="text-gray-500 w-20">Quantity: {item.quantity}</p>
@@ -303,7 +322,10 @@ export default function PaymentMethod() {
               value={voucherId}
               onChange={handleVoucherChange}
             />
-            <Button className="w-1/3 p-2 bg-blue-500 rounded h-10 text-white" onClick={applyVoucher}>
+            <Button
+              className="w-1/3 p-2 bg-blue-500 rounded h-10 text-white"
+              onClick={applyVoucher}
+            >
               Áp dụng
             </Button>
           </div>

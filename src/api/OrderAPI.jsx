@@ -7,12 +7,15 @@ const OrderAPI = {
   getOrderById: (id) => {
     return axiosClient.get(`/order/${id}`);
   },
+  getOrdersByUserId: (id) => {
+    return axiosClient.get(`/order/user/${id}`);
+  },
   createOrderWithDetails: (orderData) => {
     return axiosClient.post("/order/createWithDetails", orderData);
   },
   cancelOrder: (id) => {
     return axiosClient.put(`/order/cancel/${id}`, {
-      reason : "Bom hàng"
+      reason: "Bom hàng",
     });
   },
   getOrdersByDeliveryStaffId: (id) => {
