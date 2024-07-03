@@ -1,121 +1,136 @@
-import React, { useState } from "react";
-import { Table, Input, Button, Radio } from "antd";
+import { useState, useEffect } from "react";
+import { Input, Button, Radio, DatePicker } from "antd";
+import AuthAPI from "../api/AuthAPI";
+import openNotificationWithIcon from "../notification";
+import moment from "moment";
 
 export default function UserInfo() {
-  const [name, setName] = useState("?");
-  const [email, setEmail] = useState("?@gmail.com");
-  const [phone, setPhone] = useState("0123456789");
-  const [gender, setGender] = useState("Nam");
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [phone, setPhone] = useState();
+  const [gender, setGender] = useState();
+  const [dob, setDob] = useState();
+  const [point, setPoint] = useState();
+  const userId = localStorage.getItem("userId");
 
-  const handleSave = () => {
-    // Add save logic here, for now, we'll just log the updated information
-    console.log({ name, email, phone, gender });
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await AuthAPI.getUserById(userId);
+        if (response.status === 200) {
+          const userData = response.data.data;
+          setName(userData.fullName);
+          setEmail(userData.email);
+          setPhone(userData.phone);
+          setGender(userData.gender);
+          setDob(moment(userData.dob));
+          setPoint(userData.point);
+        } else {
+          openNotificationWithIcon("error", "Failed to fetch user details");
+        }
+      } catch (error) {
+        openNotificationWithIcon(
+          "error",
+          "Failed to fetch user details",
+          error.message
+        );
+      }
+    };
+
+    fetchUserDetails();
+  }, [userId]);
+
+  const handleSave = async () => {
+    const userData = {
+      fullName: name,
+      phone,
+      dob: dob.format("YYYY-MM-DD"),
+      gender,
+    };
+
+    try {
+      const response = await AuthAPI.updateUser(userId, userData);
+      if (response.status === 200) {
+        openNotificationWithIcon("success", "Details updated successfully");
+      } else {
+        openNotificationWithIcon("error", "Failed to update details");
+      }
+    } catch (error) {
+      openNotificationWithIcon(
+        "error",
+        "Failed to update details",
+        error.message
+      );
+    }
   };
-
-  const columns = [
-    {
-      title: "Mã đơn hàng",
-      dataIndex: "orderId",
-      key: "orderId",
-    },
-    {
-      title: "Ngày đặt",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Thành tiền",
-      dataIndex: "total",
-      key: "total",
-    },
-    {
-      title: "Trạng thái thanh toán",
-      dataIndex: "paymentStatus",
-      key: "paymentStatus",
-    },
-    {
-      title: "Vận chuyển",
-      dataIndex: "shipping",
-      key: "shipping",
-    },
-  ];
-
-  const data = [
-    {
-      key: "1",
-      orderId: "#103487",
-      date: "11/06/2024",
-      total: "78,000,000",
-      paymentStatus: "Đang xử lý",
-      shipping: "Đang vận chuyển",
-    },
-  ];
 
   return (
     <div className="flex flex-col items-center justify-center my-10">
-      <div className="w-full max-w-4xl">
-        <h1 className="text-2xl text-center font-semibold mb-4">
+      <div className="w-full max-w-4xl bg-white p-6 shadow-md rounded-lg">
+        <h1 className="text-2xl text-center font-semibold mb-8">
           Thông tin tài khoản
         </h1>
-        <div className="flex space-x-10 ">
-          <div className="p-4 w-1/4">
-            <p className="font-medium">Tài khoản</p>
-            <p className="font-medium">Danh sách địa chỉ</p>
-            <button className="font-medium cursor-pointer text-red-500">
-              Đăng xuất
-            </button>
-          </div>
-          <div className="flex flex-col space-y-4 w-full">
-            <div className="bg-white shadow-md rounded p-4">
-              <h2 className="text-lg font-semibold">Tài khoản của bạn</h2>
-              <div className="mt-2 space-y-2">
-                <div className="flex items-center">
-                  <label className="w-32">Họ và tên:</label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <label className="w-32">Email:</label>
-                  <Input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <label className="w-32">Số điện thoại:</label>
-                  <Input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <label className="w-32">Giới tính:</label>
-                  <Radio.Group
-                    onChange={(e) => setGender(e.target.value)}
-                    value={gender}
-                  >
-                    <Radio value="Nam">Nam</Radio>
-                    <Radio value="Nữ">Nữ</Radio>
-                  </Radio.Group>
-                </div>
-              </div>
-              <Button
-                type="primary"
-                className="mt-4 w-full"
-                onClick={handleSave}
+        <div className="flex flex-col space-y-10">
+          <div className="space-y-8">
+            <div className="flex items-center">
+              <label className="w-32">Họ và tên:</label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-32">Email:</label>
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full"
+                disabled
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-32">Số điện thoại:</label>
+              <Input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-32">Giới tính:</label>
+              <Radio.Group
+                onChange={(e) => setGender(e.target.value)}
+                value={gender}
+                className="w-full"
               >
-                Lưu
-              </Button>
+                <Radio value="male">Nam</Radio>
+                <Radio value="female">Nữ</Radio>
+              </Radio.Group>
             </div>
-            <div className="bg-white shadow-md rounded p-4">
-              <h2 className="text-lg font-semibold">
-                Danh sách đơn hàng mới nhất
-              </h2>
-              <Table columns={columns} dataSource={data} pagination={false} />
+            <div className="flex items-center">
+              <label className="w-32">Ngày sinh:</label>
+              <DatePicker
+                value={dob}
+                onChange={(date) => setDob(date)}
+                className="w-full"
+                format="YYYY-MM-DD"
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="w-32">Điểm:</label>
+              <Input
+                value={point}
+                onChange={(e) => setPoint(e.target.value)}
+                className="w-full"
+                type="number"
+                disabled
+              />
             </div>
           </div>
+          <Button type="primary" className="w-full" onClick={handleSave}>
+            Lưu
+          </Button>
         </div>
       </div>
     </div>

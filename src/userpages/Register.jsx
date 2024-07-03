@@ -14,6 +14,7 @@ const { Option } = Select;
 
 export default function Register() {
   const navigate = useNavigate();
+
   const handleKeyPress = (e) => {
     const charCode = e.which ? e.which : e.keyCode;
     if (charCode < 48 || charCode > 57) {
@@ -25,9 +26,12 @@ export default function Register() {
     console.log("Received values of form: ", values);
     try {
       const { fullName, password, phone, email, gender, dob } = values;
-      const formattedDob = moment([dob.year, dob.month - 1, dob.day]).format(
-        "YYYY-MM-DD"
-      );
+      const formattedDob = moment({
+        year: dob.year,
+        month: dob.month,
+        day: dob.day,
+      }).format("YYYY-MM-DD");
+
       const response = await AuthAPI.Register(
         fullName,
         password,
@@ -45,7 +49,7 @@ export default function Register() {
       } else {
         openNotificationWithIcon(
           "error",
-          "Registration successful!",
+          "Registration failed!",
           response.data.message
         );
         console.log("Registration failed", response.data);
@@ -55,6 +59,7 @@ export default function Register() {
       console.error("Registration error: ", error);
     }
   };
+
   const years = [];
   for (let i = 1900; i <= new Date().getFullYear(); i++) {
     years.push(
@@ -243,7 +248,6 @@ export default function Register() {
             name="address"
             rules={[
               {
-                type: "address",
                 required: true,
                 message: "Please input your address!",
               },
@@ -255,7 +259,6 @@ export default function Register() {
           <Form.Item
             className="mb-4"
             name="password"
-            // extra="Password needs to be at least 8 characters."
             rules={[
               {
                 required: true,

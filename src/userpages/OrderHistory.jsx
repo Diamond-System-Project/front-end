@@ -1,31 +1,40 @@
-import React from "react";
-import { Button, Table } from "antd";
+import { useState, useEffect } from "react";
+import { Button, Table, message } from "antd";
 import { Link } from "react-router-dom";
+import OrderAPI from "../api/OrderAPI";
 
 const OrderHistory = () => {
-  const dataSource = [
-    {
-      key: "1",
-      orderId: "1",
-      totalQuantity: 3,
-      totalPrice: "$300",
-      status: "Completed",
-    },
-    {
-      key: "2",
-      orderId: "3",
-      totalQuantity: 5,
-      totalPrice: "$500",
-      status: "Pending",
-    },
-    {
-      key: "3",
-      orderId: "2",
-      totalQuantity: 2,
-      totalPrice: "$200",
-      status: "Processing",
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await OrderAPI.getOrdersByUserId(userId);
+        if (response.data.success) {
+          const fetchedOrders = response.data.data;
+          const formattedOrders = fetchedOrders.map((order) => ({
+            key: order.id,
+            orderId: order.orderId,
+            date: order.order_date,
+            totalPrice: order.payment,
+            status: order.status,
+          }));
+          setOrders(formattedOrders);
+        } else {
+          message.error("Failed to fetch orders: " + response.data.message);
+        }
+      } catch (error) {
+        message.error("Failed to fetch orders: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [userId]);
 
   const columns = [
     {
@@ -34,9 +43,9 @@ const OrderHistory = () => {
       key: "orderId",
     },
     {
-      title: "Total Quantity",
-      dataIndex: "totalQuantity",
-      key: "totalQuantity",
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
     },
     {
       title: "Status",
@@ -95,7 +104,12 @@ const OrderHistory = () => {
       <h1 className="text-3xl justify-center flex w-full font-bold mb-4">
         Tất cả đơn hàng
       </h1>
-      <Table dataSource={dataSource} columns={columns} className="w-2/3" />
+      <Table
+        dataSource={orders}
+        columns={columns}
+        loading={loading}
+        className="w-2/3"
+      />
       <div className="bg-white shadow-md rounded p-4 mt-4 w-1/3">
         <h2 className="text-lg font-semibold">Điểm tích lũy</h2>
         <div className="mt-2 space-y-2">
