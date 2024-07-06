@@ -1,4 +1,3 @@
-// import React from "react";
 import { Menu } from "antd";
 import {
   DashboardOutlined,
@@ -6,6 +5,7 @@ import {
   OrderedListOutlined,
   UserOutlined,
   WalletOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
@@ -43,6 +43,9 @@ const SideBar = () => {
         </Menu.Item>
         <Menu.Item key="7" icon={<WalletOutlined />}>
           <Link to="/manager/management-voucher"> Voucher</Link>
+        </Menu.Item>
+        <Menu.Item key="8" icon={<UnorderedListOutlined />}>
+          <Link to="/manager/collection"> Collection</Link>
         </Menu.Item>
       </Menu>
     </div>

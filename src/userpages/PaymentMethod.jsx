@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
-import { Button, Divider, Radio, message } from "antd";
+import {
+  Button,
+  Divider,
+  Radio,
+  message,
+  Modal,
+  List,
+  Input,
+  Card,
+} from "antd";
 import { Typography } from "@mui/material";
-import { Card, Input } from "antd";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import AccountBalanceTwoToneIcon from "@mui/icons-material/AccountBalanceTwoTone";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +23,10 @@ export default function PaymentMethod() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [voucherId, setVoucherId] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [vouchers, setVouchers] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  //eslint-disable-next-line
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     cname: "",
     phone: "",
@@ -40,33 +52,47 @@ export default function PaymentMethod() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
   const finalPrice = totalPrice - discount;
 
-  const handleVoucherChange = (e) => {
-    setVoucherId(e.target.value);
-  };
-
-  const applyVoucher = async () => {
-    if (!voucherId) {
-      message.error("Vui lòng nhập mã giảm giá");
-      return;
-    }
-
+  const fetchVouchers = async () => {
     try {
-      const response = await VoucherAPI.getVoucherById(voucherId);
-      if (response.data.success) {
-        const voucher = response.data.data;
-        setDiscount(totalPrice * voucher.discount);
-        message.success(
-          `Voucher applied. Discount: ${voucher.discount * 100}%`
-        );
+      const userId = localStorage.getItem("userId");
+      const response = await VoucherAPI.getByMemberId(userId);
+      if (response.success) {
+        setVouchers(response.data);
       } else {
-        message.error("Invalid voucher ID");
+        console.error("Failed to fetch vouchers:", response.message);
       }
     } catch (error) {
-      console.error("Failed to fetch voucher:", error);
-      message.error("Failed to fetch voucher");
+      console.error("Error fetching vouchers:", error);
     }
+  };
+
+  useEffect(() => {
+    if (isModalVisible) {
+      fetchVouchers();
+    }
+  }, [isModalVisible]);
+
+  useEffect(() => {
+    console.log(vouchers);
+  }, [vouchers]);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleVoucherSelect = (voucher) => {
+    setSelectedVoucher(voucher);
+    setVoucherId(voucher.voucherId);
+    setDiscount(totalPrice * voucher.discount);
+    setIsModalVisible(false);
+    message.success(`Voucher applied. Discount: ${voucher.discount * 100}%`);
   };
 
   const validateCustomerInfo = () => {
@@ -82,6 +108,7 @@ export default function PaymentMethod() {
     if (!phone || !phoneRegex.test(phone)) {
       newErrors.phone = "Phone number must be 10 digits";
     }
+
     if (!address) {
       newErrors.address = "Address is required";
     }
@@ -107,6 +134,12 @@ export default function PaymentMethod() {
 
   const onCompleteOrder = async () => {
     if (!validateCustomerInfo()) {
+      return;
+    }
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      message.error("Please log in to continue.");
       return;
     }
 
@@ -139,7 +172,7 @@ export default function PaymentMethod() {
         } else {
           navigate("/payment-success", {
             state: { orderData, cartItems, discount, finalPrice },
-          }); // Pass order data to success page
+          });
         }
       } else {
         message.error(response.data.message || "Failed to create order");
@@ -150,42 +183,39 @@ export default function PaymentMethod() {
     }
   };
 
-  useEffect(() => {
-    const handleVnPayResponse = async () => {
-      // Get return URL from VNPAY
-      const urlParams = new URLSearchParams(window.location.search);
-      const vnp_ResponseCode = urlParams.get("vnp_ResponseCode");
-      const vnp_OrderInfo = urlParams.get("vnp_OrderInfo");
-      if (vnp_ResponseCode && vnp_OrderInfo) {
-        const response = await PaymentAPI.sendToDatabase(
-          vnp_OrderInfo,
-          vnp_ResponseCode
-        );
-        // Reset url
-        window.history.pushState({}, document.title, window.location.pathname);
-        console.log(response);
-        if (response.code === "00") {
-          message.success("Payment successful");
-          localStorage.removeItem("orderData");
-          localStorage.removeItem("cartItems");
-          localStorage.removeItem("discount");
-          localStorage.removeItem("finalPrice");
-          navigate("/payment-success", {
-            state: {
-              orderData: JSON.parse(localStorage.getItem("orderData")),
-              cartItems: JSON.parse(localStorage.getItem("cartItems")),
-              discount: JSON.parse(localStorage.getItem("discount")),
-              finalPrice: JSON.parse(localStorage.getItem("finalPrice")),
-            },
-          });
-        } else {
-          message.error("Payment failed");
-        }
+  const handleVnPayResponse = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const vnp_ResponseCode = urlParams.get("vnp_ResponseCode");
+    const vnp_OrderInfo = urlParams.get("vnp_OrderInfo");
+    if (vnp_ResponseCode && vnp_OrderInfo) {
+      const response = await PaymentAPI.sendToDatabase(
+        vnp_OrderInfo,
+        vnp_ResponseCode
+      );
+      window.history.pushState({}, document.title, window.location.pathname);
+      if (response.code === "00") {
+        message.success("Payment successful");
+        const orderData = JSON.parse(localStorage.getItem("orderData"));
+        const cartItems = JSON.parse(localStorage.getItem("cartItems"));
+        const discount = JSON.parse(localStorage.getItem("discount"));
+        const finalPrice = JSON.parse(localStorage.getItem("finalPrice"));
+        localStorage.removeItem("orderData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("discount");
+        localStorage.removeItem("finalPrice");
+        navigate("/payment-success", {
+          state: { orderData, cartItems, discount, finalPrice },
+        });
+      } else {
+        message.error("Payment failed");
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     handleVnPayResponse();
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen flex justify-center p-4">
@@ -200,7 +230,7 @@ export default function PaymentMethod() {
             Phương thức vận chuyển
           </Typography>
           <Radio.Group value="delivery" className="mb-4">
-            <div className="flex justify-between items-center border p-2 rounded w-[700px] h-14">
+            <div className="flex justify-between items-center border p-2 rounded w-full h-14">
               <Radio value="delivery">Giao hàng tận nơi</Radio>
               <Typography variant="body2" className="ml-6">
                 0đ
@@ -216,13 +246,13 @@ export default function PaymentMethod() {
             value={paymentMethod}
             className="mb-4 my-4"
           >
-            <div className="flex justify-between items-center border p-2 rounded w-[700px] h-14">
+            <div className="flex justify-between items-center border p-2 rounded w-full h-14">
               <Radio value="cod">
                 <LocalShippingOutlinedIcon />
                 Thanh toán khi giao hàng (COD)
               </Radio>
             </div>
-            <div className="flex justify-between items-center border p-2 rounded w-[700px] h-14 my-4">
+            <div className="flex justify-between items-center border p-2 rounded w-full h-14 my-4">
               <Radio value="vnpay">
                 <AccountBalanceTwoToneIcon />
                 Chuyển khoản qua VNPay
@@ -243,7 +273,7 @@ export default function PaymentMethod() {
               onChange={handleCustomerInfoChange}
             />
             {errors.cname && (
-              <Typography variant="body2" color="error">
+              <Typography variant="body2" className="text-red-500">
                 {errors.cname}
               </Typography>
             )}
@@ -258,7 +288,7 @@ export default function PaymentMethod() {
               onChange={handleCustomerInfoChange}
             />
             {errors.phone && (
-              <Typography variant="body2" color="error">
+              <Typography variant="body2" className="text-red-500">
                 {errors.phone}
               </Typography>
             )}
@@ -272,6 +302,11 @@ export default function PaymentMethod() {
               value={customerInfo.address}
               onChange={handleCustomerInfoChange}
             />
+            {errors.address && (
+              <Typography variant="body2" className="text-red-500">
+                {errors.address}
+              </Typography>
+            )}
           </div>
           <div className="mb-4">
             <Input
@@ -283,7 +318,7 @@ export default function PaymentMethod() {
               onChange={handleCustomerInfoChange}
             />
             {errors.email && (
-              <Typography variant="body2" color="error">
+              <Typography variant="body2" className="text-red-500">
                 {errors.email}
               </Typography>
             )}
@@ -292,8 +327,8 @@ export default function PaymentMethod() {
             <Button type="link">Giỏ hàng</Button>
             <Button
               type="primary"
-              className="bg-blue-500 text-white w-[400px] h-10 mr-3"
-              onClick={() => onCompleteOrder()}
+              className="bg-blue-500 text-white w-full h-10 mr-3"
+              onClick={onCompleteOrder}
             >
               Hoàn tất đơn hàng
             </Button>
@@ -315,18 +350,11 @@ export default function PaymentMethod() {
           ))}
           <div className="border-b my-4"></div>
           <div className="flex justify-between mb-2">
-            <Input
-              type="text"
-              placeholder="Mã giảm giá"
-              className="w-2/3 p-2 border rounded mr-2"
-              value={voucherId}
-              onChange={handleVoucherChange}
-            />
             <Button
-              className="w-1/3 p-2 bg-blue-500 rounded h-10 text-white"
-              onClick={applyVoucher}
+              className="w-full p-2 bg-blue-500 rounded h-10 text-white"
+              onClick={showModal}
             >
-              Áp dụng
+              Chọn mã giảm giá
             </Button>
           </div>
           <div className="border-b my-4"></div>
@@ -349,6 +377,36 @@ export default function PaymentMethod() {
           </div>
         </Card>
       </div>
+      <Modal
+        title="Chọn mã giảm giá"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <List
+          itemLayout="horizontal"
+          dataSource={vouchers || []}
+          renderItem={(voucher) => (
+            <List.Item
+              key={voucher.voucherId} // Adjusted to use voucherId
+              actions={[
+                <Button
+                  key={`select-${voucher.voucherId}`} // Adjusted to use voucherId
+                  type="primary"
+                  onClick={() => handleVoucherSelect(voucher)}
+                >
+                  Chọn
+                </Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={`Voucher ID: ${voucher.voucherId}`} // Adjusted to use voucherId
+                description={`Discount: ${voucher.discount * 100}%`} // Adjusted to use discount
+              />
+            </List.Item>
+          )}
+        />
+      </Modal>
     </div>
   );
 }

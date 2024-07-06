@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Button, Input, Upload, message, Form, Select, Card } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { storage, ref, uploadBytes, getDownloadURL } from "../firebase"; // Import necessary Firebase functions
+import { storage, ref, uploadBytes, getDownloadURL } from "../firebase";
 
 const { Option } = Select;
 const { TextArea } = Input;
 const { Dragger } = Upload;
-
+//eslint-disable-next-line
 const AddProduct = ({ onCreate }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);

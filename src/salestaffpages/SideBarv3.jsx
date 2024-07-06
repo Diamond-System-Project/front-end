@@ -1,4 +1,3 @@
-// import React from "react";
 import { Menu } from "antd";
 import {
   DashboardOutlined,
@@ -25,7 +24,7 @@ const SideBar = () => {
         </Menu.Item>
 
         <Menu.Item key="2" icon={<AppstoreOutlined />}>
-          <Link to="/staff/list-mount-diamond">List Mount Diamond</Link>
+          <Link to="/staff/list-diamond-mount">List Diamond Mount</Link>
         </Menu.Item>
         <Menu.Item key="3" icon={<OrderedListOutlined />}>
           <Link to="/staff/stock-list">Stock List</Link>

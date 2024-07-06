@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, Modal, message } from "antd";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddProduct from "./AddProduct";

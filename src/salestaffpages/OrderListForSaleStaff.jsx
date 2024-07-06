@@ -1,38 +1,44 @@
-// import React from "react";
-import { Table, Tag } from "antd";
+import { useState, useEffect } from "react";
+import { Table, Tag, Spin, message } from "antd";
 import { Link } from "react-router-dom";
+import OrderAPI from "../api/OrderAPI";
 
 const OrderList = () => {
-  const data = [
-    {
-      orderId: "1",
-      date: "2022-01-01",
-      customerName: "John Doe",
-      status: "delivered",
-      amount: "$100",
-    },
-    {
-      orderId: "2",
-      date: "2022-01-02",
-      customerName: "Jane Smith",
-      status: "delivering",
-      amount: "$200",
-    },
-    {
-      orderId: "3",
-      date: "2022-01-03",
-      customerName: "Bob Johnson",
-      status: "cancel",
-      amount: "$300",
-    },
-    {
-      orderId: "4",
-      date: "2022-01-03",
-      customerName: "Bo son",
-      status: "processing",
-      amount: "$300",
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await OrderAPI.getAllOrders();
+        console.log("API response:", response); // Log the entire response
+
+        // Check if the response has the expected structure
+        if (response.data && Array.isArray(response.data.data)) {
+          // Transform and set data
+          const orders = response.data.data.map((order) => ({
+            orderId: order.orderId,
+            customerName: order.cname,
+            date: order.order_date,
+            status: order.status.toLowerCase(), // Ensure status is in lowercase for filtering
+            amount: order.payment,
+          }));
+          setData(orders);
+        } else {
+          console.error("Unexpected data format:", response.data); // Log the unexpected format
+          throw new Error("Unexpected data format");
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        message.error("Failed to fetch orders.");
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const columns = [
     {
@@ -40,7 +46,6 @@ const OrderList = () => {
       dataIndex: "orderId",
       key: "orderId",
     },
-
     {
       title: "Customer Name",
       dataIndex: "customerName",
@@ -59,14 +64,14 @@ const OrderList = () => {
         let color;
         switch (status) {
           case "processing":
-            color = "orange";
-            break;
-          case "delivering":
+          case "pending":
+          case "shipping":
             color = "orange";
             break;
           case "delivered":
             color = "green";
             break;
+          case "cancelled":
           case "cancel":
             color = "red";
             break;
@@ -76,22 +81,11 @@ const OrderList = () => {
         return <Tag color={color}>{status}</Tag>;
       },
       filters: [
-        {
-          text: "processing",
-          value: "processing",
-        },
-        {
-          text: "delivering",
-          value: "delivering",
-        },
-        {
-          text: "delivered",
-          value: "delivered",
-        },
-        {
-          text: "cancel",
-          value: "cancel",
-        },
+        { text: "processing", value: "processing" },
+        { text: "pending", value: "pending" },
+        { text: "shipping", value: "shipping" },
+        { text: "delivered", value: "delivered" },
+        { text: "cancelled", value: "cancelled" },
       ],
       onFilter: (value, record) => record.status.indexOf(value) === 0,
     },
@@ -112,14 +106,16 @@ const OrderList = () => {
   ];
 
   return (
-    <>
-      <div className="mx-6 p-4 my-4">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold">Order List</h1>
-        </div>
-        <Table dataSource={data} columns={columns} />
+    <div className="mx-6 p-4 my-4">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Order List</h1>
       </div>
-    </>
+      {loading ? (
+        <Spin tip="Loading..." />
+      ) : (
+        <Table dataSource={data} columns={columns} rowKey="orderId" />
+      )}
+    </div>
   );
 };
 

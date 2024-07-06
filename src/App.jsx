@@ -27,8 +27,6 @@ import ManagementEmployees from "./adminpages/ManagementEmployees";
 import StaffDetail from "./adminpages/StaffDetail";
 import SideBarv3 from "./salestaffpages/SideBarv3";
 import ListDiamond from "./salestaffpages/ListDiamond";
-import ListMountDiamond from "./salestaffpages/ListMountDiamond";
-import StockList from "./salestaffpages/StockList";
 import OrderListForDelivery from "./deliverystaffpages/OrderListForDelivery";
 import OrderListForSaleStaff from "./salestaffpages/OrderListForSaleStaff";
 import Carousel from "./userpages/Carousel";
@@ -40,6 +38,11 @@ import Promotion from "./userpages/Promotion";
 import OrderHistory from "./userpages/OrderHistory";
 import ManagementStaff from "./managerpages/ManagementStaff";
 import DiamondMount from "./managerpages/DiamondMount";
+import Collection from "./userpages/Collection";
+import Quotation from "./userpages/Quotation";
+import ManagementCollection from "./managerpages/ManagementCollection";
+import ListDiamondMount from "./salestaffpages/ListDiamondMount";
+import StockList from "./salestaffpages/StockList";
 function App() {
   return (
     <Router>
@@ -98,6 +101,26 @@ function App() {
             <>
               <Header />
               <Checkout />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/collection"
+          element={
+            <>
+              <Header />
+              <Collection />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/quotation"
+          element={
+            <>
+              <Header />
+              <Quotation />
               <Footer />
             </>
           }
@@ -328,6 +351,18 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/manager/collection"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <ManagementCollection />
+              </div>
+            </div>
+          }
+        />
 
         {/* Sale Staff routes */}
         <Route
@@ -343,14 +378,13 @@ function App() {
           }
         />
         <Route
-          path="/staff/list-mount-diamond"
+          path="/staff/list-diamond-mount"
           element={
             <div className="flex">
               <SideBarv3 />
               <div className="flex-1">
                 <Headerv2 />
-
-                <ListMountDiamond />
+                <ListDiamondMount />
               </div>
             </div>
           }
@@ -362,7 +396,6 @@ function App() {
               <SideBarv3 />
               <div className="flex-1">
                 <Headerv2 />
-
                 <StockList />
               </div>
             </div>
@@ -384,7 +417,7 @@ function App() {
           path="/staff/order-list/order-detail/:id"
           element={
             <div className="flex">
-              <SideBar />
+              <SideBarv3 />
               <div className="flex-1">
                 <Headerv2 />
                 <OrderDetail />

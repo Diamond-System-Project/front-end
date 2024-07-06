@@ -5,7 +5,12 @@ import { useLocation, Link } from "react-router-dom";
 
 export default function PaymentSuccess() {
   const location = useLocation();
-  const { orderData, cartItems, discount, finalPrice } = location.state || {};
+  const {
+    orderData,
+    cartItems = [],
+    discount = 0,
+    finalPrice = 0,
+  } = location.state || {};
 
   useEffect(() => {
     if (location.state) {
@@ -17,6 +22,24 @@ export default function PaymentSuccess() {
     }
   }, [location.state]);
 
+  if (!orderData || !cartItems.length) {
+    return (
+      <div className="flex flex-col items-center p-6">
+        <div className="w-full max-w-6xl bg-white p-6 shadow-lg rounded-lg">
+          <h2 className="text-2xl font-semibold mt-4">
+            Lỗi khi hoàn tất thanh toán
+          </h2>
+          <p className="text-gray-500">
+            Không thể tải thông tin đơn hàng. Vui lòng thử lại sau.
+          </p>
+          <Link to="/">
+            <Button type="primary">Tiếp tục mua hàng</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center p-6">
       <div className="w-full max-w-6xl bg-white p-6 shadow-lg rounded-lg">
@@ -27,7 +50,6 @@ export default function PaymentSuccess() {
             className="w-32 mx-auto"
           />
           <h2 className="text-2xl font-semibold mt-4">Đặt hàng thành công</h2>
-          <p className="text-lg">Mã đơn hàng #{orderData?.order?.id}</p>
           <p className="text-gray-500">Cảm ơn bạn đã mua hàng!</p>
         </div>
         <Card className="mb-6">
@@ -51,7 +73,7 @@ export default function PaymentSuccess() {
             <p>
               {orderData?.order?.payment_method === "cod"
                 ? "Thanh toán khi giao hàng (COD)"
-                : "Chuyển khoản qua Paypal"}
+                : "Chuyển khoản qua VNPay"}
             </p>
           </div>
           <Divider />
@@ -67,7 +89,7 @@ export default function PaymentSuccess() {
         <Card>
           {cartItems.map((item) => (
             <div
-              key={`${item.id}-${item.code}-${item.price}-${item.quantity}`}
+              key={`${item.productId}-${item.code}-${item.price}-${item.quantity}`}
               className="flex justify-between items-center mb-4"
             >
               <img src={item.image} alt="Product" className="w-16 h-16" />
@@ -81,7 +103,7 @@ export default function PaymentSuccess() {
           <Divider />
           <div className="flex justify-between mb-2">
             <p>Tạm tính</p>
-            <p>{finalPrice.toLocaleString()}đ</p>
+            <p>{(finalPrice + discount).toLocaleString()}đ</p>
           </div>
           <div className="flex justify-between mb-2">
             <p>Giảm giá</p>

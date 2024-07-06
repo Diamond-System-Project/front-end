@@ -1,15 +1,26 @@
-import React from "react";
-import { Table } from "antd";
-// import "antd/dist/antd.css";
-import "tailwindcss/tailwind.css";
-
+import { useState, useEffect } from "react";
+import { Table, Spin, message } from "antd";
+import DiamondAPI from "../api/DiamondAPI";
 export default function ListDiamond() {
+  const [diamonds, setDiamonds] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDiamonds = async () => {
+      try {
+        const response = await DiamondAPI.getAllDiamonds();
+        setDiamonds(response.data);
+        setLoading(false);
+      } catch (error) {
+        message.error("Failed to fetch diamonds.");
+        setLoading(false);
+      }
+    };
+
+    fetchDiamonds();
+  }, []);
+
   const columns = [
-    {
-      title: "Diamond ID",
-      dataIndex: "diamondId",
-      key: "diamondId",
-    },
     {
       title: "Diamond Name",
       dataIndex: "diamondName",
@@ -50,44 +61,16 @@ export default function ListDiamond() {
       dataIndex: "basePrice",
       key: "basePrice",
     },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-  ];
-
-  const data = [
-    {
-      diamondId: "1",
-      diamondName: "Diamond 1",
-      origin: "Origin 1",
-      shape: "Shape 1",
-      caratWeight: "1.0",
-      color: "Color 1",
-      clarity: "Clarity 1",
-      cut: "Cut 1",
-      basePrice: "$100",
-      description: "Description 1",
-    },
-    {
-      diamondId: "2",
-      diamondName: "Diamond 2",
-      origin: "Origin 2",
-      shape: "Shape 2",
-      caratWeight: "2.0",
-      color: "Color 2",
-      clarity: "Clarity 2",
-      cut: "Cut 2",
-      basePrice: "$200",
-      description: "Description 2",
-    },
   ];
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">List Diamond Product</h1>
-      <Table columns={columns} dataSource={data} />
+      {loading ? (
+        <Spin tip="Loading..." />
+      ) : (
+        <Table columns={columns} dataSource={diamonds} rowKey="id" />
+      )}
     </div>
   );
 }

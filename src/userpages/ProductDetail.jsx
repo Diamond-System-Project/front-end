@@ -132,7 +132,7 @@ export default function ProductDetail() {
           </div>
         </div>
         <div className="w-1/2 p-4">
-          <Title level={3}>{product.name}</Title>
+          <Title level={3}>{product.productName}</Title>
           <Text type="secondary">Mã sản phẩm: {product.code}</Text>
           <div className="my-2">
             <Title level={2} className="text-red-500">

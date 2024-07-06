@@ -13,7 +13,7 @@ export default function Login() {
       const response = await AuthAPI.Login(values.email, values.password);
       if (response.data.success) {
         openNotificationWithIcon("success", "Login Successfully");
-        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("accessToken", response.data.data.token);
         localStorage.setItem("userId", response.data.data.userId);
         localStorage.setItem("fullName", response.data.data.fullName);
         navigate("/");

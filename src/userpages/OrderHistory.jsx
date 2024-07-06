@@ -110,19 +110,6 @@ const OrderHistory = () => {
         loading={loading}
         className="w-2/3"
       />
-      <div className="bg-white shadow-md rounded p-4 mt-4 w-1/3">
-        <h2 className="text-lg font-semibold">Điểm tích lũy</h2>
-        <div className="mt-2 space-y-2">
-          <div className="flex items-center justify-between">
-            <span>Tổng điểm:</span>
-            <span>1000 điểm</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Số điểm quy đổi:</span>
-            <span>200 điểm</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

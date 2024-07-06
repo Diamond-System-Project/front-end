@@ -13,12 +13,12 @@ export default function Header() {
   const cartSize = useSelector((state) => state.cart.items.length);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
-  // const fullName = localStorage.getItem("fullName");
+  const token = localStorage.getItem("accessToken");
+  // const userId = localStorage.getItem("userId");
+  const fullName = localStorage.getItem("fullName");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("fullName");
     navigate("/login");
   };
@@ -62,8 +62,8 @@ export default function Header() {
               >
                 <span className="flex items-center space-x-1 cursor-pointer">
                   <AccountCircleIcon />
-                  <span>{userId}</span>
-                  {/* <span>{fullName}</span> */}
+                  {/* <span>{userId}</span> */}
+                  <span>{fullName}</span>
                 </span>
               </Dropdown>
             ) : (
@@ -95,10 +95,10 @@ export default function Header() {
           <Link to="/trang-suc-cuoi" className="text-black">
             TRANG SỨC CƯỚI
           </Link>
-          <Link to="/bang-gia" className="text-black">
+          <Link to="/quotation" className="text-black">
             BẢNG GIÁ
           </Link>
-          <Link to="/bo-suu-tap" className="text-black">
+          <Link to="/collection" className="text-black">
             BỘ SƯU TẬP MỚI
           </Link>
           <Link to="/promotions" className="text-black">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Table,
@@ -8,34 +8,35 @@ import {
   Select,
   Dropdown,
   Menu,
+  message,
 } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
+import DiamondMountAPI from "../api/DiamondMountAPI";
 
 const { Option } = Select;
 
 const ManagementDiamondMount = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "1",
-      name: "Classic Mount",
-      size: "6",
-      type: "Ring",
-      material: "Gold",
-      price: "1000",
-    },
-    {
-      key: "2",
-      name: "Elegant Mount",
-      size: "7",
-      type: "Necklace",
-      material: "Platinum",
-      price: "1500",
-    },
-  ]);
-
+  const [dataSource, setDataSource] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingRecord, setEditingRecord] = useState(null);
+
+  useEffect(() => {
+    fetchDiamondMounts();
+  }, []);
+
+  const fetchDiamondMounts = async () => {
+    try {
+      const response = await DiamondMountAPI.getAllDiamondMounts();
+      const formattedData = response.data.map((item) => ({
+        ...item,
+        key: item.mountId,
+      }));
+      setDataSource(formattedData);
+    } catch (error) {
+      message.error("Failed to fetch diamond mounts.");
+    }
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -44,24 +45,29 @@ const ManagementDiamondMount = () => {
   const handleOk = () => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
         form.resetFields();
         const newData = {
           ...values,
         };
 
-        if (editingRecord) {
-          const updatedDataSource = dataSource.map((item) =>
-            item.key === editingRecord.key ? { ...item, ...newData } : item
-          );
-          setDataSource(updatedDataSource);
+        try {
+          if (editingRecord) {
+            await DiamondMountAPI.updateDiamondMount(
+              editingRecord.mountId,
+              newData
+            );
+            message.success("Diamond mount updated successfully!");
+          } else {
+            await DiamondMountAPI.createDiamondMount(newData);
+            message.success("Diamond mount created successfully!");
+          }
+          fetchDiamondMounts();
           setEditingRecord(null);
-        } else {
-          newData.key = (dataSource.length + 1).toString();
-          setDataSource([...dataSource, newData]);
+          setIsModalVisible(false);
+        } catch (error) {
+          message.error("Failed to save diamond mount.");
         }
-
-        setIsModalVisible(false);
       })
       .catch((info) => {
         console.log("Validate Failed:", info);
@@ -80,16 +86,21 @@ const ManagementDiamondMount = () => {
     setIsModalVisible(true);
   };
 
-  const handleDelete = (record) => {
-    const newDataSource = dataSource.filter((item) => item.key !== record.key);
-    setDataSource(newDataSource);
+  const handleDelete = async (record) => {
+    try {
+      await DiamondMountAPI.deleteDiamondMount(record.mountId);
+      message.success("Diamond mount deleted successfully!");
+      fetchDiamondMounts();
+    } catch (error) {
+      message.error("Failed to delete diamond mount.");
+    }
   };
 
   const columns = [
     {
       title: "Diamond Mount Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "mountName",
+      key: "mountName",
     },
     {
       title: "Size",
@@ -108,8 +119,8 @@ const ManagementDiamondMount = () => {
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "basePrice",
+      key: "basePrice",
     },
     {
       title: "Actions",
@@ -156,7 +167,7 @@ const ManagementDiamondMount = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="name"
+            name="mountName"
             label="Diamond Mount Name"
             rules={[
               { required: true, message: "Please input the mount name!" },
@@ -191,7 +202,7 @@ const ManagementDiamondMount = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            name="price"
+            name="basePrice"
             label="Price"
             rules={[{ required: true, message: "Please input the price!" }]}
           >
