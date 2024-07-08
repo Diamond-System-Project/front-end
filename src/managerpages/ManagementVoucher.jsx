@@ -1,90 +1,76 @@
-import React, { useState } from "react";
-import { Table, Button, Modal, Input, DatePicker, message } from "antd";
-import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { Table, Button, Modal, Input, message, Switch } from "antd";
+import VoucherTypeAPI from "../api/VoucherTypeAPI";
 
 const ManagementVoucher = () => {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [voucherData, setVoucherData] = useState([
-    {
-      key: 1,
-      voucherID: 1,
-      startDay: "2024-06-06",
-      endDay: "2024-06-30",
-      pointsToBeExchange: 200,
-    },
-    {
-      key: 2,
-      voucherID: 2,
-      startDay: "2024-06-06",
-      endDay: "2024-07-30",
-      pointsToBeExchange: 300,
-    },
-  ]);
+  const [voucherData, setVoucherData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isCreate, setIsCreate] = useState(false);
 
-  const userData = [
-    {
-      key: 1,
-      userID: 1,
-      price: 100,
-      accumulatedPoints: 500,
-    },
-    {
-      key: 2,
-      userID: 2,
-      price: 200,
-      accumulatedPoints: 1000,
-    },
-  ];
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      setLoading(true);
+      try {
+        const response = await VoucherTypeAPI.getAll();
+        setVoucherData(response.data);
+      } catch (error) {
+        console.error("Error fetching vouchers:", error);
+        message.error("Failed to fetch vouchers");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const userColumns = [
-    {
-      title: "UserID",
-      dataIndex: "userID",
-      key: "userID",
-    },
-    {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-    },
-    {
-      title: "Accumulated Points",
-      dataIndex: "accumulatedPoints",
-      key: "accumulatedPoints",
-    },
-  ];
+    fetchVouchers();
+  }, []);
 
   const voucherColumns = [
     {
-      title: "VoucherID",
-      dataIndex: "voucherID",
-      key: "voucherID",
+      title: "Voucher Type ID",
+      dataIndex: "voucherTypeId",
+      key: "voucherTypeId",
     },
     {
-      title: "Start Day",
-      dataIndex: "startDay",
-      key: "startDay",
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
     },
     {
-      title: "End Day",
-      dataIndex: "endDay",
-      key: "endDay",
+      title: "Discount",
+      dataIndex: "discount",
+      key: "discount",
+      render: (discount) => `${discount * 100}%`,
     },
     {
-      title: "Points to be exchange",
-      dataIndex: "pointsToBeExchange",
-      key: "pointsToBeExchange",
+      title: "Discount Length (days)",
+      dataIndex: "discountLength",
+      key: "discountLength",
+    },
+    {
+      title: "Points Needed",
+      dataIndex: "pointNeeded",
+      key: "pointNeeded",
+    },
+    {
+      title: "Active",
+      dataIndex: "active",
+      key: "active",
+      render: (active) => <Switch checked={active} disabled />,
     },
     {
       title: "Actions",
       key: "actions",
       render: (record) => (
         <div>
-          <Button type="primary" onClick={() => showModal(record)}>
+          <Button type="primary" onClick={() => showModal(record, false)}>
             Edit
           </Button>
-          <Button type="danger" onClick={() => handleDelete(record.key)}>
+          <Button
+            type="danger"
+            onClick={() => handleDelete(record.voucherTypeId)}
+          >
             Delete
           </Button>
         </div>
@@ -92,21 +78,45 @@ const ManagementVoucher = () => {
     },
   ];
 
-  const showModal = (voucher) => {
-    setSelectedVoucher({ ...voucher });
+  const showModal = (voucher, isCreate) => {
+    setSelectedVoucher(isCreate ? {} : { ...voucher });
+    setIsCreate(isCreate);
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     setIsModalVisible(false);
     if (selectedVoucher) {
-      const updatedVoucherData = voucherData.map((voucher) =>
-        voucher.key === selectedVoucher.key
-          ? { ...voucher, ...selectedVoucher }
-          : voucher
-      );
-      setVoucherData(updatedVoucherData);
-      message.success("Voucher updated successfully");
+      if (isCreate) {
+        // Handle create voucher type
+        try {
+          const response = await VoucherTypeAPI.create(selectedVoucher);
+          setVoucherData([...voucherData, response.data]);
+          message.success("Voucher created successfully");
+        } catch (error) {
+          console.error("Error creating voucher:", error);
+          message.error("Failed to create voucher");
+        }
+      } else {
+        // Handle update voucher type
+        const updatedVoucherData = voucherData.map((voucher) =>
+          voucher.voucherTypeId === selectedVoucher.voucherTypeId
+            ? { ...voucher, ...selectedVoucher }
+            : voucher
+        );
+        setVoucherData(updatedVoucherData);
+
+        try {
+          await VoucherTypeAPI.update(
+            selectedVoucher.voucherTypeId,
+            selectedVoucher
+          );
+          message.success("Voucher updated successfully");
+        } catch (error) {
+          console.error("Error updating voucher:", error);
+          message.error("Failed to update voucher");
+        }
+      }
     }
   };
 
@@ -121,59 +131,98 @@ const ManagementVoucher = () => {
     });
   };
 
-  const handleDateChange = (date, field) => {
+  const handleSwitchChange = (checked) => {
     setSelectedVoucher((prevVoucher) => ({
       ...prevVoucher,
-      [field]: date ? dayjs(date).format("YYYY-MM-DD") : "",
+      active: checked,
     }));
   };
 
-  const handleDelete = (key) => {
+  const handleDelete = async (id) => {
     const updatedVoucherData = voucherData.filter(
-      (voucher) => voucher.key !== key
+      (voucher) => voucher.voucherTypeId !== id
     );
     setVoucherData(updatedVoucherData);
-    message.success("Voucher deleted successfully");
+
+    try {
+      await VoucherTypeAPI.delete(id);
+      message.success("Voucher deleted successfully");
+    } catch (error) {
+      console.error("Error deleting voucher:", error);
+      message.error("Failed to delete voucher");
+    }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">User Vouchers</h1>
-      <Table dataSource={userData} columns={userColumns} />
-
-      <h1 className="text-2xl font-bold mb-4">Vouchers</h1>
-      <Table dataSource={voucherData} columns={voucherColumns} />
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold mb-4">Voucher Types</h1>
+        <Button
+          type="primary"
+          className="mb-4"
+          onClick={() => showModal(null, true)}
+        >
+          Create Voucher Type
+        </Button>
+      </div>
+      <Table
+        dataSource={voucherData}
+        columns={voucherColumns}
+        loading={loading}
+        rowKey="voucherTypeId"
+      />
 
       <Modal
-        title="Edit Voucher"
+        title={isCreate ? "Create Voucher" : "Edit Voucher"}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         {selectedVoucher && (
           <div className="flex flex-col space-y-4">
+            {!isCreate && (
+              <p>
+                <strong>Voucher Type ID:</strong>{" "}
+                {selectedVoucher.voucherTypeId}
+              </p>
+            )}
             <p>
-              <strong>Voucher ID:</strong> {selectedVoucher.voucherID}
-            </p>
-            <p>
-              <strong>Start Day: </strong>
-              <DatePicker
-                defaultValue={dayjs(selectedVoucher.startDay)}
-                onChange={(date) => handleDateChange(date, "startDay")}
-              />
-            </p>
-            <p>
-              <strong>End Day: </strong>
-              <DatePicker
-                defaultValue={dayjs(selectedVoucher.endDay)}
-                onChange={(date) => handleDateChange(date, "endDay")}
-              />
-            </p>
-            <p>
-              <strong>Points to be Exchange:</strong>
+              <strong>Description: </strong>
               <Input
-                value={selectedVoucher.pointsToBeExchange}
-                onChange={(e) => handleInputChange(e, "pointsToBeExchange")}
+                value={selectedVoucher.description}
+                onChange={(e) => handleInputChange(e, "description")}
+              />
+            </p>
+            <p>
+              <strong>Discount: </strong>
+              <Input
+                value={selectedVoucher.discount}
+                type="number"
+                step="0.01"
+                onChange={(e) => handleInputChange(e, "discount")}
+              />
+            </p>
+            <p>
+              <strong>Discount Length (days): </strong>
+              <Input
+                value={selectedVoucher.discountLength}
+                type="number"
+                onChange={(e) => handleInputChange(e, "discountLength")}
+              />
+            </p>
+            <p>
+              <strong>Points Needed: </strong>
+              <Input
+                value={selectedVoucher.pointNeeded}
+                type="number"
+                onChange={(e) => handleInputChange(e, "pointNeeded")}
+              />
+            </p>
+            <p>
+              <strong>Active: </strong>
+              <Switch
+                checked={selectedVoucher.active}
+                onChange={handleSwitchChange}
               />
             </p>
           </div>

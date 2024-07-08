@@ -73,7 +73,7 @@ const Collection = () => {
                       cover={
                         <img
                           alt={product.productName}
-                          src={product.image || "placeholder_image_url"}
+                          src={product.url || "placeholder_image_url"}
                         />
                       }
                     >

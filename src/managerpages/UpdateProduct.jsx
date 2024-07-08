@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, Input, Card, Upload, message, Form, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { storage, ref, uploadBytes, getDownloadURL } from "../firebase"; // Import necessary Firebase functions
+import { storage, ref, uploadBytes, getDownloadURL } from "../firebase";
+import ProductAPI from "../api/ProductAPI";
 
 const { Option } = Select;
 const { Dragger } = Upload;
 const { TextArea } = Input;
-
+//eslint-disable-next-line
 const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [form] = Form.useForm();
@@ -14,49 +15,67 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   useEffect(() => {
     if (product) {
       form.setFieldsValue({
-        imageUrl: product.imageUrl || "",
+        //eslint-disable-next-line
         productName: product.productName || "",
+        //eslint-disable-next-line
         description: product.description || "",
-        componentsPrice: product.componentsPrice || "",
-        laborFee: product.laborFee || "",
-        price: product.price || "",
+        //eslint-disable-next-line
+        mountId: product.mountId?.mountId || "",
+        //eslint-disable-next-line
+        laborFee: product.laborFee || undefined,
+        //eslint-disable-next-line
         status: product.status || "",
+        //eslint-disable-next-line
+        componentsPrice: product.componentsPrice || undefined,
+        //eslint-disable-next-line
+        price: product.price || undefined,
       });
-      setImagePreview(product?.imageUrl || "");
+      //eslint-disable-next-line
+      setImagePreview(product?.url || "");
     }
   }, [product, form]);
 
   const handleImageUpload = async (info) => {
     const { file } = info;
     try {
-      // Upload file to Firebase Storage
       const storageRef = ref(storage, file.name);
       const snapshot = await uploadBytes(storageRef, file.originFileObj);
-
-      // Get download URL from Firebase Storage
       const downloadURL = await getDownloadURL(snapshot.ref);
-
-      // Set image preview state to display uploaded image
       setImagePreview(downloadURL);
     } catch (error) {
       console.error("Error uploading file:", error);
-      message.error(
-        "Failed to upload image. Ensure you have proper permissions."
-      );
+      message.error("Failed to upload image. Please try again later.");
     }
   };
 
-  const handleFinish = (values) => {
+  const handleFinish = async (values) => {
     const updatedProduct = {
       ...product,
       ...values,
-      imageUrl: imagePreview,
+      url: imagePreview,
     };
-    onUpdate(updatedProduct);
+
+    try {
+      await ProductAPI.updateProduct(updatedProduct);
+      onUpdate(updatedProduct);
+      message.success("Product updated successfully!");
+    } catch (error) {
+      console.error("Error updating product:", error);
+      message.error("Failed to update product. Please try again later.");
+    }
   };
 
-  const handleDelete = () => {
-    onDelete(product.productId);
+  const handleDelete = async () => {
+    try {
+      //eslint-disable-next-line
+      await ProductAPI.deleteProduct(product.productId);
+      //eslint-disable-next-line
+      onDelete(product.productId);
+      message.success("Product deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      message.error("Failed to delete product. Please try again later.");
+    }
   };
 
   return (
@@ -90,24 +109,26 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                   className="mb-4"
                 />
               </Form.Item>
-
               <Form.Item
                 name="mountId"
                 label="Mount"
                 rules={[{ required: true, message: "Please input the mount!" }]}
               >
-                <Input placeholder="Type mount here" className="mb-4" />
+                <Input
+                  placeholder="Type mount here"
+                  className="mb-4"
+                  type="number"
+                />
               </Form.Item>
-
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
                   name="laborFee"
-                  label="Label Fee"
+                  label="Labor Fee"
                   rules={[
-                    { required: true, message: "Please input the label fee!" },
+                    { required: true, message: "Please input the labor fee!" },
                   ]}
                 >
-                  <Input placeholder="$" className="mb-4" />
+                  <Input placeholder="$" className="mb-4" type="number" />
                 </Form.Item>
                 <Form.Item
                   name="status"
@@ -120,17 +141,22 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                   ]}
                 >
                   <Select placeholder="Select status">
-                    <Option value="inStock">In Stock</Option>
-                    <Option value="outStock">Out of Stock</Option>
+                    <Option value="InStock">In Stock</Option>
+                    <Option value="Out of Stock">Out of Stock</Option>
                   </Select>
                 </Form.Item>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item name="componentsPrice" label="Components Price">
-                  <Input placeholder="$" className="mb-4" />
+                  <Input placeholder="$" className="mb-4" type="number" />
                 </Form.Item>
                 <Form.Item name="price" label="Sale Price">
-                  <Input placeholder="$" className="mb-4" />
+                  <Input
+                    placeholder="$"
+                    className="mb-4"
+                    type="number"
+                    readOnly
+                  />
                 </Form.Item>
               </div>
             </div>

@@ -1,45 +1,56 @@
-import React from "react";
-import { Button, Table } from "antd";
-import { Link } from "react-router-dom";
-
-const handleAction = (record) => {
-  console.log("Edit button clicked for record: ", record);
-};
-
-const handleDelete = (record) => {
-  console.log("Delete button clicked for record: ", record);
-};
+import { useEffect, useState } from "react";
+import { Table } from "antd";
+import GetUserByRoleAPI from "../api/GetUserByRoleAPI";
 
 const ManagementStaff = () => {
-  const dataSource = [
-    {
-      key: "1",
-      userName: "John Doe",
-      gender: "Male",
-      dob: "01/01/1990",
-      role: "Sale Staff",
-    },
-    {
-      key: "2",
-      userName: "Jane Smith",
-      gender: "Female",
-      dob: "01/01/1990",
-      role: "Manager",
-    },
-    {
-      key: "3",
-      userName: "Jane Smith",
-      gender: "Female",
-      dob: "01/01/1990",
-      role: "Delivery Staff",
-    },
-  ];
+  const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchAllUsersByRoles();
+  }, []);
+
+  const fetchAllUsersByRoles = async () => {
+    setLoading(true);
+    try {
+      const [managers, saleStaff, deliveryStaff] = await Promise.all([
+        GetUserByRoleAPI.getAllByRole(2),
+        GetUserByRoleAPI.getAllByRole(3),
+        GetUserByRoleAPI.getAllByRole(4),
+      ]);
+
+      const allUsers = [
+        ...(Array.isArray(managers.data) ? managers.data : []).map((user) => ({
+          ...user,
+          role: "Manager",
+        })),
+        ...(Array.isArray(saleStaff.data) ? saleStaff.data : []).map(
+          (user) => ({
+            ...user,
+            role: "Sale Staff",
+          })
+        ),
+        ...(Array.isArray(deliveryStaff.data) ? deliveryStaff.data : []).map(
+          (user) => ({
+            ...user,
+            role: "Delivery Staff",
+          })
+        ),
+      ];
+
+      setDataSource(allUsers);
+    } catch (error) {
+      console.error("Failed to fetch users by roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     {
       title: "User Name",
-      dataIndex: "userName",
-      key: "userName",
+      dataIndex: "fullName",
+      key: "fullName",
     },
     {
       title: "Gender",
@@ -55,42 +66,6 @@ const ManagementStaff = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
-      filters: [
-        {
-          text: "Manager",
-          value: "Manager",
-        },
-        {
-          text: "Sale Staff",
-          value: "Sale Staff",
-        },
-        {
-          text: "Delivery Staff",
-          value: "Delivery Staff",
-        },
-      ],
-      onFilter: (value, record) => record.role.includes(value),
-    },
-    {
-      title: "Edit",
-      key: "edit",
-      render: (text, record) => (
-        <Link
-          to={`/admin/employees-detail/${record.key}`}
-          onClick={() => handleAction(record)}
-        >
-          Edit
-        </Link>
-      ),
-    },
-    {
-      title: "Delete",
-      key: "delete",
-      render: (text, record) => (
-        <Button type="danger" onClick={() => handleDelete(record)}>
-          Delete
-        </Button>
-      ),
     },
   ];
 
@@ -101,7 +76,12 @@ const ManagementStaff = () => {
           <h1 className="text-2xl font-bold ml-4">All Staff</h1>
         </div>
       </div>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        loading={loading}
+        rowKey="id"
+      />
     </div>
   );
 };

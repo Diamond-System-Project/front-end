@@ -43,6 +43,11 @@ import Quotation from "./userpages/Quotation";
 import ManagementCollection from "./managerpages/ManagementCollection";
 import ListDiamondMount from "./salestaffpages/ListDiamondMount";
 import StockList from "./salestaffpages/StockList";
+import Warranty from "./salestaffpages/Warranty";
+import ForgotPassword from "./userpages/ForgotPassword";
+import Certificate from "./managerpages/Certificate";
+import ManagementDiamond from "./managerpages/ManagementDiamond";
+import ProductPrice from "./managerpages/ProductPrice";
 function App() {
   return (
     <Router>
@@ -72,6 +77,22 @@ function App() {
           element={
             <>
               <Login />
+            </>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <>
+              <ForgotPassword />
+            </>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <>
+              <ForgotPassword />
             </>
           }
         />
@@ -232,6 +253,18 @@ function App() {
           }
         />
         <Route
+          path="/manager/management-product-prices"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <ProductPrice />
+              </div>
+            </div>
+          }
+        />
+        <Route
           path="/manager/add-product"
           element={
             <div className="flex">
@@ -363,7 +396,30 @@ function App() {
             </div>
           }
         />
-
+        <Route
+          path="/manager/certificate"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <Certificate />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/manager/management-diamond"
+          element={
+            <div className="flex">
+              <SideBar />
+              <div className="flex-1">
+                <Headerv2 />
+                <ManagementDiamond />
+              </div>
+            </div>
+          }
+        />
         {/* Sale Staff routes */}
         <Route
           path="/staff/list-diamond"
@@ -421,6 +477,18 @@ function App() {
               <div className="flex-1">
                 <Headerv2 />
                 <OrderDetail />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/staff/warranty"
+          element={
+            <div className="flex">
+              <SideBarv3 />
+              <div className="flex-1">
+                <Headerv2 />
+                <Warranty />
               </div>
             </div>
           }

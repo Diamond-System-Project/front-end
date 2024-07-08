@@ -1,9 +1,8 @@
-// ManagementUser.js
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Typography } from "antd";
 import { Link } from "react-router-dom";
 import UserAPI from "../api/UserAPI";
-
+//eslint-disable-next-line
 const { Title } = Typography;
 
 const ManagementUser = () => {
@@ -13,11 +12,10 @@ const ManagementUser = () => {
     const fetchUsers = async () => {
       try {
         const usersData = await UserAPI.users();
-        console.log(usersData)
+        console.log(usersData);
         setUsers(usersData.data.data);
       } catch (error) {
         console.error("Failed to fetch users:", error);
-        // Handle error, show message, etc.
       }
     };
 

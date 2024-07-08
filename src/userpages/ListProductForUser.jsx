@@ -83,7 +83,7 @@ const ListProduct = () => {
             >
               <div className="border p-4 rounded-lg shadow-lg cursor-pointer">
                 <img
-                  src={product.imageUrl}
+                  src={product.url}
                   alt={product.productName}
                   className="w-full h-64 object-cover mb-4 rounded"
                 />

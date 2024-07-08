@@ -99,8 +99,8 @@ const ListProduct = () => {
   const columns = [
     {
       title: "Image",
-      dataIndex: "imageUrl",
-      key: "image",
+      dataIndex: "url",
+      key: "url",
       render: (image) => (
         <img src={image} alt="Product" className="w-20 h-auto" />
       ),

@@ -20,6 +20,16 @@ const AuthAPI = {
       },
     });
   },
+  forgotPassword: (email) => {
+    const url = `/user/forgot-password`;
+    const data = { email };
+    return axiosClient.post(url, data);
+  },
+  resetPassword: (token, password) => {
+    const url = `/user/reset-password`;
+    const data = { token, password };
+    return axiosClient.post(url, data);
+  },
   updateUser: (id, data) => {
     const url = `/user/update/${id}`;
     const token = localStorage.getItem("token");

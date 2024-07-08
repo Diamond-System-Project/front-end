@@ -32,6 +32,9 @@ const SideBar = () => {
         <Menu.Item key="4" icon={<OrderedListOutlined />}>
           <Link to="/staff/order-list">List Order</Link>
         </Menu.Item>
+        <Menu.Item key="5" icon={<OrderedListOutlined />}>
+          <Link to="/staff/warranty">Warranty</Link>
+        </Menu.Item>
       </Menu>
     </div>
   );

@@ -10,6 +10,9 @@ const OrderAPI = {
   getOrdersByUserId: (id) => {
     return axiosClient.get(`/order/user/${id}`);
   },
+  getOrdersByCurrentUserId: (id) => {
+    return axiosClient.get(`order/history/${id}`);
+  },
   createOrderWithDetails: (orderData) => {
     return axiosClient.post("/order/createWithDetails", orderData);
   },

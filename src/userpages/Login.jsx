@@ -16,6 +16,7 @@ export default function Login() {
         localStorage.setItem("accessToken", response.data.data.token);
         localStorage.setItem("userId", response.data.data.userId);
         localStorage.setItem("fullName", response.data.data.fullName);
+        localStorage.setItem("roleId", response.data.data.roleId);
         navigate("/");
       } else {
         openNotificationWithIcon("error", "Login Failed!", response.data.data);

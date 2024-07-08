@@ -109,12 +109,12 @@ export default function Header() {
           >
             TRANG SỨC
           </Link>
-          <Link
+          {/* <Link
             to="/trang-suc-cuoi"
             className="text-black hover:text-red-500 transition-colors duration-300"
           >
             TRANG SỨC CƯỚI
-          </Link>
+          </Link> */}
           <Link
             to="/quotation"
             className="text-black hover:text-red-500 transition-colors duration-300"

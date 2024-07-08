@@ -69,7 +69,7 @@ export default function UserInfo() {
     const userData = {
       fullName: name,
       phone,
-      dob: dob ? dob.format("dd-MM-yyyy") : null,
+      dob: dob ? dob.format("YYYY-MM-DD") : null,
       gender,
     };
 
