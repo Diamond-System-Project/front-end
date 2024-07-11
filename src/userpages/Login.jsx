@@ -11,12 +11,24 @@ export default function Login() {
     console.log("Received values of form: ", values);
     try {
       const response = await AuthAPI.Login(values.email, values.password);
+      
       if (response.data.success) {
         openNotificationWithIcon("success", "Login Successfully");
         localStorage.setItem("accessToken", response.data.data.token);
         localStorage.setItem("userId", response.data.data.userId);
         localStorage.setItem("fullName", response.data.data.fullName);
+        localStorage.setItem("email", response.data.data.email);
+        localStorage.setItem("phone", response.data.data.phone);
+        localStorage.setItem("address", response.data.data.address);
         localStorage.setItem("roleId", response.data.data.roleId);
+
+        localStorage.setItem("userInfo", JSON.stringify({
+          cname : response.data.data.fullName,
+          email: values.email,
+          phone: response.data.data.phone,
+          address: response.data.data.address
+        }));
+
         navigate("/");
       } else {
         openNotificationWithIcon("error", "Login Failed!", response.data.data);

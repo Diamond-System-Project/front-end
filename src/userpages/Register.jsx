@@ -1,14 +1,14 @@
-import { Button, Form, Input, Radio, Select, Checkbox, message } from "antd";
 import {
+  HomeOutlined,
   LockOutlined,
   MailOutlined,
-  UserOutlined,
   PhoneOutlined,
-  HomeOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input, message, Radio, Select } from "antd";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import AuthAPI from "../api/AuthAPI";
-import moment from "moment";
 import openNotificationWithIcon from "../notification";
 const { Option } = Select;
 
@@ -25,12 +25,12 @@ export default function Register() {
   const onFinish = async (values) => {
     console.log("Received values of form: ", values);
     try {
-      const { fullName, password, phone, email, gender, dob } = values;
+      const { fullName, password, phone, email, gender, dob, address } = values;
       const formattedDob = moment({
         year: dob.year,
-        month: dob.month,
+        month: dob.month - 1, // months are 0-based in moment
         day: dob.day,
-      }).format("YYYY-MM-DD");
+      }).format("DD-MM-YYYY");
 
       const response = await AuthAPI.Register(
         fullName,
@@ -38,7 +38,8 @@ export default function Register() {
         phone,
         email,
         gender,
-        formattedDob
+        formattedDob,
+        address
       );
       if (response.data.success) {
         openNotificationWithIcon("success", "Registration successful!");
@@ -311,7 +312,7 @@ export default function Register() {
               },
             ]}
           >
-            <Checkbox>I have read and agree to DOJI's terms of use</Checkbox>
+            <Checkbox>I have read and agree to terms of use</Checkbox>
           </Form.Item>
 
           <Form.Item className="mb-0">

@@ -6,12 +6,38 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import ZaloIcon from "@mui/icons-material/Chat";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import styled from "styled-components";
 import { Input } from "antd";
 
 export default function Footer() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const handleConnectClick = () => {
+    window.open("https://zalo.me/0948704134", "_blank", "noopener,noreferrer");
+  };
+
+  const FooterLink = styled.a`
+    position: relative;
+    text-decoration: none;
+    &::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      bottom: -2px;
+      left: 0;
+      background-color: currentColor;
+      visibility: hidden;
+      transform: scaleX(0);
+      transition: all 0.3s ease-in-out;
+    }
+    &:hover::after {
+      visibility: visible;
+      transform: scaleX(1);
+    }
+  `;
 
   const socialLinks = [
     {
@@ -37,7 +63,7 @@ export default function Footer() {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2 self-end">
             <LocalPhoneIcon className="text-red-500" />
-            <span className="font-bold">HOTLINE: 18001168</span>
+            <span className="font-bold">HOTLINE: 0948704134</span>
           </div>
           <div className="flex justify-center">
             <img
@@ -48,7 +74,14 @@ export default function Footer() {
           </div>
           <div className="flex items-center space-x-2 self-end">
             <LocationOnIcon className="text-red-500" />
-            <span>HỆ THỐNG PHÂN PHỐI</span>
+            <a
+              href="https://thegioikimcuong.vn/pages/destination/"
+              className="hover:text-red-500 transition-colors duration-300 cursor-pointer"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              HỆ THỐNG PHÂN PHỐI
+            </a>
           </div>
         </div>
 
@@ -56,32 +89,111 @@ export default function Footer() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 w-full">
           <div className="text-left px-2 sm:px-4">
-            <h3 className="font-bold flex items-center mb-4 sm:mb-8">LIÊN HỆ</h3>
+            <h3 className="font-bold flex items-center mb-4 sm:mb-8">
+              LIÊN HỆ
+            </h3>
             <p>Địa chỉ: NVHSV TPHCM</p>
             <p>Điện thoại: 0948704134</p>
             <p>Email: fptuni@fpt.edu.vn</p>
           </div>
           <div className="text-left">
             <h3 className="font-bold flex items-center mb-8">VỀ CHÚNG TÔI</h3>
-            <p>Dịch vụ khách hàng</p>
-            <p>Kinh doanh bán sỉ</p>
+            <FooterLink
+              href="https://thegioikimcuong.vn/pages/khach-hang-than-thiet"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Dịch vụ khách hàng
+            </FooterLink>
           </div>
           <div className="text-left">
             <h3 className="font-bold flex items-center mb-8">
               DỊCH VỤ KHÁCH HÀNG
             </h3>
-            <p>Hướng dẫn đặt hàng</p>
-            <p>Phương thức thanh toán</p>
-            <p>Chính sách & bảo hành</p>
-            <p>Cam kết chất lượng</p>
-            <p>Điều khoản mua bán</p>
+            <p>
+              <FooterLink
+                href="https://caohungdiamond.com/huong-dan-mua-hang/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Hướng dẫn đặt hàng
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="https://caohungdiamond.com/huong-dan-mua-hang/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Phương thức thanh toán
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="https://caohungdiamond.com/chinh-sach-bao-hanh/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Chính sách & bảo hành
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="https://caohungdiamond.com/cam-ket-kim-cuong/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Cam kết chất lượng
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="https://caohungdiamond.com/dieu-khoan-su-dung/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Điều khoản mua bán
+              </FooterLink>
+            </p>
           </div>
           <div className="text-left">
             <h3 className="font-bold flex items-center mb-8">TIN TỨC</h3>
-            <p>Tin khuyến mãi</p>
-            <p>Tin trang sức</p>
-            <p>Video</p>
-            <p>Blog</p>
+            <p>
+              <FooterLink
+                href="http://localhost:5173/promotions"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Tin khuyến mãi
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="http://localhost:5173/knowledge"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Tin trang sức
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="https://www.youtube.com/watch?v=DgqvwPNpFp4"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Video
+              </FooterLink>
+            </p>
+            <p>
+              <FooterLink
+                href="https://www.facebook.com/fpturvxnnnn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Blog
+              </FooterLink>
+            </p>
           </div>
           <div className="text-left px-2 sm:px-4">
             <h3 className="font-bold flex items-center mb-4 sm:mb-8">
@@ -101,7 +213,10 @@ export default function Footer() {
         <div className="border-t border-gray-300 my-8 w-full"></div>
 
         <div className="flex flex-col items-center">
-          <button className="bg-red-500 text-white py-2 px-4 rounded-full mb-4">
+          <button
+            onClick={handleConnectClick}
+            className="bg-red-500 text-white py-2 px-4 rounded-full mb-4 hover:bg-red-600 transition-colors duration-300"
+          >
             KẾT NỐI VỚI CHÚNG TÔI
           </button>
           <div className="flex justify-center space-x-28">
@@ -123,7 +238,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 mt-8">
           <p className="text-gray-600 text-center">
-            Copyright 2024 © FPT Gold & Gems Group
+            Copyright 2024 © Song Long Diamond powered by FPT Gold & Gems Group
           </p>
           <button
             onClick={scrollToTop}

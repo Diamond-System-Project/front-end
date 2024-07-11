@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Pagination } from "antd";
+import { Pagination, Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import ProductAPI from "../api/ProductAPI";
 
@@ -10,6 +10,10 @@ const ListProduct = () => {
   const [productTypes, setProductTypes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
+
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -58,50 +62,52 @@ const ListProduct = () => {
   );
 
   return (
-    <div className="flex">
-      <div className="w-1/4 p-4">
-        <div className="border p-4 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Filter by Type</h3>
+    <div className="container mx-auto px-4">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold mb-2">Filter by Type</h3>
+        <div className="flex flex-wrap gap-2">
           {productTypes.map((type) => (
-            <div key={type}>
-              <input
-                type="checkbox"
-                checked={selectedTypes.includes(type)}
-                onChange={() => handleTypeChange(type)}
-              />
-              <label className="ml-2">{type}</label>
-            </div>
+            <Checkbox
+              key={type}
+              onChange={() => handleTypeChange(type)}
+              checked={selectedTypes.includes(type)}
+            >
+              {type}
+            </Checkbox>
           ))}
         </div>
       </div>
-      <div className="w-3/4 p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {paginatedProducts.map((product) => (
-            <Link
-              to={`/product-detail/${product.productId}`}
-              key={product.productId}
-            >
-              <div className="border p-4 rounded-lg shadow-lg cursor-pointer">
-                <img
-                  src={product.url}
-                  alt={product.productName}
-                  className="w-full h-64 object-cover mb-4 rounded"
-                />
-                <h3 className="text-lg font-semibold">{product.productName}</h3>
-                <p className="text-gray-600">{product.mountId.mountName}</p>
-                <p className="text-gray-800 font-bold">${product.price}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-        <div className="mt-4 flex justify-center">
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredProducts.length}
-            onChange={handlePageChange}
-          />
-        </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {paginatedProducts.map((product) => (
+          <Link
+            to={`/product-detail/${product.productId}`}
+            key={product.productId}
+            className="block bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+          >
+            <div className="aspect-w-3 aspect-h-4">
+              <img
+                src={product.url || "default-image-url.jpg"}
+                alt={product.productName}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-lg font-semibold mb-1 truncate">{product.productName}</h3>
+              <p className="text-sm text-gray-600 mb-2 truncate">{product.mountId.mountName}</p>
+              <p className="text-lg font-bold text-blue-600">{formatCurrency(Number(product.price))}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <Pagination
+          current={currentPage}
+          total={filteredProducts.length}
+          pageSize={pageSize}
+          onChange={handlePageChange}
+        />
       </div>
     </div>
   );

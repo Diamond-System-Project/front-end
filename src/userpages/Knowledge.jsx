@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { Row, Col, Card, Typography } from "antd";
 
 const { Title, Text } = Typography;
@@ -67,7 +67,7 @@ export default function Knowledge() {
         Danh Mục: Kiến Thức Kim Cương
       </Title>
       <Text className="text-center mb-4 block">
-        Tổng hợp những bài viết mới nhất về kim cương, hột xoàn | từ Song Long
+        Tổng hợp những bài viết mới nhất về kim cương, đá quý | từ Song Long
         Diamond
       </Text>
       <Row gutter={[16, 16]}>

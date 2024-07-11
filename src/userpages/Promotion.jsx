@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 
 const promotions = [
   {
@@ -26,9 +26,16 @@ export default function Promotions() {
         KHUYẾN MÃI TRONG THÁNG
       </h2>
       <div className="text-center mb-4">
-        <button className="bg-black text-white px-4 py-2 rounded-full">
-          TOÀN HỆ THỐNG CỬA HÀNG
-        </button>
+        <a
+          href="https://thegioikimcuong.vn/pages/destination/"
+          target="_blank"
+          rel="noopener noreferrer"
+          
+        >
+          <button className="bg-black text-white px-4 py-2 rounded-full transition duration-300 ease-in-out hover:bg-green-500 hover:text-black">
+            TOÀN HỆ THỐNG CỬA HÀNG
+          </button>
+        </a>
       </div>
       <div className="mb-8">
         <img

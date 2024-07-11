@@ -27,6 +27,10 @@ export default function OrderDetails() {
   const [isWarrantyModalVisible, setIsWarrantyModalVisible] = useState(false);
   const [warrantyData, setWarrantyData] = useState(null);
 
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
+
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
@@ -37,7 +41,7 @@ export default function OrderDetails() {
             key: detail.orderDetailId,
             productName: detail.productId.productName,
             quantity: detail.quantity,
-            totalPrice: detail.price?.toLocaleString() ?? "N/A",
+            totalPrice: formatCurrency(detail.price),
           }));
           setOrderDetails(formattedDetails);
         } else {
@@ -214,7 +218,7 @@ export default function OrderDetails() {
               <Col span={12}>
                 <Text strong>Base Price:</Text>{" "}
                 <Text>
-                  {certificateData?.diamondId?.basePrice?.toLocaleString()}
+                <Text>{formatCurrency(certificateData?.diamondId?.basePrice)}</Text>
                 </Text>
               </Col>
               <Col span={12}>

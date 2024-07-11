@@ -1,13 +1,19 @@
 // Collection.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Card, List } from "antd";
+import { Card, List, message } from "antd";
 import CollectionApi from "../api/CollectionAPI";
 
 const Collection = () => {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
+  
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -16,6 +22,7 @@ const Collection = () => {
         setCollections(response.data.data);
       } catch (error) {
         console.error("Error fetching collections:", error);
+        message.error("Failed to load collections");
       }
     };
 
@@ -23,65 +30,102 @@ const Collection = () => {
   }, []);
 
   const handleCollectionClick = async (collectionId) => {
+    setLoading(true);
+    setSelectedCollection(collectionId);
+    setProducts([]);
+
     try {
       const response = await CollectionApi.getProduct(collectionId);
-      setSelectedCollection(collectionId);
-      setProducts(response.data.data); // Adjust based on your API response structure
+      setProducts(response.data.data);
+      if (response.data.data.length === 0) {
+        message.info("This collection has no products.");
+      }
     } catch (error) {
-      console.error("Error fetching products:", error);
+        // console.error("Error fetching products:", error);
+        // message.error("Failed to load products for this collection");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Collections</h2>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h2 className="text-3xl font-bold mb-8">Collections</h2>
       {collections.length === 0 ? (
-        <p className="text-center">Loading collections...</p>
+        <p className="text-center text-lg">Loading collections...</p>
       ) : (
         <List
-          grid={{ gutter: 16, column: 2 }}
+          grid={{ gutter: 24, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 4 }}
           dataSource={collections}
           renderItem={(collection) => (
             <List.Item>
               <Card
-                title={collection.collectionName}
-                bordered={false}
-                className="cursor-pointer"
+                hoverable
+                cover={
+                  <img
+                    alt={collection.collectionName}
+                    src={collection.imageUrl || "default_collection_image_url"}
+                    className="h-60 w-full object-cover"
+                  />
+                }
                 onClick={() => handleCollectionClick(collection.collectionId)}
+                className={`cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 ${
+                  selectedCollection === collection.collectionId ? 'border-4 border-blue-500' : ''
+                }`}
+                style={{ maxWidth: '100%', margin: '0 auto' }}
               >
-                <p>{collection.description}</p>
+                <Card.Meta
+                  title={<div className="text-xl font-semibold">{collection.collectionName}</div>}
+                  description={<div className="text-base mt-2">{collection.description}</div>}
+                />
               </Card>
             </List.Item>
           )}
         />
       )}
       {selectedCollection && (
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Products in Collection</h3>
-          {products.length === 0 ? (
-            <p className="text-center">
-              No products found for this collection.
-            </p>
+        <div className="mt-16">
+          <h3 className="text-2xl font-bold mb-8">Products in Collection</h3>
+          {loading ? (
+            <p className="text-center text-lg">Loading products...</p>
+          ) : products.length === 0 ? (
+            <p className="text-center text-lg">No products found for this collection.</p>
           ) : (
             <List
-              grid={{ gutter: 16, column: 4 }}
+              grid={{ gutter: 24, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 5 }}
               dataSource={products}
               renderItem={(product) => (
                 <List.Item>
                   <Link to={`/product-detail/${product.productId}`}>
                     <Card
+                      hoverable
                       cover={
                         <img
                           alt={product.productName}
-                          src={product.url || "placeholder_image_url"}
+                          src={product.imageUrl || "default_product_image_url"}
+                          className="h-56 w-full object-cover"
                         />
                       }
+                      className="transition duration-300 ease-in-out transform hover:scale-105"
+                      style={{ maxWidth: '100%', margin: '0 auto' }}
                     >
                       <Card.Meta
-                        title={product.productName}
-                        description={product.description}
+                        title={
+                          <span className="text-lg font-semibold">
+                            {product.productName}
+                          </span>
+                        }
+                        description={
+                          <>
+                            <p className="text-base text-gray-500 mb-2">
+                              {product.description}
+                            </p>
+                            <p className="text-base font-bold text-blue-600">
+                              Price: {formatCurrency(product.price)}
+                            </p>
+                          </>
+                        }
                       />
-                      <p>Price: ${product.price}</p>
                     </Card>
                   </Link>
                 </List.Item>
