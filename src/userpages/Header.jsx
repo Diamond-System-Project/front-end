@@ -7,6 +7,7 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import { Divider, Dropdown, Menu } from "antd";
+import { NavLink } from "react-router-dom";
 
 export default function Header() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -55,7 +56,11 @@ export default function Header() {
             >
               <span className="flex items-center space-x-1">
                 <CorporateFareIcon className="text-yellow-500" />
+<<<<<<< HEAD
                 <span>TRANG SỨC SONG LONG</span>
+=======
+                <span>VỀ TRANG SỨC SONG LONG</span>
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
               </span>
             </Link>
             <a
@@ -118,6 +123,7 @@ export default function Header() {
           </Link>
         </div>
         <Divider />
+<<<<<<< HEAD
         <nav className="flex justify-center items-center space-x-10 mb-6 bg-white-100 w-full relative py-4">
           {navItems.map((item, index) => (
             <NavLink
@@ -141,6 +147,63 @@ export default function Header() {
             )}
           </NavLink>
           ))}
+=======
+        <nav className="flex justify-center items-center space-x-10 mb-6 bg-white-100 w-full">
+          <NavLink
+            to="/list-product"
+            className={({ isActive }) =>
+              `text-black hover:text-red-500 transition-colors duration-300 pb-2 border-b-2 ${
+                isActive ? "border-red-500" : "border-transparent"
+              }`
+            }
+          >
+            TRANG SỨC
+          </NavLink>
+
+          <NavLink
+            to="/quotation"
+            className={({ isActive }) =>
+              `text-black hover:text-red-500 transition-colors duration-300 pb-2 border-b-2 ${
+                isActive ? "border-red-500" : "border-transparent"
+              }`
+            }
+          >
+            BẢNG GIÁ
+          </NavLink>
+
+          <NavLink
+            to="/collection"
+            className={({ isActive }) =>
+              `text-black hover:text-red-500 transition-colors duration-300 pb-2 border-b-2 ${
+                isActive ? "border-red-500" : "border-transparent"
+              }`
+            }
+          >
+            BỘ SƯU TẬP MỚI
+          </NavLink>
+
+          <NavLink
+            to="/promotions"
+            className={({ isActive }) =>
+              `text-black hover:text-red-500 transition-colors duration-300 pb-2 border-b-2 ${
+                isActive ? "border-red-500" : "border-transparent"
+              }`
+            }
+          >
+            KHUYẾN MÃI
+          </NavLink>
+
+          <NavLink
+            to="/knowledge"
+            className={({ isActive }) =>
+              `text-black hover:text-red-500 transition-colors duration-300 pb-2 border-b-2 ${
+                isActive ? "border-red-500" : "border-transparent"
+              }`
+            }
+          >
+            KIẾN THỨC
+          </NavLink>
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
         </nav>
       </header>
     </>

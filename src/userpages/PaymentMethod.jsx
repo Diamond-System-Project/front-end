@@ -67,12 +67,21 @@ export default function PaymentMethod() {
     setCustomerInfo({ ...customerInfo, [name]: value });
   };
 
+<<<<<<< HEAD
   const items = Array.isArray(selectedCartItems) ? selectedCartItems : [selectedCartItems];
 
   const totalPrice = items.reduce(
       (acc, item) => acc + item.price * item.quantity,
       0
     );
+=======
+  const items = Array.isArray(cartItems) ? cartItems : [cartItems];
+
+  const totalPrice = items.reduce(
+    (acc, item) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
+    0
+  );
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
   
   const finalPrice = Math.max(totalPrice - discount, 0);
 
@@ -156,8 +165,13 @@ export default function PaymentMethod() {
   };
 
   const formatCurrency = (amount) => {
+<<<<<<< HEAD
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") ;
   };
+=======
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }; 
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
 
   const onCompleteOrder = async () => {
     if (!validateCustomerInfo()) {
@@ -166,6 +180,15 @@ export default function PaymentMethod() {
 
     if (!paymentMethod) {
       message.error("Please select a payment method!!");
+<<<<<<< HEAD
+=======
+      return;
+    }
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      message.error("Please log in to continue!!");
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
       return;
     }
 

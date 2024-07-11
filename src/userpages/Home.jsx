@@ -375,6 +375,13 @@ export default function Home() {
                   </Link>
                 ))}
             </div>
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
             {currentProduct + itemsPerPageProduct < products.length && (
               <button
                 onClick={nextPageProduct}

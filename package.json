@@ -33,7 +33,10 @@
     "react-loading-skeleton": "^3.4.0",
     "react-redux": "^9.1.2",
     "react-router-dom": "^6.23.1",
+<<<<<<< HEAD
     "react-toastify": "^10.0.5",
+=======
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
     "styled-components": "^6.1.11",
     "web-vitals": "^4.1.1"
   },

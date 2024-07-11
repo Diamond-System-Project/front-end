@@ -71,6 +71,25 @@ export default function ProductDetail() {
 
   const handleChatClick = () => {
     window.open("https://zalo.me/0948704134", "_blank", "noopener,noreferrer");
+<<<<<<< HEAD
+=======
+  };
+
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    const productItem = {
+      productId: product.productId,
+      productName: product.productName,
+      image: product.image,
+      price: formatCurrency(product.price),
+      quantity,
+    };
+    navigate("/payment-method", { state: { cartItems: [productItem] } });
+>>>>>>> c2da0810611fd2179b85b7349103da5a8894e93e
   };
 
   const formatCurrency = (amount) => {
