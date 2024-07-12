@@ -145,18 +145,15 @@ const ManagementDiamondMount = () => {
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex justify-between w-full">
-          <h1 className="text-2xl font-bold ml-4">Diamond Mount Management</h1>
-          <Button
-            type="primary"
-            className="bg-black text-white mr-2"
-            onClick={showModal}
-          >
-            + ADD NEW MOUNT
-          </Button>
-        </div>
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h1 className="text-2xl font-bold">Diamond Mount Management</h1>
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
+          onClick={showModal}
+        >
+          + ADD NEW MOUNT
+        </button>
       </div>
       <Table dataSource={dataSource} columns={columns} />
       <Modal

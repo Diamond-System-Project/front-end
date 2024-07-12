@@ -1,4 +1,3 @@
-import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./userpages/Header";
 import Footer from "./userpages/Footer";
@@ -12,7 +11,7 @@ import PaymentMethod from "./userpages/PaymentMethod";
 import PaymentSuccess from "./userpages/PaymentSuccess";
 import SideBar from "./managerpages/SideBar";
 import Headerv2 from "./managerpages/Headerv2";
-import DashBoard from "./managerpages/DashBoard";
+import Dashboard from "./adminpages/Dashboard";
 import ListProduct from "./managerpages/ListProduct";
 import AddProduct from "./managerpages/AddProduct";
 import UpdateProduct from "./managerpages/UpdateProduct";
@@ -42,17 +41,21 @@ import Collection from "./userpages/Collection";
 import Quotation from "./userpages/Quotation";
 import ManagementCollection from "./managerpages/ManagementCollection";
 import ListDiamondMount from "./salestaffpages/ListDiamondMount";
-import StockList from "./salestaffpages/StockList";
 import Warranty from "./salestaffpages/Warranty";
 import ForgotPassword from "./userpages/ForgotPassword";
 import Certificate from "./managerpages/Certificate";
 import ManagementDiamond from "./managerpages/ManagementDiamond";
 import ProductPrice from "./managerpages/ProductPrice";
+import ProductPromotion from "./managerpages/ProductPromotion";
+import Promotions from "./managerpages/Promotion";
+import ProductDiamond from "./managerpages/ProductDiamond";
+import Inventory from "./managerpages/Inventory";
+import ProtectedRoute from "./Route/ProtectedRoute";
+
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public routes */}
         <Route
           path="/"
           element={
@@ -64,480 +67,543 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/register"
-          element={
-            <>
-              <Register />
-            </>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <>
-              <Login />
-            </>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <>
-              <ForgotPassword />
-            </>
-          }
-        />
-        <Route
-          path="/reset-password"
-          element={
-            <>
-              <ForgotPassword />
-            </>
-          }
-        />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
         <Route
           path="/order-history"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <OrderHistory />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/order-detail/:id"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <OrderDetailForUser />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/checkout"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <Checkout />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/collection"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <Collection />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/quotation"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <Quotation />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/list-product"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <ListProductForUser />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/product-detail/:id"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <ProductDetail />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/cart"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <Cart />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/payment-method"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <PaymentMethod />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/payment-success"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <PaymentSuccess />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/profile"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <UserInfo />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/knowledge"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <Knowledge />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/promotions"
           element={
-            <>
+            <ProtectedRoute allowedRoles={["Member"]}>
               <Header />
               <Promotion />
               <Footer />
-            </>
+            </ProtectedRoute>
           }
         />
 
         {/* Manager routes */}
         <Route
-          path="/manager/dashboard"
-          element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <DashBoard />
-              </div>
-            </div>
-          }
-        />
-        <Route
           path="/manager/list-products"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ListProduct />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ListProduct />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-product-prices"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ProductPrice />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ProductPrice />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/add-product"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <AddProduct />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <AddProduct />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manager/product-diamond"
+          element={
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ProductDiamond />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manager/inventory"
+          element={
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <Inventory />
+                </div>
+              </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/update-product/:id"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <UpdateProduct />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <UpdateProduct />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-user"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ManagementUser />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ManagementUser />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-user/user-detail/:id"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <UserDetail />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <UserDetail />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-user/user-orders/:id"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <UserOrders />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <UserOrders />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/order-list"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <OrderList />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <OrderList />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/order-list/order-detail/:id"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <OrderDetail />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <OrderDetail />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-voucher"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ManagementVoucher />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ManagementVoucher />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-staff"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ManagementStaff />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ManagementStaff />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/diamond-mount"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <DiamondMount />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <DiamondMount />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/collection"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ManagementCollection />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ManagementCollection />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/certificate"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <Certificate />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <Certificate />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/manager/management-diamond"
           element={
-            <div className="flex">
-              <SideBar />
-              <div className="flex-1">
-                <Headerv2 />
-                <ManagementDiamond />
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ManagementDiamond />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manager/promotion"
+          element={
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <Promotions />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manager/product-promotion"
+          element={
+            <ProtectedRoute allowedRoles={["Manager"]}>
+              <div className="flex">
+                <SideBar />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ProductPromotion />
+                </div>
+              </div>
+            </ProtectedRoute>
           }
         />
         {/* Sale Staff routes */}
         <Route
           path="/staff/list-diamond"
           element={
-            <div className="flex">
-              <SideBarv3 />
-              <div className="flex-1">
-                <Headerv2 />
-                <ListDiamond />
+            <ProtectedRoute allowedRoles={["Sales Staff"]}>
+              <div className="flex">
+                <SideBarv3 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ListDiamond />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff/list-diamond-mount"
           element={
-            <div className="flex">
-              <SideBarv3 />
-              <div className="flex-1">
-                <Headerv2 />
-                <ListDiamondMount />
+            <ProtectedRoute allowedRoles={["Sales Staff"]}>
+              <div className="flex">
+                <SideBarv3 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ListDiamondMount />
+                </div>
               </div>
-            </div>
-          }
-        />
-        <Route
-          path="/staff/stock-list"
-          element={
-            <div className="flex">
-              <SideBarv3 />
-              <div className="flex-1">
-                <Headerv2 />
-                <StockList />
-              </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff/order-list"
           element={
-            <div className="flex">
-              <SideBarv3 />
-              <div className="flex-1">
-                <Headerv2 />
-                <OrderListForSaleStaff />
+            <ProtectedRoute allowedRoles={["Sales Staff"]}>
+              <div className="flex">
+                <SideBarv3 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <OrderListForSaleStaff />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff/order-list/order-detail/:id"
           element={
-            <div className="flex">
-              <SideBarv3 />
-              <div className="flex-1">
-                <Headerv2 />
-                <OrderDetail />
+            <ProtectedRoute allowedRoles={["Sales Staff"]}>
+              <div className="flex">
+                <SideBarv3 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <OrderDetail />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff/warranty"
           element={
-            <div className="flex">
-              <SideBarv3 />
-              <div className="flex-1">
-                <Headerv2 />
-                <Warranty />
+            <ProtectedRoute allowedRoles={["Sales Staff"]}>
+              <div className="flex">
+                <SideBarv3 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <Warranty />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         {/* Delivery Staff routes */}
         <Route
           path="/delivery"
           element={
-            <div className="flex flex-col">
-              <Headerv2 />
-              <OrderListForDelivery />
-            </div>
+            <ProtectedRoute allowedRoles={["Delivery Staff"]}>
+              <div className="flex flex-col">
+                <Headerv2 />
+                <OrderListForDelivery />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/delivery/order-list/order-detail/:id"
+          element={
+            <ProtectedRoute allowedRoles={["Delivery Staff"]}>
+              <div className="flex flex-col">
+                <Headerv2 />
+                <OrderDetail />
+              </div>
+            </ProtectedRoute>
           }
         />
         {/* Admin routes */}
         <Route
           path="/admin/dashboard"
           element={
-            <div className="flex">
-              <SideBarv2 />
-              <div className="flex-1">
-                <Headerv2 />
-                <DashBoard />
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <div className="flex">
+                <SideBarv2 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <Dashboard />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/management-employees"
           element={
-            <div className="flex">
-              <SideBarv2 />
-              <div className="flex-1">
-                <Headerv2 />
-                <ManagementEmployees />
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <div className="flex">
+                <SideBarv2 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <ManagementEmployees />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/admin/employees-detail/:id"
           element={
-            <div className="flex">
-              <SideBarv2 />
-              <div className="flex-1">
-                <Headerv2 />
-                <StaffDetail />
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <div className="flex">
+                <SideBarv2 />
+                <div className="flex-1">
+                  <Headerv2 />
+                  <StaffDetail />
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         />
       </Routes>

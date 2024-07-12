@@ -1,16 +1,23 @@
 import {
-  HomeOutlined,
+  Button,
+  Form,
+  Input,
+  Radio,
+  Checkbox,
+  message,
+  DatePicker,
+} from "antd";
+import {
   LockOutlined,
   MailOutlined,
-  PhoneOutlined,
   UserOutlined,
+  PhoneOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, message, Radio, Select } from "antd";
-import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import AuthAPI from "../api/AuthAPI";
+import dayjs from "dayjs";
 import openNotificationWithIcon from "../notification";
-const { Option } = Select;
 
 export default function Register() {
   const navigate = useNavigate();
@@ -26,11 +33,8 @@ export default function Register() {
     console.log("Received values of form: ", values);
     try {
       const { fullName, password, phone, email, gender, dob, address } = values;
-      const formattedDob = moment({
-        year: dob.year,
-        month: dob.month - 1, // months are 0-based in moment
-        day: dob.day,
-      }).format("DD-MM-YYYY");
+      const formattedDob = dayjs(dob).format("DD-MM-YYYY");
+      console.log("Formatted DOB: ", formattedDob);
 
       const response = await AuthAPI.Register(
         fullName,
@@ -43,7 +47,6 @@ export default function Register() {
       );
       if (response.data.success) {
         openNotificationWithIcon("success", "Registration successful!");
-        // Redirect to login page after 2 seconds
         setTimeout(() => {
           navigate("/login");
         }, 2000);
@@ -60,33 +63,6 @@ export default function Register() {
       console.error("Registration error: ", error);
     }
   };
-
-  const years = [];
-  for (let i = 1900; i <= new Date().getFullYear(); i++) {
-    years.push(
-      <Option key={i} value={i}>
-        {i}
-      </Option>
-    );
-  }
-
-  const months = [];
-  for (let i = 1; i <= 12; i++) {
-    months.push(
-      <Option key={i} value={i}>
-        {i}
-      </Option>
-    );
-  }
-
-  const days = [];
-  for (let i = 1; i <= 31; i++) {
-    days.push(
-      <Option key={i} value={i}>
-        {i}
-      </Option>
-    );
-  }
 
   const validatePassword = (_, value) => {
     if (!value || value.length < 8) {
@@ -212,36 +188,7 @@ export default function Register() {
               },
             ]}
           >
-            <Input.Group compact>
-              <Form.Item
-                name={["dob", "day"]}
-                noStyle
-                rules={[{ required: true, message: "Please select day!" }]}
-              >
-                <Select placeholder="Day" style={{ width: "34%" }}>
-                  {days}
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                name={["dob", "month"]}
-                noStyle
-                rules={[{ required: true, message: "Please select month!" }]}
-              >
-                <Select placeholder="Month" style={{ width: "33%" }}>
-                  {months}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name={["dob", "year"]}
-                noStyle
-                rules={[{ required: true, message: "Please select year!" }]}
-              >
-                <Select placeholder="Year" style={{ width: "33%" }}>
-                  {years}
-                </Select>
-              </Form.Item>
-            </Input.Group>
+            <DatePicker style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
@@ -312,7 +259,7 @@ export default function Register() {
               },
             ]}
           >
-            <Checkbox>I have read and agree to terms of use</Checkbox>
+            <Checkbox>I have read and agree to DOJI's terms of use</Checkbox>
           </Form.Item>
 
           <Form.Item className="mb-0">

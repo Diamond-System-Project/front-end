@@ -7,17 +7,16 @@ import {
   Input,
   DatePicker,
   notification,
+  Select,
 } from "antd";
-import {
-  PlusOutlined,
-  EditOutlined,
-  //  DeleteOutlined
-} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import WarrantyAPI from "../api/WarrantyAPI";
+import OrderDetailAPI from "../api/OrderDetailAPI";
 import moment from "moment";
 
 const Warranty = () => {
   const [warranties, setWarranties] = useState([]);
+  const [orderDetails, setOrderDetails] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedWarranty, setSelectedWarranty] = useState(null);
@@ -25,14 +24,13 @@ const Warranty = () => {
 
   useEffect(() => {
     fetchWarranties();
+    fetchAllOrderDetails(); // Fetching all order details
   }, []);
 
   const fetchWarranties = async () => {
     try {
       const response = await WarrantyAPI.getAll();
       console.log("Fetched warranties: ", response.data);
-
-      // Ensure the response data is an array
       if (Array.isArray(response.data.data)) {
         setWarranties(response.data.data);
       } else {
@@ -45,6 +43,22 @@ const Warranty = () => {
     }
   };
 
+  const fetchAllOrderDetails = async () => {
+    try {
+      const response = await OrderDetailAPI.getAllOrderDetails();
+      console.log("Fetched order details: ", response.data);
+      if (Array.isArray(response.data.data)) {
+        setOrderDetails(response.data.data);
+      } else {
+        console.error("Fetched data is not an array:", response.data);
+        notification.error({ message: "Failed to fetch order details" });
+      }
+    } catch (error) {
+      notification.error({ message: "Failed to fetch order details" });
+      console.error("Fetch order details error: ", error);
+    }
+  };
+
   const handleCreate = () => {
     setIsEditing(false);
     setSelectedWarranty(null);
@@ -54,8 +68,6 @@ const Warranty = () => {
   const handleEdit = (warranty) => {
     setIsEditing(true);
     setSelectedWarranty(warranty);
-
-    // Set form values, including nested fields
     form.setFieldsValue({
       orderDetailId: warranty.orderDetailId.orderDetailId,
       warrantyLength: warranty.warrantyLength,
@@ -65,17 +77,6 @@ const Warranty = () => {
 
     setIsModalVisible(true);
   };
-
-  //   const handleDelete = async (warrantyId) => {
-  //     try {
-  //       await WarrantyAPI.delete(warrantyId);
-  //       fetchWarranties();
-  //       notification.success({ message: "Warranty deleted successfully" });
-  //     } catch (error) {
-  //       notification.error({ message: "Failed to delete warranty" });
-  //       console.error("Delete warranty error: ", error);
-  //     }
-  //   };
 
   const handleOk = async () => {
     try {
@@ -132,23 +133,21 @@ const Warranty = () => {
       render: (text, record) => (
         <div className="flex space-x-2">
           <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
-          {/* <Button
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.warrantyId)}
-            danger
-          /> */}
         </div>
       ),
     },
   ];
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Warranty List</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-          Add Warranty
-        </Button>
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h2 className="text-2xl font-bold">Warranty List</h2>
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
+          onClick={handleCreate}
+        >
+          + ADD WARRANTY
+        </button>
       </div>
       <Table dataSource={warranties} columns={columns} rowKey="warrantyId" />
       <Modal
@@ -162,10 +161,19 @@ const Warranty = () => {
             name="orderDetailId"
             label="Order Detail ID"
             rules={[
-              { required: true, message: "Please input the order detail ID!" },
+              { required: true, message: "Please select the order detail!" },
             ]}
           >
-            <Input disabled={isEditing} />
+            <Select disabled={isEditing} placeholder="Select Order Detail">
+              {orderDetails.map((orderDetail) => (
+                <Select.Option
+                  key={orderDetail.orderDetailId}
+                  value={orderDetail.orderDetailId}
+                >
+                  {orderDetail.orderDetailId}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             name="warrantyLength"

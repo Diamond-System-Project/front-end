@@ -54,11 +54,9 @@ const ManagementUser = () => {
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold ml-4">All Customers</h1>
-        </div>
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h1 className="text-2xl font-bold">All Customers</h1>
       </div>
       <Table dataSource={users} columns={columns} />
     </div>

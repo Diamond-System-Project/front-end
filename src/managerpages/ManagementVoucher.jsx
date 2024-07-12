@@ -64,7 +64,7 @@ const ManagementVoucher = () => {
       key: "actions",
       render: (record) => (
         <div>
-          <Button type="primary" onClick={() => showModal(record, false)}>
+          <Button type="link" onClick={() => showModal(record, false)}>
             Edit
           </Button>
           <Button
@@ -88,7 +88,6 @@ const ManagementVoucher = () => {
     setIsModalVisible(false);
     if (selectedVoucher) {
       if (isCreate) {
-        // Handle create voucher type
         try {
           const response = await VoucherTypeAPI.create(selectedVoucher);
           setVoucherData([...voucherData, response.data]);
@@ -98,7 +97,6 @@ const ManagementVoucher = () => {
           message.error("Failed to create voucher");
         }
       } else {
-        // Handle update voucher type
         const updatedVoucherData = voucherData.map((voucher) =>
           voucher.voucherTypeId === selectedVoucher.voucherTypeId
             ? { ...voucher, ...selectedVoucher }
@@ -154,16 +152,15 @@ const ManagementVoucher = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold mb-4">Voucher Types</h1>
-        <Button
-          type="primary"
-          className="mb-4"
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h1 className="text-2xl font-bold">Voucher Types</h1>
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
           onClick={() => showModal(null, true)}
         >
-          Create Voucher Type
-        </Button>
+          + ADD VOUCHER TYPE
+        </button>
       </div>
       <Table
         dataSource={voucherData}
@@ -182,19 +179,19 @@ const ManagementVoucher = () => {
           <div className="flex flex-col space-y-4">
             {!isCreate && (
               <p>
-                <strong>Voucher Type ID:</strong>{" "}
+                Voucher Type ID:
                 {selectedVoucher.voucherTypeId}
               </p>
             )}
             <p>
-              <strong>Description: </strong>
+              Description:
               <Input
                 value={selectedVoucher.description}
                 onChange={(e) => handleInputChange(e, "description")}
               />
             </p>
             <p>
-              <strong>Discount: </strong>
+              Discount:
               <Input
                 value={selectedVoucher.discount}
                 type="number"
@@ -203,7 +200,7 @@ const ManagementVoucher = () => {
               />
             </p>
             <p>
-              <strong>Discount Length (days): </strong>
+              Discount Length (days):
               <Input
                 value={selectedVoucher.discountLength}
                 type="number"
@@ -211,7 +208,7 @@ const ManagementVoucher = () => {
               />
             </p>
             <p>
-              <strong>Points Needed: </strong>
+              Points Needed:
               <Input
                 value={selectedVoucher.pointNeeded}
                 type="number"
@@ -219,7 +216,7 @@ const ManagementVoucher = () => {
               />
             </p>
             <p>
-              <strong>Active: </strong>
+              Active:
               <Switch
                 checked={selectedVoucher.active}
                 onChange={handleSwitchChange}

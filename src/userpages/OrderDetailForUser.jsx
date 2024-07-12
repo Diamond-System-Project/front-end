@@ -14,6 +14,7 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import OrderDetailAPI from "../api/OrderDetailAPI";
 import CertificateAPI from "../api/CertificateAPI";
 import WarrantyAPI from "../api/WarrantyAPI";
+import Logo from "../assets/images/Songlong.png";
 
 const { Title, Text } = Typography;
 
@@ -28,6 +29,7 @@ export default function OrderDetails() {
   const [warrantyData, setWarrantyData] = useState(null);
 
   const formatCurrency = (amount) => {
+    if (amount == null) return "0 VND"; // Handle null or undefined values
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
   };
 
@@ -85,7 +87,7 @@ export default function OrderDetails() {
     try {
       const response = await WarrantyAPI.getByOrderDetailId(orderDetailId);
       if (response.data.success) {
-        setWarrantyData(response.data.data);
+        setWarrantyData(response.data.data[0]); // Assuming data is an array, take the first element
         setIsWarrantyModalVisible(true);
       } else {
         message.error("Failed to fetch warranty: " + response.data.message);
@@ -169,7 +171,7 @@ export default function OrderDetails() {
           >
             <Row justify="center" style={{ marginBottom: "20px" }}>
               <img
-                src="src/assets/images/Songlong.png"
+                src={Logo}
                 alt="Logo"
                 style={{ width: "100px", marginBottom: "20px" }}
               />
@@ -218,7 +220,7 @@ export default function OrderDetails() {
               <Col span={12}>
                 <Text strong>Base Price:</Text>{" "}
                 <Text>
-                <Text>{formatCurrency(certificateData?.diamondId?.basePrice)}</Text>
+                  {formatCurrency(certificateData?.diamondId?.basePrice)}
                 </Text>
               </Col>
               <Col span={12}>
@@ -277,7 +279,7 @@ export default function OrderDetails() {
           >
             <Row justify="center" style={{ marginBottom: "20px" }}>
               <img
-                src="src/assets/images/Songlong.png"
+                src={Logo}
                 alt="Logo"
                 style={{ width: "100px", marginBottom: "20px" }}
               />
@@ -324,6 +326,46 @@ export default function OrderDetails() {
                 <Text strong>Description:</Text>{" "}
                 <Text>
                   {warrantyData?.orderDetailId?.productId?.description}
+                </Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Order ID:</Text>{" "}
+                <Text>{warrantyData?.orderDetailId?.orderId?.orderId}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Customer Name:</Text>{" "}
+                <Text>{warrantyData?.orderDetailId?.orderId?.cname}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Customer Phone:</Text>{" "}
+                <Text>{warrantyData?.orderDetailId?.orderId?.phone}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Customer Email:</Text>{" "}
+                <Text>{warrantyData?.orderDetailId?.orderId?.email}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Order Date:</Text>{" "}
+                <Text>{warrantyData?.orderDetailId?.orderId?.order_date}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Payment Method:</Text>{" "}
+                <Text>
+                  {warrantyData?.orderDetailId?.orderId?.payment_method}
+                </Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Price:</Text>{" "}
+                <Text>
+                  {formatCurrency(warrantyData?.orderDetailId?.price)}
+                </Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Payment Status:</Text>{" "}
+                <Text>
+                  {warrantyData?.orderDetailId?.orderId?.paymentStatus
+                    ? "Paid"
+                    : "Unpaid"}
                 </Text>
               </Col>
             </Row>

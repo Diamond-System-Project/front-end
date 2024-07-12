@@ -10,6 +10,7 @@ const OrderList = () => {
   const [data, setData] = useState([]);
   const [deliveryStaffList, setDeliveryStaffList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deliveryOrderNumbers, setDeliveryOrderNumbers] = useState([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -24,7 +25,10 @@ const OrderList = () => {
           deliveryStaff: order.deliveryStaff
             ? order.deliveryStaff.fullName
             : null,
-          amount: `$${order.payment.toFixed(2)}`,
+          amount: new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(order.payment),
         }));
         setData(orders);
       } catch (error) {
@@ -45,8 +49,19 @@ const OrderList = () => {
       }
     };
 
+    const fetchDeliveryOrderNumbers = async () => {
+      try {
+        const response = await OrderAPI.getDeliveryShippingOrderNumber();
+        setDeliveryOrderNumbers(response.data.data);
+      } catch (error) {
+        console.log(error);
+        message.error("Failed to fetch delivery order numbers");
+      }
+    };
+
     fetchOrders();
     fetchDeliveryStaff();
+    fetchDeliveryOrderNumbers();
   }, []);
 
   const handleCancelOrder = async (record) => {
@@ -83,14 +98,14 @@ const OrderList = () => {
       if (selectedStaff) {
         console.log(
           `Assigning order ${record.orderId} to delivery staff ${selectedStaff.userId}`
-        ); // Add logging
+        );
 
         const payload = {
           orderId: record.orderId,
           deliveryId: selectedStaff.userId,
         };
 
-        console.log("Request payload:", payload); // Log the payload being sent
+        console.log("Request payload:", payload);
 
         const response = await GetUserByRoleAPI.assignOrderToDelivery(
           record.orderId,
@@ -186,8 +201,8 @@ const OrderList = () => {
         <>
           <Link to={`/manager/order-list/order-detail/${record.orderId}`}>
             View Detail
-          </Link>{" "}
-          |
+          </Link>
+
           {["pending", "processing", "shipping"].includes(
             record.status.toLowerCase()
           ) ? (
@@ -212,9 +227,16 @@ const OrderList = () => {
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="mb-4">
+    <div>
+      <div className="flex justify-between items-center p-6">
         <h1 className="text-2xl font-bold">Order List</h1>
+        <div className="flex space-x-4">
+          {deliveryOrderNumbers.map((item) => (
+            <div key={item.deliveryId}>
+              {item.deliveryName}: {item.numberOfOrders}
+            </div>
+          ))}
+        </div>
       </div>
       <Table dataSource={data} columns={columns} loading={loading} />
     </div>

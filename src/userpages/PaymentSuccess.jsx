@@ -13,9 +13,7 @@ export default function PaymentSuccess() {
   } = location.state || {};
 
   const formatCurrency = (amount) => {
-    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
-      .replace('₫', 'VND')
-      .trim();
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
   };
 
   useEffect(() => {

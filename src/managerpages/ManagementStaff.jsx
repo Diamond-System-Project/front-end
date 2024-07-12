@@ -63,10 +63,6 @@ const ManagementStaff = () => {
     fetchData();
   }, []);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
   const handleOk = () => {
     form
       .validateFields()
@@ -83,9 +79,6 @@ const ManagementStaff = () => {
           );
           setDataSource(updatedDataSource);
           setEditingRecord(null);
-        } else {
-          newData.key = (dataSource.length + 1).toString();
-          setDataSource([...dataSource, newData]);
         }
 
         setIsModalVisible(false);
@@ -176,17 +169,10 @@ const ManagementStaff = () => {
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="flex justify-between items-center mb-4">
+    <div>
+      <div className="flex justify-between items-center p-6">
         <div className="flex justify-between w-full">
-          <h1 className="text-2xl font-bold ml-4">All Staff</h1>
-          <Button
-            type="primary"
-            className="bg-black text-white mr-2"
-            onClick={showModal}
-          >
-            + ADD NEW STAFF
-          </Button>
+          <h1 className="text-2xl font-bold">All Staff</h1>
         </div>
       </div>
       <Table dataSource={dataSource} columns={columns} loading={loading} />

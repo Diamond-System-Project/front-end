@@ -1,32 +1,28 @@
-// import React from "react";
 import { Input, Dropdown, Menu, Button } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+const { Search } = Input;
 
 const Headerv2 = () => {
-  const { Search } = Input;
   const navigate = useNavigate();
-
-  // const token = localStorage.getItem("accessToken");
-  // // const userId = localStorage.getItem("userId");
-  // const fullName = localStorage.getItem("fullName");
+  const fullName = localStorage.getItem("fullName") || "User";
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("fullName");
+    localStorage.clear();
     navigate("/login");
   };
 
   const menu = (
     <Menu>
       <Menu.Item key="0">
-        <Link to="/profile">Profile</Link>
+        <a href="#profile">Profile</a>
       </Menu.Item>
       <Menu.Item key="1">
         <a href="#settings">Settings</a>
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="2" onClick={handleLogout}>
+      <Menu.Item key="3" onClick={handleLogout}>
         Logout
       </Menu.Item>
     </Menu>
@@ -41,14 +37,13 @@ const Headerv2 = () => {
         className="mr-4"
         prefix={<SearchOutlined />}
       />
-
       <Dropdown overlay={menu} trigger={["click"]}>
         <Button
           className="ant-dropdown-link flex items-center"
           onClick={(e) => e.preventDefault()}
         >
           <UserOutlined style={{ fontSize: "20px", marginRight: "8px" }} />
-          <span>MANAGER</span>
+          <span>{fullName}</span>
         </Button>
       </Dropdown>
     </div>

@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, message } from "antd";
+import { Table, Button, Modal, Form, Input, Select, message } from "antd";
 import ProductPriceAPI from "../api/ProductPriceAPI";
+import ProductAPI from "../api/ProductAPI";
+
+const { Option } = Select;
 
 const ProductPrice = () => {
   const [productPrices, setProductPrices] = useState([]);
+  const [products, setProducts] = useState([]);
   const [selectedProductPrice, setSelectedProductPrice] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
     fetchProductPrices();
+    fetchProducts();
   }, []);
 
   const fetchProductPrices = async () => {
@@ -20,6 +25,15 @@ const ProductPrice = () => {
       }
     } catch (error) {
       console.error("Error fetching product prices:", error);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await ProductAPI.products();
+      setProducts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -107,6 +121,11 @@ const ProductPrice = () => {
       title: "Selling Price",
       dataIndex: "sellingPrice",
       key: "sellingPrice",
+      render: (sellingPrice) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(sellingPrice),
     },
     {
       title: "Action",
@@ -132,13 +151,12 @@ const ProductPrice = () => {
     <div>
       <div className="flex justify-between items-center p-6">
         <h1 className="text-2xl font-bold">Product Prices</h1>
-        <Button
-          type="primary"
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
           onClick={handleAddProductPrice}
-          style={{ marginBottom: 16 }}
         >
-          Add Product Price
-        </Button>
+          + ADD PRODUCT PRICE
+        </button>
       </div>
       <Table
         columns={columns}
@@ -155,12 +173,16 @@ const ProductPrice = () => {
         <Form form={form} layout="vertical">
           <Form.Item
             name="productId"
-            label="Product ID"
-            rules={[
-              { required: true, message: "Please input the product ID!" },
-            ]}
+            label="Product"
+            rules={[{ required: true, message: "Please select a product!" }]}
           >
-            <Input placeholder="Type product ID here" />
+            <Select placeholder="Select a product">
+              {products.map((product) => (
+                <Option key={product.productId} value={product.productId}>
+                  {product.productName}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             name="markupRate"

@@ -73,7 +73,7 @@ const ManagementDiamond = () => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <Button type="primary" onClick={() => showModal(record)}>
+        <Button type="link" onClick={() => showModal(record)}>
           Edit
         </Button>
       ),
@@ -81,12 +81,15 @@ const ManagementDiamond = () => {
   ];
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-4">
+    <div>
+      <div className="flex justify-between items-center p-6">
         <h1 className="text-2xl font-bold">Diamond Management</h1>
-        <Button type="primary" onClick={() => showModal(null)}>
-          Add Diamond
-        </Button>
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
+          onClick={() => showModal(null)}
+        >
+          + ADD DIAMOND
+        </button>
       </div>
       <Table
         columns={columns}

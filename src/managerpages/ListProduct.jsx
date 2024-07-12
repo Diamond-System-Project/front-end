@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Modal, message } from "antd";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
 import ProductAPI from "../api/ProductAPI";
@@ -61,7 +60,7 @@ const ListProduct = () => {
         message.success("Product updated successfully");
         setProducts((prevProducts) => {
           const updatedIndex = prevProducts.findIndex(
-            (p) => p.id === updatedProduct.id
+            (p) => p.productId === updatedProduct.productId
           );
           if (updatedIndex !== -1) {
             const updatedProducts = [...prevProducts];
@@ -85,7 +84,7 @@ const ListProduct = () => {
       const response = await ProductAPI.deleteProduct(productId);
       if (response.data.success) {
         message.success("Product deleted successfully");
-        setProducts(products.filter((p) => p.id !== productId));
+        setProducts(products.filter((p) => p.productId !== productId));
         setIsUpdateProductModalVisible(false);
       } else {
         message.error(response.data.message || "Failed to delete product");
@@ -108,7 +107,7 @@ const ListProduct = () => {
     {
       title: "Name",
       dataIndex: "productName",
-      key: "name",
+      key: "productName",
     },
     {
       title: "Description",
@@ -119,10 +118,15 @@ const ListProduct = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (price) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(price),
     },
     {
       title: "Stock",
-      dataIndex: "status",
+      dataIndex: "stock",
       key: "stock",
       sorter: (a, b) => a.stock - b.stock,
       sortOrder: sortedInfo.columnKey === "stock" && sortedInfo.order,
@@ -131,37 +135,37 @@ const ListProduct = () => {
       title: "Action",
       key: "action",
       render: (_, product) => (
-        <Button type="link" onClick={() => handleUpdateProduct(product)}>
-          <MoreVertIcon className="h-6 w-6 " />
-        </Button>
+        <span>
+          <Button type="link" onClick={() => handleUpdateProduct(product)}>
+            Edit
+          </Button>
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDeleteProduct(product.productId)}
+          >
+            Delete
+          </Button>
+        </span>
       ),
     },
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold ml-4">All Products</h1>
-        </div>
-        <Button
-          type="primary"
-          className="bg-black text-white mr-2"
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h1 className="text-2xl font-bold">All Products</h1>
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
           onClick={() => setIsAddProductModalVisible(true)}
         >
           + ADD NEW PRODUCT
-        </Button>
+        </button>
       </div>
       <Table
-        rowSelection={{
-          type: "checkbox",
-          onChange: (_, selectedRows) => {
-            console.log("Selected rows:", selectedRows);
-          },
-        }}
         columns={columns}
         dataSource={products}
-        rowKey="id"
+        rowKey="productId"
         onChange={handleChange}
       />
       <Modal
@@ -169,7 +173,7 @@ const ListProduct = () => {
         visible={isAddProductModalVisible}
         footer={null}
         onCancel={() => setIsAddProductModalVisible(false)}
-        width={1800}
+        width={1500}
       >
         <AddProduct onCreate={handleAddProduct} />
       </Modal>
@@ -178,7 +182,7 @@ const ListProduct = () => {
         visible={isUpdateProductModalVisible}
         footer={null}
         onCancel={() => setIsUpdateProductModalVisible(false)}
-        width={1800}
+        width={1500}
       >
         <UpdateProduct
           product={selectedProduct}

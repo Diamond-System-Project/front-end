@@ -91,10 +91,10 @@ const OrderList = () => {
         </Select>
       ),
       filters: [
-        { text: "Pending", value: "pending" },
-        { text: "Processing", value: "processing" },
-        { text: "Shipping", value: "shipping" },
-        { text: "Delivered", value: "delivered" },
+        { text: "Pending", value: "Pending" },
+        { text: "Processing", value: "Processing" },
+        { text: "Shipping", value: "Shipping" },
+        { text: "Delivered", value: "Delivered" },
       ],
       onFilter: (value, record) => record.status === value,
     },
@@ -107,7 +107,7 @@ const OrderList = () => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <Link to={`/manager/order-list/order-detail/${record.orderId}`}>
+        <Link to={`/delivery/order-list/order-detail/${record.orderId}`}>
           View Detail
         </Link>
       ),

@@ -30,7 +30,6 @@ export default function Promotions() {
           href="https://thegioikimcuong.vn/pages/destination/"
           target="_blank"
           rel="noopener noreferrer"
-          
         >
           <button className="bg-black text-white px-4 py-2 rounded-full transition duration-300 ease-in-out hover:bg-green-500 hover:text-black">
             TOÀN HỆ THỐNG CỬA HÀNG

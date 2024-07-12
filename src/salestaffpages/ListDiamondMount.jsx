@@ -50,8 +50,10 @@ export default function ListDiamondMount() {
   ];
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">List Diamond Mount</h1>
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h1 className="text-2xl font-bold mb-4">List Diamond Mount</h1>
+      </div>
       {loading ? (
         <Spin tip="Loading..." />
       ) : (

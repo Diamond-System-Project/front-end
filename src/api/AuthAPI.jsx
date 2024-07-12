@@ -6,9 +6,9 @@ const AuthAPI = {
     const data = { email, password };
     return axiosClient.post(url, data);
   },
-  Register: (fullName, password, phone, email, gender, dob, address) => {
+  Register: (fullName, password, phone, email, gender, dob) => {
     const url = `/user/register`;
-    const data = { fullName, password, phone, email, gender, dob, address };
+    const data = { fullName, password, phone, email, gender, dob };
     return axiosClient.post(url, data);
   },
   getUserById: (id) => {

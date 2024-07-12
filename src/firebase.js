@@ -3,13 +3,13 @@ import { getAnalytics } from "firebase/analytics";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAWApJxMb1CLj_TkOIQCDEcFlhT36KZdR8",
-  authDomain: "diamond-font-end-8ac2d.firebaseapp.com",
-  projectId: "diamond-font-end-8ac2d",
-  storageBucket: "diamond-font-end-8ac2d.appspot.com",
-  messagingSenderId: "494586714469",
-  appId: "1:494586714469:web:e4385d5c08c5eadcb7a98c",
-  measurementId: "G-HBKLF2PDG6"
+  apiKey: "AIzaSyAzeRbfpcDfpKCHWJVMmMl_E-8W6tkgwr0",
+  authDomain: "diamond-font-end.firebaseapp.com",
+  projectId: "diamond-font-end",
+  storageBucket: "diamond-font-end.appspot.com",
+  messagingSenderId: "811885457585",
+  appId: "1:811885457585:web:1c83bf5c4da6dbf4283290",
+  measurementId: "G-90SLG0P78X"
 };
 
 

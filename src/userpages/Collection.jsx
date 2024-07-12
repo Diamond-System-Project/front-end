@@ -1,5 +1,4 @@
-// Collection.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Card, List, message } from "antd";
 import CollectionApi from "../api/CollectionAPI";
@@ -9,11 +8,11 @@ const Collection = () => {
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const productsRef = useRef(null);
 
   const formatCurrency = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
   };
-  
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -39,12 +38,15 @@ const Collection = () => {
       setProducts(response.data.data);
       if (response.data.data.length === 0) {
         message.info("This collection has no products.");
-      }
+      } 
     } catch (error) {
-        // console.error("Error fetching products:", error);
-        // message.error("Failed to load products for this collection");
+      console.error("Error fetching products:", error);
+      
     } finally {
       setLoading(false);
+      setTimeout(() => {
+        productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   };
 
@@ -64,19 +66,29 @@ const Collection = () => {
                 cover={
                   <img
                     alt={collection.collectionName}
-                    src={collection.imageUrl || "default_collection_image_url"}
+                    src={collection.url || "default_collection_image_url"}
                     className="h-60 w-full object-cover"
                   />
                 }
                 onClick={() => handleCollectionClick(collection.collectionId)}
                 className={`cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 ${
-                  selectedCollection === collection.collectionId ? 'border-4 border-blue-500' : ''
+                  selectedCollection === collection.collectionId
+                    ? "border-4 border-blue-500"
+                    : ""
                 }`}
-                style={{ maxWidth: '100%', margin: '0 auto' }}
+                style={{ maxWidth: "100%", margin: "0 auto" }}
               >
                 <Card.Meta
-                  title={<div className="text-xl font-semibold">{collection.collectionName}</div>}
-                  description={<div className="text-base mt-2">{collection.description}</div>}
+                  title={
+                    <div className="text-xl font-semibold">
+                      {collection.collectionName}
+                    </div>
+                  }
+                  description={
+                    <div className="text-base mt-2">
+                      {collection.description}
+                    </div>
+                  }
                 />
               </Card>
             </List.Item>
@@ -84,12 +96,14 @@ const Collection = () => {
         />
       )}
       {selectedCollection && (
-        <div className="mt-16">
+        <div className="mt-16" ref={productsRef}>
           <h3 className="text-2xl font-bold mb-8">Products in Collection</h3>
           {loading ? (
             <p className="text-center text-lg">Loading products...</p>
           ) : products.length === 0 ? (
-            <p className="text-center text-lg">No products found for this collection.</p>
+            <p className="text-center text-lg">
+              No products found for this collection.
+            </p>
           ) : (
             <List
               grid={{ gutter: 24, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 5 }}
@@ -102,12 +116,12 @@ const Collection = () => {
                       cover={
                         <img
                           alt={product.productName}
-                          src={product.imageUrl || "default_product_image_url"}
+                          src={product.url || "default_product_image_url"}
                           className="h-56 w-full object-cover"
                         />
                       }
                       className="transition duration-300 ease-in-out transform hover:scale-105"
-                      style={{ maxWidth: '100%', margin: '0 auto' }}
+                      style={{ maxWidth: "100%", margin: "0 auto" }}
                     >
                       <Card.Meta
                         title={

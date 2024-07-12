@@ -122,8 +122,8 @@ const AddProduct = ({ onCreate }) => {
                   ]}
                 >
                   <Select placeholder="Select status">
-                    <Option value="inStock">In Stock</Option>
-                    <Option value="outStock">Out of Stock</Option>
+                    <Option value="InStock">In Stock</Option>
+                    <Option value="Out of Stock">Out of Stock</Option>
                   </Select>
                 </Form.Item>
               </div>

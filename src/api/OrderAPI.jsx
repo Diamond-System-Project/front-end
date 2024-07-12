@@ -24,6 +24,9 @@ const OrderAPI = {
   getOrdersByDeliveryStaffId: (id) => {
     return axiosClient.get(`/order/delivery/${id}`);
   },
+  getDeliveryShippingOrderNumber: () => {
+    return axiosClient.get(`/order/list/deliveryOrder`);
+  },
   updateOrderStatusByDelivery: (orderId, status) => {
     return axiosClient.put(`/order/delivery/status`, {
       orderId,

@@ -69,7 +69,7 @@ export default function PaymentMethod() {
 
   const items = Array.isArray(selectedCartItems) ? selectedCartItems : [selectedCartItems];
 
-  const totalPrice = items.reduce(
+  const totalPrice = items.reduce(  
       (acc, item) => acc + item.price * item.quantity,
       0
     );

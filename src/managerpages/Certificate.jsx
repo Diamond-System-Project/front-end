@@ -8,14 +8,18 @@ import {
   message,
   DatePicker,
   Descriptions,
+  Select,
 } from "antd";
 import CertificateAPI from "../api/CertificateAPI";
+import DiamondAPI from "../api/DiamondAPI";
 
 const { Column } = Table;
 const { confirm } = Modal;
+const { Option } = Select;
 
 const CertificateManagement = () => {
   const [certificates, setCertificates] = useState([]);
+  const [diamonds, setDiamonds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [viewVisible, setViewVisible] = useState(false);
@@ -36,8 +40,19 @@ const CertificateManagement = () => {
     }
   };
 
+  const fetchDiamonds = async () => {
+    try {
+      const response = await DiamondAPI.getAllDiamonds();
+      setDiamonds(response.data || []);
+    } catch (error) {
+      console.error("Error fetching diamonds:", error);
+      message.error("Failed to fetch diamonds");
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchDiamonds();
   }, []);
 
   const handleDelete = async (certificateId) => {
@@ -100,16 +115,17 @@ const CertificateManagement = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div className="flex justify-between items-center p-6">
-          <h2 className="text-2xl font-bold">Certificate Management</h2>
-          <Button type="primary" onClick={showCreateModal}>
-            Create Certificate
-          </Button>
-        </div>
+      <div className="flex justify-between items-center p-6">
+        <h2 className="text-2xl font-bold">Certificate Management</h2>
+        <button
+          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
+          onClick={showCreateModal}
+        >
+          + ADD CERTIFICATE
+        </button>
       </div>
+
       <Table dataSource={certificates} loading={loading} rowKey="cerId">
-        <Column dataIndex="cerId" key="cerId" />
         <Column
           title="Diamond ID"
           key="diamondId"
@@ -162,10 +178,16 @@ const CertificateManagement = () => {
         >
           <Form.Item
             name="diamondId"
-            label="Diamond ID"
-            rules={[{ required: true, message: "Please enter Diamond ID" }]}
+            label="Diamond"
+            rules={[{ required: true, message: "Please select a Diamond" }]}
           >
-            <Input />
+            <Select placeholder="Select a diamond">
+              {diamonds.map((diamond) => (
+                <Option key={diamond.diamondId} value={diamond.diamondId}>
+                  {diamond.diamondName}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item

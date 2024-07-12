@@ -3,33 +3,50 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import AuthAPI from "../api/AuthAPI";
 import openNotificationWithIcon from "../notification";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+const roleRoutes = {
+  1: "/admin/dashboard",
+  2: "/manager/list-products",
+  3: "/staff/list-diamond",
+  4: "/delivery",
+  5: "/",
+};
 
 export default function Login() {
   const navigate = useNavigate();
+  const [redirectTo] = useState(null);
 
   const onFinish = async (values) => {
     console.log("Received values of form: ", values);
     try {
       const response = await AuthAPI.Login(values.email, values.password);
-      
       if (response.data.success) {
         openNotificationWithIcon("success", "Login Successfully");
-        localStorage.setItem("accessToken", response.data.data.token);
-        localStorage.setItem("userId", response.data.data.userId);
-        localStorage.setItem("fullName", response.data.data.fullName);
-        localStorage.setItem("email", response.data.data.email);
-        localStorage.setItem("phone", response.data.data.phone);
-        localStorage.setItem("address", response.data.data.address);
-        localStorage.setItem("roleId", response.data.data.roleId);
+        const userData = response.data.data;
+        localStorage.setItem("accessToken", userData.token);
+        localStorage.setItem("userId", userData.userId);
+        localStorage.setItem("fullName", userData.fullName);
+        localStorage.setItem("email", userData.email);
+        localStorage.setItem("phone", userData.phone);
+        localStorage.setItem("address", userData.address);
+        localStorage.setItem("roleId", userData.roleId);
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            cname: userData.fullName,
+            email: values.email,
+            phone: userData.phone,
+            address: userData.address,
+            roleId: userData.roleId,
+          })
+        );
 
-        localStorage.setItem("userInfo", JSON.stringify({
-          cname : response.data.data.fullName,
-          email: values.email,
-          phone: response.data.data.phone,
-          address: response.data.data.address
-        }));
-
-        navigate("/");
+        const roleId = userData.roleId;
+        const route = roleRoutes[roleId] || "/";
+        console.log("Role ID:", roleId);
+        console.log("Redirecting to:", route);
+        navigate(route, { replace: true });
       } else {
         openNotificationWithIcon("error", "Login Failed!", response.data.data);
       }
@@ -37,6 +54,12 @@ export default function Login() {
       openNotificationWithIcon("error", "Login Failed!", error.data);
     }
   };
+
+  useEffect(() => {
+    if (redirectTo) {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [redirectTo, navigate]);
 
   return (
     <section className="flex items-center bg-white-100 min-h-screen">
