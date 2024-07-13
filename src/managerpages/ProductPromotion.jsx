@@ -96,12 +96,12 @@ function ProductPromotion() {
     setFormData({
       promotionId: promotion.promotionId.promotionId,
       productId: promotion.productId.productId,
-      discount: promotion.discount.toString(), // Convert discount to string for input
+      discount: promotion.discount.toString(),
       startDate: promotion.startDate
-        ? moment(promotion.startDate, "YYYY-MM-DD")
+        ? moment(promotion.startDate, "DD-MM-YYYY")
         : null,
       endDate: promotion.endDate
-        ? moment(promotion.endDate, "YYYY-MM-DD")
+        ? moment(promotion.endDate, "DD-MM-YYYY")
         : null,
     });
     setEditingPromotion(promotion);
@@ -124,7 +124,7 @@ function ProductPromotion() {
     try {
       const formattedFormData = {
         ...formData,
-        discount: parseFloat(formData.discount), // Ensure discount is a number
+        discount: parseFloat(formData.discount),
         startDate: formData.startDate
           ? formData.startDate.format("DD-MM-YYYY")
           : "",
@@ -165,6 +165,23 @@ function ProductPromotion() {
     setFormData({ ...formData, promotionId: value });
   };
 
+  const handleUpdateStatus = async (promotion) => {
+    try {
+      const { promotionId, productId } = promotion;
+      const statusUpdateResponse = await ProductPromotionAPI.updateStatus(
+        promotionId.promotionId,
+        productId.productId
+      );
+      console.log("Status update response:", statusUpdateResponse);
+      message.success("Product promotion status updated successfully");
+      const fetchResponse = await ProductPromotionAPI.getAll();
+      setProductPromotions(fetchResponse.data);
+    } catch (error) {
+      console.error("Error updating promotion status:", error);
+      message.error("Failed to update promotion status");
+    }
+  };
+
   const columns = [
     {
       title: "ID",
@@ -197,10 +214,19 @@ function ProductPromotion() {
       key: "endDate",
     },
     {
+      title: "Status",
+      dataIndex: "active",
+      key: "active",
+      render: (active) => (active ? "Active" : "Inactive"),
+    },
+    {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
         <div className="flex space-x-2">
+          <Button type="link" onClick={() => handleUpdateStatus(record)}>
+            {record.active ? "Inactive" : "Active"}
+          </Button>
           <Button type="link" onClick={() => handleEdit(record)}>
             Edit
           </Button>
@@ -230,7 +256,7 @@ function ProductPromotion() {
         columns={columns}
         dataSource={productPromotions}
         rowKey="productPromotionId"
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
       />
       <Modal
         title={editingPromotion ? "Update Promotion" : "Create Promotion"}

@@ -11,8 +11,8 @@ function Promotion() {
   const [formData, setFormData] = useState({
     promotionName: "",
     description: "",
-    startDate: "",
-    endDate: "",
+    startDate: null,
+    endDate: null,
   });
   const [editingPromotion, setEditingPromotion] = useState(null);
 
@@ -30,24 +30,37 @@ function Promotion() {
 
   const handleDelete = async (promotionId) => {
     try {
-      await PromotionAPI.updateStatus(promotionId); // Assuming this endpoint sets the status to inactive or deleted
+      await PromotionAPI.updateStatus(promotionId, false);
       setPromotions(
-        promotions.filter((promo) => promo.promotionId !== promotionId)
+        promotions.map((promo) =>
+          promo.promotionId === promotionId
+            ? { ...promo, active: false }
+            : promo
+        )
       );
     } catch (error) {
-      console.error("Error deleting promotion", error);
+      console.error("Error updating promotion status", error);
+    }
+  };
+
+  const activatePromotion = async (promotionId) => {
+    try {
+      await PromotionAPI.updateStatus(promotionId, true);
+      setPromotions(
+        promotions.map((promo) =>
+          promo.promotionId === promotionId ? { ...promo, active: true } : promo
+        )
+      );
+    } catch (error) {
+      console.error("Error activating promotion", error);
     }
   };
 
   const handleEdit = (promotion) => {
     setFormData({
       ...promotion,
-      startDate: promotion.startDate
-        ? moment(promotion.startDate, "DD-MM-YYYY")
-        : null,
-      endDate: promotion.endDate
-        ? moment(promotion.endDate, "DD-MM-YYYY")
-        : null,
+      startDate: promotion.startDate ? moment(promotion.startDate) : null,
+      endDate: promotion.endDate ? moment(promotion.endDate) : null,
     });
     setEditingPromotion(promotion);
     setShowModal(true);
@@ -57,8 +70,8 @@ function Promotion() {
     setFormData({
       promotionName: "",
       description: "",
-      startDate: "",
-      endDate: "",
+      startDate: null,
+      endDate: null,
     });
     setEditingPromotion(null);
     setShowModal(true);
@@ -69,9 +82,11 @@ function Promotion() {
       const formattedFormData = {
         ...formData,
         startDate: formData.startDate
-          ? formData.startDate.format("DD-MM-YYYY")
-          : "",
-        endDate: formData.endDate ? formData.endDate.format("DD-MM-YYYY") : "",
+          ? formData.startDate.format("YYYY-MM-DD")
+          : null,
+        endDate: formData.endDate
+          ? formData.endDate.format("YYYY-MM-DD")
+          : null,
       };
       if (editingPromotion) {
         await PromotionAPI.update(
@@ -114,25 +129,44 @@ function Promotion() {
       title: "Start Date",
       dataIndex: "startDate",
       key: "startDate",
+      render: (startDate) =>
+        startDate ? moment(startDate).format("DD-MM-YYYY") : "",
     },
     {
       title: "End Date",
       dataIndex: "endDate",
       key: "endDate",
+      render: (endDate) =>
+        endDate ? moment(endDate).format("DD-MM-YYYY") : "",
+    },
+    {
+      title: "Status",
+      dataIndex: "active",
+      key: "active",
+      render: (active) => (active ? "Active" : "Inactive"),
     },
     {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
         <div className="flex space-x-2">
+          {record.active ? (
+            <Button
+              type="link"
+              onClick={() => handleDelete(record.promotionId)}
+            >
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              type="link"
+              onClick={() => activatePromotion(record.promotionId)}
+            >
+              Activate
+            </Button>
+          )}
           <Button type="link" onClick={() => handleEdit(record)}>
             Edit
-          </Button>
-          <Button
-            type="danger"
-            onClick={() => handleDelete(record.promotionId)}
-          >
-            Delete
           </Button>
         </div>
       ),
@@ -154,7 +188,7 @@ function Promotion() {
         columns={columns}
         dataSource={promotions}
         rowKey="promotionId"
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
       />
       <Modal
         title={editingPromotion ? "Update Promotion" : "Create Promotion"}

@@ -256,11 +256,12 @@ export default function PaymentMethod() {
     <div className="min-h-screen flex justify-center p-4">
       <div className="w-5/6 flex">
         <div className="w-1/2 p-4 bg-white shadow-lg rounded-lg mr-4">
-          <img
-            src="/assets/images/Song long diamond.png"
-            alt="Song long Diamond"
-            className="w-50 m-2"
-          />
+        <img
+  src="src\assets\images\Songlong.png"
+  alt="Song long Diamond"
+  className="mx-auto d-block"
+  style={{ maxWidth: '20%' }}
+/>
           <Typography variant="h6" className="mb-4 w-fit">
             Phương thức vận chuyển
           </Typography>
@@ -384,7 +385,7 @@ export default function PaymentMethod() {
               key={`${item.id}-${item.code}-${item.price}-${item.quantity}`}
               className="flex items-center mb-4"
             >
-              <img src={item.image} alt="Product" className="w-16 h-16 mr-4" />
+              <img src={item.url} alt="Product" className="w-16 h-16 mr-4" />
               <div className="flex-grow flex items-center justify-between">
                 <div className="flex flex-col items-start">
                   <p className="font-semibold">{item.productName}</p>

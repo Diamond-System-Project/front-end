@@ -96,7 +96,7 @@ export default function PaymentSuccess() {
               key={`${item.productId}-${item.code}-${item.price}-${item.quantity}`}
               className="flex justify-between items-center mb-4"
             >
-              <img src={item.image} alt="Product" className="w-16 h-16" />
+              <img src={item.url} alt="Product" className="w-16 h-16" />
               <div className="flex-1 ml-4">
                 <p className="font-semibold">{item.productName}</p>
                 <p className="text-gray-500">Quantity: {item.quantity}</p>

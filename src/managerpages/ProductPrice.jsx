@@ -72,7 +72,6 @@ const ProductPrice = () => {
     try {
       const values = await form.validateFields();
       if (selectedProductPrice) {
-        // Update existing product price
         const updatedProductPrice = {
           ...selectedProductPrice,
           markupRate: values.markupRate,
@@ -80,7 +79,6 @@ const ProductPrice = () => {
         await ProductPriceAPI.update(updatedProductPrice);
         message.success("Product price updated successfully");
       } else {
-        // Add new product price
         const newProductPrice = {
           productId: values.productId,
           markupRate: values.markupRate,
@@ -102,6 +100,11 @@ const ProductPrice = () => {
   };
 
   const columns = [
+    {
+      title: "ID",
+      dataIndex: "productPriceId",
+      key: "productPriceId",
+    },
     {
       title: "Product Name",
       dataIndex: ["productId", "productName"],

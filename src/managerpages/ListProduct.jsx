@@ -97,6 +97,11 @@ const ListProduct = () => {
 
   const columns = [
     {
+      title: "Product ID",
+      dataIndex: "productId",
+      key: "productId",
+    },
+    {
       title: "Image",
       dataIndex: "url",
       key: "url",
@@ -124,31 +129,31 @@ const ListProduct = () => {
           currency: "VND",
         }).format(price),
     },
-    {
-      title: "Stock",
-      dataIndex: "stock",
-      key: "stock",
-      sorter: (a, b) => a.stock - b.stock,
-      sortOrder: sortedInfo.columnKey === "stock" && sortedInfo.order,
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, product) => (
-        <span>
-          <Button type="link" onClick={() => handleUpdateProduct(product)}>
-            Edit
-          </Button>
-          <Button
-            type="link"
-            danger
-            onClick={() => handleDeleteProduct(product.productId)}
-          >
-            Delete
-          </Button>
-        </span>
-      ),
-    },
+    // {
+    //   title: "Stock",
+    //   dataIndex: "stock",
+    //   key: "stock",
+    //   sorter: (a, b) => a.stock - b.stock,
+    //   sortOrder: sortedInfo.columnKey === "stock" && sortedInfo.order,
+    // },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, product) => (
+    //     <span>
+    //       <Button type="link" onClick={() => handleUpdateProduct(product)}>
+    //         Edit
+    //       </Button>
+    //       <Button
+    //         type="link"
+    //         danger
+    //         onClick={() => handleDeleteProduct(product.productId)}
+    //       >
+    //         Delete
+    //       </Button>
+    //     </span>
+    //   ),
+    // },
   ];
 
   return (

@@ -34,20 +34,22 @@ const ManagementUser = () => {
       key: "fullName",
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+    },
+
+    {
       title: "Detail",
       key: "detail",
       render: (record) => (
         <Link to={`/manager/management-user/user-detail/${record.userId}`}>
           Detail
-        </Link>
-      ),
-    },
-    {
-      title: "Order",
-      key: "order",
-      render: (record) => (
-        <Link to={`/manager/management-user/user-orders/${record.userId}`}>
-          View Order
         </Link>
       ),
     },

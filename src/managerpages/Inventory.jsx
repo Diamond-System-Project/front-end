@@ -130,6 +130,16 @@ const Inventory = () => {
 
   const columns = [
     {
+      title: "Location ID",
+      dataIndex: "locationId",
+      key: "locationId",
+    },
+    {
+      title: "Product ID",
+      dataIndex: ["productId", "productId"],
+      key: "productId",
+    },
+    {
       title: "Product Name",
       dataIndex: ["productId", "productName"],
       key: "productName",
@@ -164,14 +174,13 @@ const Inventory = () => {
           <Button type="link" onClick={() => handleEdit(record)}>
             Edit
           </Button>
-          <Button type="link" onClick={() => handleDelete(record._id)} danger>
+          {/* <Button type="link" onClick={() => handleDelete(record._id)} danger>
             Delete
-          </Button>
+          </Button> */}
         </div>
       ),
     },
   ];
-
   return (
     <div>
       <div className="flex justify-between items-center p-6">

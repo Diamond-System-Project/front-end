@@ -24,10 +24,8 @@ axiosClient.interceptors.request.use(async (config) => {
 //   },
 //   (error) => {
 //     if (error.response.status === 401) {
-//       // Handle token expiration or unauthorized access
 //       localStorage.removeItem(ACCESS_TOKEN);
-//       // Redirect to login page or show a message
-//       window.location.href = "/login"; // Example of redirecting to login page
+//       window.location.href = "/login";
 //     }
 //     return Promise.reject(error);
 //   }

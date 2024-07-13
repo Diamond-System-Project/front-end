@@ -84,6 +84,11 @@ const ProductDiamond = () => {
 
   const columns = [
     {
+      title: "ID",
+      dataIndex: "productDiamondId", // Assuming this is the ID you want to display
+      key: "productDiamondId",
+    },
+    {
       title: "Product Name",
       dataIndex: ["productId", "productName"],
       key: "productName",
@@ -121,6 +126,7 @@ const ProductDiamond = () => {
       ),
     },
   ];
+  
 
   return (
     <div>

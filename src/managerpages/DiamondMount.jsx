@@ -98,6 +98,11 @@ const ManagementDiamondMount = () => {
 
   const columns = [
     {
+      title: "ID",
+      dataIndex: "mountId",
+      key: "mountId",
+    },
+    {
       title: "Diamond Mount Name",
       dataIndex: "mountName",
       key: "mountName",

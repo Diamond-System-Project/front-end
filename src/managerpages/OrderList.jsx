@@ -13,7 +13,7 @@ const OrderList = () => {
   const [deliveryOrderNumbers, setDeliveryOrderNumbers] = useState([]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
         const response = await OrderAPI.getAllOrders();
@@ -32,7 +32,7 @@ const OrderList = () => {
         }));
         setData(orders);
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch orders:", error);
         message.error("Failed to fetch orders");
       } finally {
         setLoading(false);
@@ -44,7 +44,7 @@ const OrderList = () => {
         const response = await GetUserByRoleAPI.getAllDeliveryStaff();
         setDeliveryStaffList(response.data);
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch delivery staff:", error);
         message.error("Failed to fetch delivery staff");
       }
     };
@@ -54,12 +54,12 @@ const OrderList = () => {
         const response = await OrderAPI.getDeliveryShippingOrderNumber();
         setDeliveryOrderNumbers(response.data.data);
       } catch (error) {
-        console.log(error);
+        console.error("Failed to fetch delivery order numbers:", error);
         message.error("Failed to fetch delivery order numbers");
       }
     };
 
-    fetchOrders();
+    fetchData();
     fetchDeliveryStaff();
     fetchDeliveryOrderNumbers();
   }, []);
@@ -136,6 +136,25 @@ const OrderList = () => {
       message.error(
         error.response?.data?.message ||
           "Failed to assign delivery staff. Please try again later."
+      );
+    }
+  };
+
+  const handleUpdateToProcessing = async (record) => {
+    try {
+      await OrderAPI.updateOrderToProcessing(record.orderId);
+      const updatedData = data.map((item) => {
+        if (item.orderId === record.orderId) {
+          item.status = "Processing";
+        }
+        return item;
+      });
+      setData(updatedData);
+      message.success(`Order ${record.orderId} is now processing.`);
+    } catch (error) {
+      console.error("Failed to update order to processing:", error);
+      message.error(
+        "Failed to update order to processing. Please try again later."
       );
     }
   };
@@ -219,6 +238,15 @@ const OrderList = () => {
           ) : (
             <Button type="link" disabled>
               Cancel Order
+            </Button>
+          )}
+
+          {record.status.toLowerCase() === "pending" && (
+            <Button
+              type="link"
+              onClick={() => handleUpdateToProcessing(record)}
+            >
+              Confirm Order
             </Button>
           )}
         </>

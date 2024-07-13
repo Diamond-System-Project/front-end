@@ -9,6 +9,7 @@ import {
   Col,
   Typography,
   Card,
+  Tooltip,
 } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import OrderDetailAPI from "../api/OrderDetailAPI";
@@ -22,14 +23,13 @@ export default function OrderDetails() {
   const { id } = useParams();
   const [orderDetails, setOrderDetails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isCertificateModalVisible, setIsCertificateModalVisible] =
-    useState(false);
+  const [isCertificateModalVisible, setIsCertificateModalVisible] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
   const [isWarrantyModalVisible, setIsWarrantyModalVisible] = useState(false);
   const [warrantyData, setWarrantyData] = useState(null);
 
   const formatCurrency = (amount) => {
-    if (amount == null) return "0 VND"; // Handle null or undefined values
+    if (amount == null) return "0 VND";
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
   };
 
@@ -47,9 +47,7 @@ export default function OrderDetails() {
           }));
           setOrderDetails(formattedDetails);
         } else {
-          message.error(
-            "Failed to fetch order details: " + response.data.message
-          );
+          message.error("Failed to fetch order details: " + response.data.message);
         }
       } catch (error) {
         message.error("Failed to fetch order details: " + error.message);
@@ -87,7 +85,7 @@ export default function OrderDetails() {
     try {
       const response = await WarrantyAPI.getByOrderDetailId(orderDetailId);
       if (response.data.success) {
-        setWarrantyData(response.data.data[0]); // Assuming data is an array, take the first element
+        setWarrantyData(response.data.data[0]);
         setIsWarrantyModalVisible(true);
       } else {
         message.error("Failed to fetch warranty: " + response.data.message);
@@ -127,14 +125,36 @@ export default function OrderDetails() {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <div className="flex space-x-2">
-          <Button type="link" onClick={() => handleSendCertificate(record.key)}>
-            Gửi chứng nhận
-          </Button>
-          <Button type="link" onClick={() => handleSendWarranty(record.key)}>
-            Giấy bảo hành
-          </Button>
-          <Button type="link">Liên hệ</Button>
+        <div className="flex space-x-2">  
+          <Tooltip title="Giấy chứng nhận">
+            <Button 
+              type="primary"
+              onClick={() => handleSendCertificate(record.key)}
+              className="hover:shadow-lg transition duration-300"
+            >
+              Giấy chứng nhận
+            </Button>
+          </Tooltip>
+          <Tooltip title="Giấy bảo hành">
+            <Button
+              type="default"
+              onClick={() => handleSendWarranty(record.key)}
+              className="bg-blue-500 hover:shadow-lg transition duration-300"
+            >
+              Giấy bảo hành
+            </Button> 
+          </Tooltip>
+          <Tooltip title="Liên hệ qua Zalo">
+            <Button
+              type="primary"
+              href="https://zalo.me/0948704134" // Replace with your actual Zalo link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-500 hover:bg-blue-600 hover:shadow-lg transition duration-300"
+            >
+              Liên hệ
+            </Button>
+          </Tooltip>
         </div>
       ),
     },
@@ -217,12 +237,12 @@ export default function OrderDetails() {
                 <Text strong>Shape:</Text>{" "}
                 <Text>{certificateData?.diamondId?.shape}</Text>
               </Col>
-              <Col span={12}>
+              {/* <Col span={12}>
                 <Text strong>Base Price:</Text>{" "}
                 <Text>
                   {formatCurrency(certificateData?.diamondId?.basePrice)}
                 </Text>
-              </Col>
+              </Col> */}
               <Col span={12}>
                 <Text strong>Certificate Number:</Text>{" "}
                 <Text>{certificateData?.number}</Text>
