@@ -1,208 +1,175 @@
-// import React from "react";
-import { Card, Row, Col, Breadcrumb, Button } from "antd";
-import { CalendarOutlined, MoreOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { Card } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
 import { CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
+import DashboardAPI from "../api/DashboardAPI";
+
 const Dashboard = () => {
-  const cardData = [
+  const [cardData, setCardData] = useState({
+    totalMembers: 0,
+    activeOrders: 0,
+    completedOrders: 0,
+    returnOrders: 0,
+    totalRevenue: 0,
+  });
+
+  const [pieChartData, setPieChartData] = useState({
+    series: [0, 0, 0],
+    labels: ["Active Orders", "Completed Orders", "Return Orders"],
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responses = await Promise.all([
+          DashboardAPI.countMember(),
+          DashboardAPI.countProcessingOrder(),
+          DashboardAPI.totalRevenue(),
+          DashboardAPI.countCompleteOrder(),
+          DashboardAPI.countCancelOrder(),
+        ]);
+
+        setCardData({
+          totalMembers: responses[0].data.data,
+          activeOrders: responses[1].data.data,
+          totalRevenue: responses[2].data.data,
+          completedOrders: responses[3].data.data,
+          returnOrders: responses[4].data.data,
+        });
+
+        setPieChartData({
+          series: [
+            responses[1].data.data,
+            responses[3].data.data,
+            responses[4].data.data,
+          ],
+          labels: ["Active Orders", "Completed Orders", "Return Orders"],
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const cardDetails = [
     {
-      title: "Total Orders",
-      amount: "$126.500",
-      percentage: "34.7%",
-      compared: "Compared to Oct 2023",
+      title: "Total Members",
+      amount: cardData.totalMembers,
+      icon: <CalendarOutlined className="text-xl text-white" />,
+      bgColor: "bg-blue-500",
     },
     {
       title: "Active Orders",
-      amount: "$126.500",
-      percentage: "34.7%",
-      compared: "Compared to Oct 2023",
+      amount: cardData.activeOrders,
+      icon: <CalendarOutlined className="text-xl text-white" />,
+      bgColor: "bg-green-500",
     },
     {
       title: "Completed Orders",
-      amount: "$126.500",
-      percentage: "34.7%",
-      compared: "Compared to Oct 2023",
+      amount: cardData.completedOrders,
+      icon: <CalendarOutlined className="text-xl text-white" />,
+      bgColor: "bg-teal-500",
     },
     {
       title: "Return Orders",
-      amount: "$126.500",
-      percentage: "34.7%",
-      compared: "Compared to Oct 2023",
+      amount: cardData.returnOrders,
+      icon: <CalendarOutlined className="text-xl text-white" />,
+      bgColor: "bg-red-500",
+    },
+    {
+      title: "Total Revenue",
+      amount: `${cardData.totalRevenue.toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      })}`,
+      icon: <CalendarOutlined className="text-xl text-white" />,
+      bgColor: "bg-yellow-500",
     },
   ];
 
-  const lineChartConfig = {
-    type: "line",
-    height: 240,
-    series: [
-      {
-        name: "Sales",
-        data: [50, 40, 300, 320, 500, 350, 200],
-      },
-    ],
-    options: {
-      chart: {
-        toolbar: {
-          show: false,
-        },
-      },
-      title: {
-        show: "",
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      colors: ["#020617"],
-      stroke: {
-        lineCap: "round",
-        curve: "smooth",
-      },
-      markers: {
-        size: 0,
-      },
-      xaxis: {
-        axisTicks: {
-          show: false,
-        },
-        axisBorder: {
-          show: false,
-        },
-        labels: {
-          style: {
-            colors: "#616161",
-            fontSize: "12px",
-            fontFamily: "inherit",
-            fontWeight: 400,
-          },
-        },
-        categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      },
-      yaxis: {
-        labels: {
-          style: {
-            colors: "#616161",
-            fontSize: "12px",
-            fontFamily: "inherit",
-            fontWeight: 400,
-          },
-        },
-      },
-      grid: {
-        show: true,
-        borderColor: "#dddddd",
-        strokeDashArray: 5,
-        xaxis: {
-          lines: {
-            show: true,
-          },
-        },
-        padding: {
-          top: 5,
-          right: 20,
-        },
-      },
-      fill: {
-        opacity: 0.8,
-      },
-      tooltip: {
-        theme: "dark",
-      },
-    },
-  };
-
   const pieChartConfig = {
     type: "pie",
-    width: 280,
-    height: 280,
-    series: [44, 55, 13, 43, 22],
+    width: 400,
+    height: 400,
+    series: pieChartData.series,
     options: {
       chart: {
         toolbar: {
           show: false,
         },
       },
+      labels: pieChartData.labels,
       title: {
-        show: "",
+        show: false,
       },
       dataLabels: {
         enabled: false,
       },
-      colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
+      colors: ["#1E3A8A", "#FF8F00", "#00897B"],
+      tooltip: {
+        enabled: true,
+        style: {
+          fontSize: "14px",
+        },
+        y: {
+          formatter: (val) => `${val}`,
+        },
+      },
       legend: {
-        show: false,
+        position: "bottom",
+        labels: {
+          colors: "#000",
+        },
       },
     },
   };
 
   return (
-    <div className="p-4 mx-6">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-2xl font-bold">Dashboard</h2>
-          <Breadcrumb>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
-          </Breadcrumb>
-        </div>
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h2 className="text-3xl font-bold ">Dashboard</h2>
       </div>
-      <Row gutter={16}>
-        {cardData.map((card, index) => (
-          <Col key={index} xs={24} sm={12} md={6}>
-            <Card className="shadow-md">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold">{card.title}</h3>
-                <Button className="border-white h-fit">
-                  <MoreOutlined />
-                </Button>
-              </div>
-              <div className="flex items-center mb-2">
-                <div className="bg-orange-500 text-white p-4 rounded-lg mr-2">
-                  <CalendarOutlined />
+      <div className="flex justify-between mx-4 my-6">
+        {cardDetails.map((card, index) => (
+          <div key={index} className="w-full max-w-xs mx-2">
+            <Card className="shadow-lg rounded-lg overflow-hidden w-full">
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {card.title}
+                  </h3>
                 </div>
-                <div>
-                  <p className="text-xl font-bold">{card.amount}</p>
-                  <p className="text-green-500">{card.percentage}</p>
+                <div className="flex items-center">
+                  <div
+                    className={`${card.bgColor} text-white p-4 rounded-lg mr-4`}
+                  >
+                    {card.icon}
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">
+                    {card.amount}
+                  </p>
                 </div>
               </div>
-              <p className="text-gray-500">{card.compared}</p>
             </Card>
-          </Col>
+          </div>
         ))}
-      </Row>
-      {/*  */}
-      <div className="flex mt-5 space-x-9">
-        <Card className="w-3/4">
+      </div>
+      <div className="my-4 mx-6">
+        <Card className="w-full shadow-lg rounded-lg overflow-hidden">
           <CardHeader
             floated={false}
             shadow={false}
             color="transparent"
-            className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
+            className="flex flex-col gap-4 rounded-none md:flex-row md:items-center p-4"
           >
-            <div>
-              <Typography variant="h6" color="blue-gray">
-                Sale Chart
-              </Typography>
-            </div>
+            <Typography variant="h6" color="blue-gray">
+              Orders Overview
+            </Typography>
           </CardHeader>
-          <CardBody className="px-2 pb-0">
-            <Chart {...lineChartConfig} />
-          </CardBody>
-        </Card>
-        {/*  */}
-        <Card>
-          <CardHeader
-            floated={false}
-            shadow={false}
-            color="transparent"
-            className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
-          >
-            <div>
-              <Typography variant="h6" color="blue-gray">
-                Pie Chart
-              </Typography>
-            </div>
-          </CardHeader>
-          <CardBody className="mt-4 grid place-items-center px-2">
+          <CardBody className="px-4 pb-4 grid place-items-center">
             <Chart {...pieChartConfig} />
           </CardBody>
         </Card>

@@ -1,9 +1,8 @@
-// ManagementUser.js
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Typography } from "antd";
 import { Link } from "react-router-dom";
 import UserAPI from "../api/UserAPI";
-
+//eslint-disable-next-line
 const { Title } = Typography;
 
 const ManagementUser = () => {
@@ -13,11 +12,10 @@ const ManagementUser = () => {
     const fetchUsers = async () => {
       try {
         const usersData = await UserAPI.users();
-        console.log(usersData)
+        console.log(usersData);
         setUsers(usersData.data.data);
       } catch (error) {
         console.error("Failed to fetch users:", error);
-        // Handle error, show message, etc.
       }
     };
 
@@ -36,6 +34,17 @@ const ManagementUser = () => {
       key: "fullName",
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+    },
+
+    {
       title: "Detail",
       key: "detail",
       render: (record) => (
@@ -44,23 +53,12 @@ const ManagementUser = () => {
         </Link>
       ),
     },
-    {
-      title: "Order",
-      key: "order",
-      render: (record) => (
-        <Link to={`/manager/management-user/user-orders/${record.userId}`}>
-          View Order
-        </Link>
-      ),
-    },
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-2xl font-bold ml-4">All Customers</h1>
-        </div>
+    <div>
+      <div className="flex justify-between items-center p-6">
+        <h1 className="text-2xl font-bold">All Customers</h1>
       </div>
       <Table dataSource={users} columns={columns} />
     </div>

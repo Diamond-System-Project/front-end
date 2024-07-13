@@ -11,21 +11,18 @@ const OrderList = () => {
     const fetchOrders = async () => {
       try {
         const response = await OrderAPI.getAllOrders();
-        console.log("API response:", response); // Log the entire response
-
-        // Check if the response has the expected structure
+        console.log("API response:", response);
         if (response.data && Array.isArray(response.data.data)) {
-          // Transform and set data
           const orders = response.data.data.map((order) => ({
             orderId: order.orderId,
             customerName: order.cname,
             date: order.order_date,
-            status: order.status.toLowerCase(), // Ensure status is in lowercase for filtering
+            status: order.status.toLowerCase(),
             amount: order.payment,
           }));
           setData(orders);
         } else {
-          console.error("Unexpected data format:", response.data); // Log the unexpected format
+          console.error("Unexpected data format:", response.data);
           throw new Error("Unexpected data format");
         }
 
@@ -106,8 +103,8 @@ const OrderList = () => {
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="mb-4">
+    <div>
+      <div className="flex justify-between items-center p-6">
         <h1 className="text-2xl font-bold">Order List</h1>
       </div>
       {loading ? (

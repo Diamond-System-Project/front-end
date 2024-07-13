@@ -7,10 +7,14 @@ export default function PaymentSuccess() {
   const location = useLocation();
   const {
     orderData,
-    cartItems = [],
+    items = [],
     discount = 0,
     finalPrice = 0,
   } = location.state || {};
+
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
 
   useEffect(() => {
     if (location.state) {
@@ -22,7 +26,7 @@ export default function PaymentSuccess() {
     }
   }, [location.state]);
 
-  if (!orderData || !cartItems.length) {
+  if (!orderData || !items.length) {
     return (
       <div className="flex flex-col items-center p-6">
         <div className="w-full max-w-6xl bg-white p-6 shadow-lg rounded-lg">
@@ -84,39 +88,39 @@ export default function PaymentSuccess() {
             <Link to="/">
               <Button type="primary">Tiếp tục mua hàng</Button>
             </Link>
-          </div>
+          </div>  
         </Card>
         <Card>
-          {cartItems.map((item) => (
+          {items.map((item) => (
             <div
               key={`${item.productId}-${item.code}-${item.price}-${item.quantity}`}
               className="flex justify-between items-center mb-4"
             >
-              <img src={item.image} alt="Product" className="w-16 h-16" />
+              <img src={item.url} alt="Product" className="w-16 h-16" />
               <div className="flex-1 ml-4">
                 <p className="font-semibold">{item.productName}</p>
                 <p className="text-gray-500">Quantity: {item.quantity}</p>
               </div>
-              <p className="font-semibold">{item.price.toLocaleString()}đ</p>
+              <p className="font-semibold">{formatCurrency(item.price)}</p>
             </div>
           ))}
           <Divider />
           <div className="flex justify-between mb-2">
             <p>Tạm tính</p>
-            <p>{(finalPrice + discount).toLocaleString()}đ</p>
+            <p>{formatCurrency(finalPrice + discount)}</p>
           </div>
           <div className="flex justify-between mb-2">
             <p>Giảm giá</p>
-            <p>{discount.toLocaleString()}đ</p>
+            <p>{formatCurrency(discount)}</p>
           </div>
           <div className="flex justify-between mb-2">
             <p>Phí vận chuyển</p>
-            <p>0đ</p>
+            <p>0 VND</p>
           </div>
           <Divider />
           <div className="flex justify-between mb-2">
             <p className="text-xl font-bold">Tổng cộng</p>
-            <p className="text-xl font-bold">{finalPrice.toLocaleString()}đ</p>
+            <p className="text-xl font-bold">{formatCurrency(finalPrice)}</p>
           </div>
         </Card>
       </div>

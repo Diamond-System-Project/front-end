@@ -1,48 +1,67 @@
-import { useState } from "react";
-import { Button, Table, Modal, Form, Input, DatePicker, Select } from "antd";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  Table,
+  Modal,
+  Form,
+  Input,
+  DatePicker,
+  Select,
+  message,
+} from "antd";
 import { Link } from "react-router-dom";
-import dayjs from "dayjs";
+import moment from "moment";
+import GetUserByRoleAPI from "../api/GetUserByRoleAPI";
 
 const { Option } = Select;
 
 const ManagementStaff = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "1",
-      userName: "John Doe",
-      gender: "Male",
-      dob: "01/01/1990",
-      role: "Sale Staff",
-      phoneNumber: "123-456-7890",
-      email: "john.doe@example.com",
-    },
-    {
-      key: "2",
-      userName: "Jane Smith",
-      gender: "Female",
-      dob: "01/01/1990",
-      role: "Sale Staff",
-      phoneNumber: "234-567-8901",
-      email: "jane.smith@example.com",
-    },
-    {
-      key: "3",
-      userName: "Jane Smith",
-      gender: "Female",
-      dob: "01/01/1990",
-      role: "Delivery Staff",
-      phoneNumber: "345-678-9012",
-      email: "jane.smith2@example.com",
-    },
-  ]);
-
+  const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingRecord, setEditingRecord] = useState(null);
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [saleStaff, deliveryStaff] = await Promise.all([
+        GetUserByRoleAPI.getAllSaleStaff(),
+        GetUserByRoleAPI.getAllDeliveryStaff(),
+      ]);
+
+      const saleStaffData = saleStaff.data.map((item) => ({
+        key: item.userId,
+        userName: item.fullName,
+        gender: item.gender,
+        dob: moment(item.dob).format("DD/MM/YYYY"),
+        role: "Sale Staff",
+        phoneNumber: item.phone,
+        email: item.email,
+      }));
+
+      const deliveryStaffData = deliveryStaff.data.map((item) => ({
+        key: item.userId,
+        userName: item.fullName,
+        gender: item.gender,
+        dob: moment(item.dob).format("DD/MM/YYYY"),
+        role: "Delivery Staff",
+        phoneNumber: item.phone,
+        email: item.email,
+      }));
+
+      setDataSource([...saleStaffData, ...deliveryStaffData]);
+    } catch (error) {
+      console.error("Error fetching staff data:", error);
+      message.error("Failed to fetch staff data");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleOk = () => {
     form
@@ -60,9 +79,6 @@ const ManagementStaff = () => {
           );
           setDataSource(updatedDataSource);
           setEditingRecord(null);
-        } else {
-          newData.key = (dataSource.length + 1).toString();
-          setDataSource([...dataSource, newData]);
         }
 
         setIsModalVisible(false);
@@ -82,7 +98,7 @@ const ManagementStaff = () => {
     setEditingRecord(record);
     form.setFieldsValue({
       ...record,
-      dob: dayjs(record.dob, "DD/MM/YYYY"),
+      dob: moment(record.dob, "DD/MM/YYYY"),
     });
     setIsModalVisible(true);
   };
@@ -153,20 +169,13 @@ const ManagementStaff = () => {
   ];
 
   return (
-    <div className="mx-6 p-4 my-4">
-      <div className="flex justify-between items-center mb-4">
+    <div>
+      <div className="flex justify-between items-center p-6">
         <div className="flex justify-between w-full">
-          <h1 className="text-2xl font-bold ml-4">All Staff</h1>
-          <Button
-            type="primary"
-            className="bg-black text-white mr-2"
-            onClick={showModal}
-          >
-            + ADD NEW STAFF
-          </Button>
+          <h1 className="text-2xl font-bold">All Staff</h1>
         </div>
       </div>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table dataSource={dataSource} columns={columns} loading={loading} />
       <Modal
         title={editingRecord ? "Edit Staff" : "Add New Staff"}
         visible={isModalVisible}

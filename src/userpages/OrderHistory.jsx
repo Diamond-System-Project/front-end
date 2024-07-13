@@ -9,6 +9,10 @@ const OrderHistory = () => {
 
   const userId = localStorage.getItem("userId");
 
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -19,7 +23,7 @@ const OrderHistory = () => {
             key: order.id,
             orderId: order.orderId,
             date: order.order_date,
-            totalPrice: order.payment,
+            totalPrice: formatCurrency(order.payment),
             status: order.status,
           }));
           setOrders(formattedOrders);
@@ -35,6 +39,8 @@ const OrderHistory = () => {
 
     fetchOrders();
   }, [userId]);
+
+  
 
   const columns = [
     {

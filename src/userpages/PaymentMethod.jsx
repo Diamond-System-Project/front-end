@@ -33,11 +33,30 @@ export default function PaymentMethod() {
     address: "",
     email: "",
   });
+
+  useEffect(() => {
+    const loadUserInfo = () => {
+      const userInfo = localStorage.getItem('userInfo');
+      if (userInfo) {
+        const parsedInfo = JSON.parse(userInfo);
+        setCustomerInfo(prevInfo => ({
+          ...prevInfo,
+          ...parsedInfo
+        }));
+      }
+    };
+
+    loadUserInfo();
+  }, []);
+
   const [errors, setErrors] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { cartItems } = location.state || { cartItems: [] };
+  // const carts = useSelector((state) => state.cart.items);
+  
+  
+  const { selectedCartItems = [] } = location.state || {};
 
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
@@ -48,12 +67,14 @@ export default function PaymentMethod() {
     setCustomerInfo({ ...customerInfo, [name]: value });
   };
 
-  const totalPrice = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const items = Array.isArray(selectedCartItems) ? selectedCartItems : [selectedCartItems];
 
-  const finalPrice = totalPrice - discount;
+  const totalPrice = items.reduce(  
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+  
+  const finalPrice = Math.max(totalPrice - discount, 0);
 
   const fetchVouchers = async () => {
     try {
@@ -92,7 +113,9 @@ export default function PaymentMethod() {
     setVoucherId(voucher.voucherId);
     setDiscount(totalPrice * voucher.discount);
     setIsModalVisible(false);
-    message.success(`Voucher applied. Discount: ${voucher.discount * 100}%`);
+    message.success(
+      `Voucher applied. Discount: ${(voucher.discount * 100).toFixed(2)}%`
+    );
   };
 
   const validateCustomerInfo = () => {
@@ -132,18 +155,27 @@ export default function PaymentMethod() {
     }
   };
 
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") ;
+  };
+
   const onCompleteOrder = async () => {
     if (!validateCustomerInfo()) {
       return;
     }
 
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      message.error("Please log in to continue.");
+    if (!paymentMethod) {
+      message.error("Please select a payment method!!");
       return;
     }
 
-    const orderDetails = cartItems.map((item) => ({
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      message.error("Please log in to continue!!");
+      return;
+    }
+
+    const orderDetails = items.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
     }));
@@ -156,6 +188,7 @@ export default function PaymentMethod() {
       },
       orderDetails,
     };
+    
 
     try {
       const response = await AddOrderAPI.createOrderWithDetails(orderData);
@@ -165,13 +198,13 @@ export default function PaymentMethod() {
         const orderId = response.data.data.orderId;
         if (paymentMethod === "vnpay") {
           localStorage.setItem("orderData", JSON.stringify(orderData));
-          localStorage.setItem("cartItems", JSON.stringify(cartItems));
+          localStorage.setItem("cartItems", JSON.stringify(items));
           localStorage.setItem("discount", JSON.stringify(discount));
           localStorage.setItem("finalPrice", JSON.stringify(finalPrice));
           redirectToVnPay(orderId);
         } else {
           navigate("/payment-success", {
-            state: { orderData, cartItems, discount, finalPrice },
+            state: { orderData, items, discount, finalPrice },
           });
         }
       } else {
@@ -217,23 +250,26 @@ export default function PaymentMethod() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log("ok", customerInfo);
+
   return (
     <div className="min-h-screen flex justify-center p-4">
       <div className="w-5/6 flex">
         <div className="w-1/2 p-4 bg-white shadow-lg rounded-lg mr-4">
-          <img
-            src="/assets/images/Song long diamond.png"
-            alt="Song long Diamond"
-            className="w-50 m-2"
-          />
+        <img
+  src="src\assets\images\Songlong.png"
+  alt="Song long Diamond"
+  className="mx-auto d-block"
+  style={{ maxWidth: '20%' }}
+/>
           <Typography variant="h6" className="mb-4 w-fit">
             Phương thức vận chuyển
           </Typography>
           <Radio.Group value="delivery" className="mb-4">
             <div className="flex justify-between items-center border p-2 rounded w-full h-14">
-              <Radio value="delivery">Giao hàng tận nơi</Radio>
+              <Radio value="delivery">Giao hàng tận nơi: </Radio>
               <Typography variant="body2" className="ml-6">
-                0đ
+                0 VND
               </Typography>
             </div>
           </Radio.Group>
@@ -271,6 +307,8 @@ export default function PaymentMethod() {
               className="w-full"
               value={customerInfo.cname}
               onChange={handleCustomerInfoChange}
+              
+              style={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}
             />
             {errors.cname && (
               <Typography variant="body2" className="text-red-500">
@@ -316,6 +354,7 @@ export default function PaymentMethod() {
               className="w-full"
               value={customerInfo.email}
               onChange={handleCustomerInfoChange}
+              style={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}
             />
             {errors.email && (
               <Typography variant="body2" className="text-red-500">
@@ -323,11 +362,17 @@ export default function PaymentMethod() {
               </Typography>
             )}
           </div>
-          <div className="flex justify-between">
-            <Button type="link">Giỏ hàng</Button>
+          <div className="flex justify-between space-x-4">
+            <Button
+              type="default"
+              className="flex-1 h-10 flex items-center justify-center"
+              onClick={() => navigate("/cart")} 
+            >
+              Giỏ hàng
+            </Button>
             <Button
               type="primary"
-              className="bg-blue-500 text-white w-full h-10 mr-3"
+              className="flex-1 bg-blue-500 text-white h-10 flex items-center justify-center"
               onClick={onCompleteOrder}
             >
               Hoàn tất đơn hàng
@@ -335,17 +380,21 @@ export default function PaymentMethod() {
           </div>
         </div>
         <Card className="w-1/2 ml-4">
-          {cartItems.map((item) => (
+          {items.map((item) => (
             <div
               key={`${item.id}-${item.code}-${item.price}-${item.quantity}`}
-              className="flex justify-between items-center mb-2"
+              className="flex items-center mb-4"
             >
-              <img src={item.image} alt="Product" className="w-16 h-16" />
-              <div className="flex-1 ml-4">
-                <p className="w-44">{item.productName}</p>
-                <p className="text-gray-500 w-20">Quantity: {item.quantity}</p>
+              <img src={item.url} alt="Product" className="w-16 h-16 mr-4" />
+              <div className="flex-grow flex items-center justify-between">
+                <div className="flex flex-col items-start">
+                  <p className="font-semibold">{item.productName}</p>
+                  <p className="text-gray-500">Quantity: {item.quantity}</p>
+                </div>
+                <p className="font-bold text-right">
+                  {formatCurrency(item.price)} VND
+                </p>
               </div>
-              <p>{item.price.toLocaleString()}đ</p>
             </div>
           ))}
           <div className="border-b my-4"></div>
@@ -360,20 +409,20 @@ export default function PaymentMethod() {
           <div className="border-b my-4"></div>
           <div className="flex justify-between mb-2">
             <p>Tạm tính</p>
-            <p>{totalPrice.toLocaleString()}đ</p>
+            <p>{formatCurrency(totalPrice)} VND</p>
           </div>
           <div className="flex justify-between mb-2">
             <p>Giảm giá</p>
-            <p>{discount.toLocaleString()}đ</p>
+            <p>{formatCurrency(discount)}</p>
           </div>
           <div className="flex justify-between mb-2">
             <p>Phí vận chuyển</p>
-            <p>0đ</p>
+            <p>0 VND</p>
           </div>
           <div className="border-b my-4"></div>
           <div className="flex justify-between mb-2">
             <p className="text-xl font-bold">Tổng cộng</p>
-            <p className="text-xl font-bold">{finalPrice.toLocaleString()}đ</p>
+            <p className="text-xl font-bold">{formatCurrency(finalPrice)} VND</p>
           </div>
         </Card>
       </div>
@@ -400,8 +449,10 @@ export default function PaymentMethod() {
               ]}
             >
               <List.Item.Meta
-                title={`Voucher ID: ${voucher.voucherId}`} // Adjusted to use voucherId
-                description={`Discount: ${voucher.discount * 100}%`} // Adjusted to use discount
+                title={`Voucher ID: ${voucher.voucherId}`}
+                description={`Discount: ${(voucher.discount * 100).toFixed(
+                  2
+                )}%`}
               />
             </List.Item>
           )}

@@ -5,6 +5,7 @@ import { Table } from "antd";
 const Quotation = () => {
   const [diamondPrices, setDiamondPrices] = useState({});
   const [loading, setLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     const fetchDiamondPrices = async () => {
@@ -29,8 +30,25 @@ const Quotation = () => {
     };
 
     fetchDiamondPrices();
+
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 86400000); // 24 giờ trong milliseconds
+
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
+  const formatDate = (date) => {
+    const options = { day: "numeric", month: "numeric", year: "numeric" };
+    return date.toLocaleDateString("vi-VN", options);
+  };
+
+  const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined) return "";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
   const formatPrices = (prices) => {
     return [
       {
@@ -74,49 +92,132 @@ const Quotation = () => {
 
   const columns = [
     {
-      title: "Grade",
+      title: <strong>Color/Clarity</strong>,
       dataIndex: "grade",
       key: "grade",
+      render: (text) => <strong>{text}</strong>,
+      onCell: () => ({
+        style: {
+          backgroundColor: "#f0f0f0",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: "#e6f7ff",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
     },
     {
       title: "IF",
       dataIndex: "if",
       key: "if",
+      className: "bg-gray-200",
+      render: (value) => formatCurrency(value),
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: "#e6f7ff",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
     },
     {
       title: "VVS1",
       dataIndex: "vvs1",
       key: "vvs1",
+      className: "bg-gray-200",
+      render: (value) => formatCurrency(value),
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: "#e6f7ff",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
     },
     {
       title: "VVS2",
       dataIndex: "vvs2",
       key: "vvs2",
+      className: "bg-gray-200",
+      render: (value) => formatCurrency(value),
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: "#e6f7ff",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
     },
     {
       title: "VS1",
       dataIndex: "vs1",
       key: "vs1",
+      className: "bg-gray-200",
+      render: (value) => formatCurrency(value),
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: "#e6f7ff",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
     },
     {
       title: "VS2",
       dataIndex: "vs2",
       key: "vs2",
+      className: "bg-gray-200",
+      render: (value) => formatCurrency(value),
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: "#e6f7ff",
+          fontWeight: "bold",
+          border: '1px solid #d9d9d9',
+        },
+      }),
     },
   ];
+
+  const sortedWeights = Object.keys(diamondPrices).sort(
+    (a, b) => parseFloat(a) - parseFloat(b)
+  );
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  const description = "* Đơn vị tính: VND * ";
+
   return (
-    <div className="text-white  p-8">
-      {Object.entries(diamondPrices).map(([weight, prices]) => (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold text-center mb-6 text-black">
+        Bảng Giá Kim Cương mới nhất hôm nay ({formatDate(currentDate)})
+      </h1>
+
+      <p className="text-lg text-center mb-8 text-gray-600">{description}</p>
+      {sortedWeights.map((weight) => (
         <div className="mb-8" key={weight}>
           <h2 className="text-center text-lg font-bold mb-4 text-black">
             Giá Kim Cương {weight}ly
           </h2>
-          <Table dataSource={prices} columns={columns} pagination={false} />
+          <Table
+            dataSource={diamondPrices[weight]}
+            columns={columns}
+            pagination={false}
+            rowClassName={(record, index) =>
+              index % 2 === 0 ? "bg-gray-100" : ""
+            }
+            style={{ 
+              border: '2px solid #d9d9d9',
+              borderCollapse: 'collapse'
+            }}
+            className="diamond-price-table"
+          />
         </div>
       ))}
     </div>

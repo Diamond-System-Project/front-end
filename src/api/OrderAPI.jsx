@@ -10,6 +10,9 @@ const OrderAPI = {
   getOrdersByUserId: (id) => {
     return axiosClient.get(`/order/user/${id}`);
   },
+  getOrdersByCurrentUserId: (id) => {
+    return axiosClient.get(`order/history/${id}`);
+  },
   createOrderWithDetails: (orderData) => {
     return axiosClient.post("/order/createWithDetails", orderData);
   },
@@ -21,11 +24,17 @@ const OrderAPI = {
   getOrdersByDeliveryStaffId: (id) => {
     return axiosClient.get(`/order/delivery/${id}`);
   },
+  getDeliveryShippingOrderNumber: () => {
+    return axiosClient.get(`/order/list/deliveryOrder`);
+  },
   updateOrderStatusByDelivery: (orderId, status) => {
     return axiosClient.put(`/order/delivery/status`, {
       orderId,
       status,
     });
+  },
+  updateOrderToProcessing: (id) => {
+    return axiosClient.put(`/order/processing/${id}`);
   },
 };
 

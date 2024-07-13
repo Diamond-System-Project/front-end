@@ -9,7 +9,7 @@ const { Dragger } = Upload;
 //eslint-disable-next-line
 const AddProduct = ({ onCreate }) => {
   const [imagePreview, setImagePreview] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [url, setUrl] = useState(null);
   const [form] = Form.useForm();
 
   const handleImageUpload = async (info) => {
@@ -22,14 +22,11 @@ const AddProduct = ({ onCreate }) => {
           setImagePreview(reader.result);
         };
 
-        // Upload file to Firebase Storage
         try {
           const storageRef = ref(storage, file.name);
           const snapshot = await uploadBytes(storageRef, file.originFileObj);
           const downloadURL = await getDownloadURL(snapshot.ref);
-
-          // Set image URL
-          setImageUrl(downloadURL);
+          setUrl(downloadURL);
           message.success("Image uploaded successfully");
         } catch (error) {
           console.error("Error uploading file:", error);
@@ -51,17 +48,23 @@ const AddProduct = ({ onCreate }) => {
     return isImage;
   };
 
-  const handleFinish = (values) => {
-    if (!imageUrl) {
+  const handleFinish = async (values) => {
+    if (!url) {
       message.error("Please upload an image!");
       return;
     }
-    const newProduct = { ...values, imageUrl }; // Ensure image URL is included
-    console.log("Form values:", newProduct);
-    onCreate(newProduct);
-    form.resetFields();
-    setImagePreview(null);
-    setImageUrl(null);
+
+    try {
+      const newProduct = { ...values, url };
+      await onCreate(newProduct);
+      form.resetFields();
+      setImagePreview(null);
+      setUrl(null);
+      message.success("Product added successfully");
+    } catch (error) {
+      console.error("Error adding product:", error);
+      message.error("Failed to add product. Please try again.");
+    }
   };
 
   return (
@@ -88,7 +91,6 @@ const AddProduct = ({ onCreate }) => {
               >
                 <TextArea placeholder="Type description here" rows={2} />
               </Form.Item>
-
               <Form.Item
                 name="mountId"
                 label="Mount"
@@ -96,7 +98,6 @@ const AddProduct = ({ onCreate }) => {
               >
                 <Input placeholder="Type mount here" />
               </Form.Item>
-
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
                   name="laborFee"
@@ -121,12 +122,11 @@ const AddProduct = ({ onCreate }) => {
                   ]}
                 >
                   <Select placeholder="Select status">
-                    <Option value="inStock">In Stock</Option>
-                    <Option value="outStock">Out of Stock</Option>
+                    <Option value="InStock">In Stock</Option>
+                    <Option value="Out of Stock">Out of Stock</Option>
                   </Select>
                 </Form.Item>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
                   name="componentsPrice"
@@ -136,15 +136,6 @@ const AddProduct = ({ onCreate }) => {
                       required: true,
                       message: "Please input the components price!",
                     },
-                  ]}
-                >
-                  <Input placeholder="$" />
-                </Form.Item>
-                <Form.Item
-                  name="price"
-                  label="Sale Price"
-                  rules={[
-                    { required: true, message: "Please input the sale price!" },
                   ]}
                 >
                   <Input placeholder="$" />
@@ -188,7 +179,7 @@ const AddProduct = ({ onCreate }) => {
           </div>
           <div className="flex justify-between space-x-4 mt-6">
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="bg-green-500">
+              <Button type="primary" htmlType="submit">
                 ADD NEW PRODUCT
               </Button>
             </Form.Item>

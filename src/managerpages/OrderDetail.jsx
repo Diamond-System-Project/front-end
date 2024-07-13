@@ -6,7 +6,7 @@ import OrderDetailAPI from "../api/OrderDetailAPI";
 const { Title, Text } = Typography;
 
 const OrderDetail = () => {
-  const { id } = useParams(); // Get order ID from URL params
+  const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,17 +19,15 @@ const OrderDetail = () => {
     const fetchOrderDetails = async () => {
       try {
         const response = await OrderDetailAPI.getOrderDetailsByOrderId(id);
-        console.log("API response:", response); // Log the entire response
-
-        // Extract the nested data
+        console.log("API response:", response);
         if (
           response.data &&
           response.data.data &&
           response.data.data.length > 0
         ) {
-          setOrder(response.data.data[0]); // Assuming response.data.data is an array
+          setOrder(response.data.data[0]);
         } else {
-          console.error("Unexpected data format:", response.data); // Log the unexpected format
+          console.error("Unexpected data format:", response.data);
           message.error("Failed to fetch order details.");
         }
       } catch (error) {

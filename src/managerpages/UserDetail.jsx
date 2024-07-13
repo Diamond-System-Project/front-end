@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import UserAPI from "../api/UserAPI";
 import { useParams } from "react-router-dom";
@@ -7,15 +7,14 @@ const UserDetail = () => {
   const { id } = useParams();
   const [form] = Form.useForm();
   const [user, setUser] = useState(null);
-  console.log(id)
+  console.log(id);
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await UserAPI.getUserById(id); // Assuming getUserById fetches user details based on ID
+        const userData = await UserAPI.getUserById(id);
         setUser(userData);
         form.setFieldsValue({
           fullName: userData.data.data.fullName,
-          password: userData.data.data.password,
           phone: userData.data.data.phone,
           dob: userData.data.data.dob,
           email: userData.data.data.email,
@@ -34,20 +33,19 @@ const UserDetail = () => {
     try {
       const response = await UserAPI.updateUser(id, values);
       if (response.success) {
-        message.success("Update success")
+        message.success("Update success");
       } else {
-        console.log(response)
+        console.log(response);
         message.error(response.data.data);
       }
     } catch (error) {
-      
       console.error("Failed to update user:", error);
       message.error("Failed to update user", error);
     }
   };
 
   if (!user) {
-    return null; // or loading indicator
+    return null;
   }
 
   return (
@@ -65,13 +63,6 @@ const UserDetail = () => {
         rules={[{ required: true, message: "Please enter your full name" }]}
       >
         <Input className="w-1/2" />
-      </Form.Item>
-      <Form.Item
-        label="password"
-        name="password"
-        rules={[{ required: true, message: "Please enter your password" }]}
-      >
-        <Input type="password" className="w-1/2" />
       </Form.Item>
       <Form.Item
         label="Phone"

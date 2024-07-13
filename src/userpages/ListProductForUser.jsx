@@ -1,15 +1,20 @@
-import { useState, useEffect } from "react";
-import { Pagination } from "antd";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { Pagination, Radio } from "antd";
 import { Link } from "react-router-dom";
 import ProductAPI from "../api/ProductAPI";
 
 const ListProduct = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedType, setSelectedType] = useState('');
   const [productTypes, setProductTypes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
+  const scrollPositionRef = useRef(0);
+
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,8 +22,6 @@ const ListProduct = () => {
         const response = await ProductAPI.products();
         const data = response.data.data;
         setProducts(data);
-
-        // Extract unique product types
         const types = [...new Set(data.map((product) => product.mountId.type))];
         setProductTypes(types);
       } catch (error) {
@@ -31,24 +34,26 @@ const ListProduct = () => {
 
   useEffect(() => {
     let updatedFilteredProducts = products;
-    if (selectedTypes.length > 0) {
+    if (selectedType) {
       updatedFilteredProducts = products.filter((product) =>
-        selectedTypes.includes(product.mountId.type)
+        product.mountId.type === selectedType
       );
     }
     setFilteredProducts(updatedFilteredProducts);
     setCurrentPage(1);
-  }, [selectedTypes, products]);
+  }, [selectedType, products]);
 
-  const handleTypeChange = (type) => {
-    if (selectedTypes.includes(type)) {
-      setSelectedTypes(selectedTypes.filter((t) => t !== type));
-    } else {
-      setSelectedTypes([...selectedTypes, type]);
-    }
+  useLayoutEffect(() => {
+    window.scrollTo(0, scrollPositionRef.current);
+  });
+
+  const handleTypeChange = (e) => {
+    scrollPositionRef.current = window.pageYOffset;
+    setSelectedType(e.target.value);
   };
 
   const handlePageChange = (page) => {
+    scrollPositionRef.current = window.pageYOffset;
     setCurrentPage(page);
   };
 
@@ -58,50 +63,59 @@ const ListProduct = () => {
   );
 
   return (
-    <div className="flex">
-      <div className="w-1/4 p-4">
-        <div className="border p-4 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Filter by Type</h3>
+    <div className="container mx-auto px-4 bg-pink-50">
+      <div className="mb-8 p-6 bg-blue-100 rounded-lg shadow-md">
+        <h3 className="text-2xl font-bold mb-4 text-blue-800">Filter by Type</h3>
+        <Radio.Group 
+          onChange={handleTypeChange} 
+          value={selectedType}
+          className="space-x-4"
+        >
+          <Radio value='' className="text-lg">All</Radio>
           {productTypes.map((type) => (
-            <div key={type}>
-              <input
-                type="checkbox"
-                checked={selectedTypes.includes(type)}
-                onChange={() => handleTypeChange(type)}
-              />
-              <label className="ml-2">{type}</label>
-            </div>
+            <Radio key={type} value={type} className="text-lg">
+              {type}
+            </Radio>
           ))}
-        </div>
+        </Radio.Group>
       </div>
-      <div className="w-3/4 p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {paginatedProducts.map((product) => (
-            <Link
-              to={`/product-detail/${product.productId}`}
-              key={product.productId}
-            >
-              <div className="border p-4 rounded-lg shadow-lg cursor-pointer">
-                <img
-                  src={product.imageUrl}
-                  alt={product.productName}
-                  className="w-full h-64 object-cover mb-4 rounded"
-                />
-                <h3 className="text-lg font-semibold">{product.productName}</h3>
-                <p className="text-gray-600">{product.mountId.mountName}</p>
-                <p className="text-gray-800 font-bold">${product.price}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-        <div className="mt-4 flex justify-center">
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredProducts.length}
-            onChange={handlePageChange}
-          />
-        </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {paginatedProducts.map((product) => (
+          <Link
+            to={`/product-detail/${product.productId}`}
+            key={product.productId}
+            className="block bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+          >
+            <div className="aspect-w-3 aspect-h-4">
+              <img
+                src={product.url || "default-image-url.jpg"}
+                alt={product.productName}
+                className="object-cover w-full h-96"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-lg font-semibold mb-1 truncate">
+                {product.productName}
+              </h3>
+              <p className="text-sm text-gray-600 mb-2 truncate">
+                {product.mountId.mountName}
+              </p>
+              <p className="text-lg font-bold text-blue-600">
+                {formatCurrency(Number(product.price))}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-8 flex justify-center pb-8">
+        <Pagination
+          current={currentPage}
+          total={filteredProducts.length}
+          pageSize={pageSize}
+          onChange={handlePageChange}
+        />
       </div>
     </div>
   );
