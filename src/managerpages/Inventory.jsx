@@ -174,9 +174,9 @@ const Inventory = () => {
           <Button type="link" onClick={() => handleEdit(record)}>
             Edit
           </Button>
-          <Button type="link" onClick={() => handleDelete(record._id)} danger>
+          {/* <Button type="link" onClick={() => handleDelete(record._id)} danger>
             Delete
-          </Button>
+          </Button> */}
         </div>
       ),
     },
