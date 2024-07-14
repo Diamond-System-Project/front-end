@@ -7,10 +7,9 @@ import ProductAPI from "../api/ProductAPI";
 const ListProduct = () => {
   const [products, setProducts] = useState([]);
   const [sortedInfo, setSortedInfo] = useState({});
-  const [isAddProductModalVisible, setIsAddProductModalVisible] =
-    useState(false);
-  const [isUpdateProductModalVisible, setIsUpdateProductModalVisible] =
-    useState(false);
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [isAddProductModalVisible, setIsAddProductModalVisible] = useState(false);
+  const [isUpdateProductModalVisible, setIsUpdateProductModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
@@ -30,6 +29,7 @@ const ListProduct = () => {
 
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
+    setFilteredInfo(filters);
   };
 
   const handleAddProduct = async (product) => {
@@ -95,6 +95,23 @@ const ListProduct = () => {
     }
   };
 
+  const nameFilterOptions = [
+    "Nhẫn",
+    "Dây chuyền",
+    "Vòng cổ",
+    "Vòng tay",
+    "Vòng đeo tay",
+    "Lắc tay",
+    "Mặt dây chuyền",
+  ];
+
+  const statusFilterOptions = [
+    { text: "InStock", value: "InStock" },
+    { text: "Out of Stock", value: "Out of Stock" },
+  ];
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  };
   const columns = [
     {
       title: "Product ID",
@@ -113,6 +130,12 @@ const ListProduct = () => {
       title: "Name",
       dataIndex: "productName",
       key: "productName",
+      filters: nameFilterOptions.map((name) => ({
+        text: name,
+        value: name,
+      })),
+      filteredValue: filteredInfo.productName || null,
+      onFilter: (value, record) => record.productName.includes(value),
     },
     {
       title: "Description",
@@ -123,18 +146,20 @@ const ListProduct = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price) =>
-        new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(price),
+      render: (price) => formatCurrency(price),
     },
     {
       title: "Stock",
-      dataIndex: "stock",
-      key: "stock",
-      sorter: (a, b) => a.stock - b.stock,
-      sortOrder: sortedInfo.columnKey === "stock" && sortedInfo.order,
+      dataIndex: "status",
+      key: "status",
+      filters: statusFilterOptions,
+      filteredValue: filteredInfo.status || null,
+      onFilter: (value, record) => record.status === value,
+      render: (status) => (
+        <span style={{ color: status === "InStock" ? "green" : "red" }}>
+          {status}
+        </span>
+      ),
     },
     {
       title: "Action",
@@ -144,13 +169,13 @@ const ListProduct = () => {
           <Button type="link" onClick={() => handleUpdateProduct(product)}>
             Edit
           </Button>
-          <Button
+          {/* <Button
             type="link"
             danger
             onClick={() => handleDeleteProduct(product.productId)}
           >
             Delete
-          </Button>
+          </Button> */}
         </span>
       ),
     },

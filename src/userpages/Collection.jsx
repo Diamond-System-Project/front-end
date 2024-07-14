@@ -24,7 +24,7 @@ const Collection = () => {
   }, [selectedCollectionId]);
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
   };
 
   useEffect(() => {
@@ -170,7 +170,7 @@ const handleCollectionClick = async (collectionId) => {
                               {product.description}
                             </p>
                             <p className="text-base font-bold text-blue-600">
-                              Price: {formatCurrency(product.price)}
+                              {formatCurrency(product.price)}
                             </p>
                           </>
                         }

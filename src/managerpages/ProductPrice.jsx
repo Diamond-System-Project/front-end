@@ -98,7 +98,9 @@ const ProductPrice = () => {
     setIsModalVisible(false);
     form.resetFields();
   };
-
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  };
   const columns = [
     {
       title: "ID",
@@ -124,11 +126,7 @@ const ProductPrice = () => {
       title: "Selling Price",
       dataIndex: "sellingPrice",
       key: "sellingPrice",
-      render: (sellingPrice) =>
-        new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(sellingPrice),
+      render: (sellingprice) => formatCurrency(sellingprice),
     },
     {
       title: "Action",

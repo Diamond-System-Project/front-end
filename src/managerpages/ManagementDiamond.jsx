@@ -1,5 +1,5 @@
+import { Button, Form, Input, Modal, notification, Table } from "antd";
 import { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, notification } from "antd";
 import DiamondAPI from "../api/DiamondAPI";
 
 const ManagementDiamond = () => {
@@ -53,7 +53,9 @@ const ManagementDiamond = () => {
       notification.error({ message: "Failed to save diamond" });
     }
   };
-
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  };
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -68,7 +70,7 @@ const ManagementDiamond = () => {
     { title: "Clarity", dataIndex: "clarity", key: "clarity" },
     { title: "Cut", dataIndex: "cut", key: "cut" },
     { title: "Shape", dataIndex: "shape", key: "shape" },
-    { title: "Base Price", dataIndex: "basePrice", key: "basePrice" },
+    { title: "Base Price", dataIndex: "basePrice", key: "basePrice",  render: (baseprice) => formatCurrency(baseprice), },
     {
       title: "Action",
       key: "action",

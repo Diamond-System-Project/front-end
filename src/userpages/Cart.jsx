@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { Button, Divider, InputNumber, Checkbox, Spin, message } from "antd";
-import { Typography } from "@mui/material";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { Typography } from "@mui/material";
+import { Button, Checkbox, Divider, InputNumber, Spin, message } from "antd";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import {
   removeFromCart,
   updateCartItemQuantity,
@@ -170,7 +170,7 @@ export default function Cart() {
                         onChange={() => handleCheckboxChange(item)}
                       />
                       <img
-                        src={item.image}
+                        src={item.url}
                         alt={item.name}
                         className="w-36 h-36 ml-4"
                       />

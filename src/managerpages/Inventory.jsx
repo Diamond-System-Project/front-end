@@ -5,10 +5,10 @@ import {
   Modal,
   Form,
   Input,
-  Checkbox,
-  DatePicker,
   Select,
+  DatePicker,
   message,
+  Switch,
 } from "antd";
 import moment from "moment";
 import InventoryAPI from "../api/InventoryAPI";
@@ -17,128 +17,140 @@ import ProductAPI from "../api/ProductAPI";
 const { Option } = Select;
 
 const Inventory = () => {
-  const [inventories, setInventories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const [editId, setEditId] = useState(null);
+  const [editingInventory, setEditingInventory] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [available, setAvailable] = useState(false);
 
   useEffect(() => {
-    const fetchInventories = async () => {
-      try {
-        const data = await InventoryAPI.getAllInventory();
-        setInventories(data);
-      } catch (error) {
-        message.error("Error fetching inventory items.");
-        console.error("Error fetching inventory items:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchProducts = async () => {
-      try {
-        const response = await ProductAPI.products();
-        setProducts(response.data.data);
-      } catch (error) {
-        message.error("Error fetching products.");
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    fetchInventories();
+    fetchInventory();
     fetchProducts();
   }, []);
 
-  const handleCreate = async (values) => {
+  const fetchInventory = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const formattedValues = {
-        ...values,
-        purchaseDate: values.purchaseDate.format("DD-MM-YYYY"),
-      };
-      console.log("Creating inventory with values:", formattedValues);
-      await InventoryAPI.createInventory(formattedValues);
-      message.success("Inventory item created successfully!");
-      setInventories(await InventoryAPI.getAllInventory());
-      setIsModalVisible(false);
-      form.resetFields();
+      const inventory = await InventoryAPI.getAllInventory();
+      setData(Array.isArray(inventory) ? inventory : []);
     } catch (error) {
-      message.error("Error creating inventory item.");
-      console.error("Error creating inventory item:", error);
+      message.error("Error fetching inventory data");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdate = async (values) => {
+  const fetchProducts = async () => {
     try {
-      setLoading(true);
-      const formattedValues = {
-        ...values,
-        purchaseDate: values.purchaseDate.format("DD-MM-YYYY"),
-      };
-      console.log(
-        "Updating inventory with ID:",
-        editId,
-        "Values:",
-        formattedValues
-      );
-      await InventoryAPI.updateInventory(editId, formattedValues);
-      message.success("Inventory item updated successfully!");
-      setInventories(await InventoryAPI.getAllInventory());
-      setIsModalVisible(false);
-      form.resetFields();
-      setEditId(null);
+      const response = await ProductAPI.products();
+      console.log("Products data:", response.data); // Log to console
+      setProducts(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
-      message.error("Error updating inventory item.");
-      console.error("Error updating inventory item:", error);
-    } finally {
-      setLoading(false);
+      message.error("Error fetching product list");
     }
+  };
+
+  const handleCreate = () => {
+    form.validateFields().then(async (values) => {
+      const { productId, purchaseDate, condition, quantity, available } =
+        values;
+      setLoading(true);
+      const formattedData = {
+        productId: parseInt(productId, 10),
+        purchaseDate: purchaseDate ? purchaseDate.format("DD-MM-YYYY") : "",
+        condition,
+        quantity: parseInt(quantity, 10),
+        available,
+      };
+      console.log("Creating Inventory with values:", formattedData);
+      try {
+        await InventoryAPI.createInventory(formattedData);
+        message.success("Created successfully");
+        fetchInventory();
+        setIsModalVisible(false);
+        form.resetFields();
+      } catch (error) {
+        console.error("Error creating inventory:", error);
+        message.error("Error creating");
+      } finally {
+        setLoading(false);
+      }
+    });
+  };
+
+  const handleUpdate = () => {
+    form.validateFields().then(async (values) => {
+      const { productId, purchaseDate, condition, quantity, available } =
+        values;
+      setLoading(true);
+      const formattedData = {
+        productId: parseInt(productId, 10),
+        purchaseDate: purchaseDate ? purchaseDate.format("DD-MM-YYYY") : "",
+        condition,
+        quantity: parseInt(quantity, 10),
+        available,
+      };
+      console.log("Updating Inventory with values:", formattedData);
+      if (!editingInventory || !editingInventory.locationId) {
+        message.error("Cannot update, missing Location ID.");
+        setLoading(false);
+        return;
+      }
+      try {
+        await InventoryAPI.updateInventory(
+          editingInventory.locationId,
+          formattedData
+        );
+        message.success("Updated successfully");
+        fetchInventory();
+        setIsModalVisible(false);
+        form.resetFields();
+        setEditingInventory(null);
+      } catch (error) {
+        console.error("Error updating inventory:", error);
+        message.error("Error updating");
+      } finally {
+        setLoading(false);
+      }
+    });
   };
 
   const handleDelete = async (id) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      console.log("Deleting inventory with ID:", id);
       await InventoryAPI.deleteInventory(id);
-      message.success("Inventory item deleted successfully!");
-      setInventories(await InventoryAPI.getAllInventory());
+      message.success("Deleted successfully");
+      fetchInventory();
     } catch (error) {
-      message.error("Error deleting inventory item.");
-      console.error("Error deleting inventory item:", error);
+      message.error("Error deleting");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (record) => {
-    setEditId(record._id);
+  const openCreateModal = () => {
+    setEditingInventory(null);
+    setAvailable(false);
+    form.resetFields(); // Reset form fields
+    setIsModalVisible(true);
+  };
+
+  const openEditModal = (record) => {
+    setEditingInventory(record);
+    setAvailable(record.available);
     form.setFieldsValue({
-      productId: record.productId.productId,
+      ...record,
+      productId: record.productId?.productId,
       purchaseDate: record.purchaseDate
         ? moment(record.purchaseDate, "DD-MM-YYYY")
         : null,
-      condition: record.condition,
-      quantity: record.quantity,
-      available: record.available,
-    });
+    }); // Set form fields value
     setIsModalVisible(true);
   };
 
   const columns = [
-    {
-      title: "Location ID",
-      dataIndex: "locationId",
-      key: "locationId",
-    },
-    {
-      title: "Product ID",
-      dataIndex: ["productId", "productId"],
-      key: "productId",
-    },
     {
       title: "Product Name",
       dataIndex: ["productId", "productName"],
@@ -148,7 +160,8 @@ const Inventory = () => {
       title: "Purchase Date",
       dataIndex: "purchaseDate",
       key: "purchaseDate",
-      render: (text) => new Date(text).toLocaleDateString(),
+      render: (text) =>
+        text ? moment(text, "DD-MM-YYYY").format("DD-MM-YYYY") : "Invalid Date",
     },
     {
       title: "Condition",
@@ -164,83 +177,72 @@ const Inventory = () => {
       title: "Available",
       dataIndex: "available",
       key: "available",
-      render: (text) => (text ? "Yes" : "No"),
+      render: (text) => <Switch checked={text} disabled />,
     },
     {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
         <div>
-          <Button type="link" onClick={() => handleEdit(record)}>
+          <Button type="link" onClick={() => openEditModal(record)}>
             Edit
           </Button>
-          <Button type="link" onClick={() => handleDelete(record._id)} danger>
+
+          <Button
+            type="link"
+            onClick={() => handleDelete(record.locationId)}
+            danger
+          >
             Delete
           </Button>
         </div>
       ),
     },
   ];
+
   return (
-    <div>
-      <div className="flex justify-between items-center p-6">
-        <h2 className="text-2xl font-bold">Inventory</h2>
-        <button
-          className="bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300 mr-2"
-          onClick={() => setIsModalVisible(true)}
-        >
-          + ADD INVENTORY
-        </button>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Inventory Management</h2>
+        <Button type="primary" onClick={openCreateModal}>
+          Add New
+        </Button>
       </div>
       <Table
         columns={columns}
-        dataSource={inventories}
+        dataSource={data}
         loading={loading}
-        rowKey="_id"
+        rowKey="locationId"
       />
       <Modal
-        title={editId ? "Edit Inventory" : "Add Inventory"}
+        title={editingInventory ? "Edit" : "Add New"}
         visible={isModalVisible}
-        onCancel={() => {
-          setIsModalVisible(false);
-          form.resetFields();
-          setEditId(null);
-        }}
-        onOk={() => {
-          form
-            .validateFields()
-            .then((values) => {
-              form.resetFields();
-              if (editId) {
-                handleUpdate(values);
-              } else {
-                handleCreate(values);
-              }
-            })
-            .catch((info) => {
-              console.log("Validate Failed:", info);
-            });
-        }}
+        onCancel={() => setIsModalVisible(false)}
+        onOk={editingInventory ? handleUpdate : handleCreate}
       >
-        <Form form={form} layout="vertical" name="inventoryForm">
+        <Form form={form} layout="vertical">
           <Form.Item
             name="productId"
-            label="Product"
-            rules={[{ required: true, message: "Please select the product!" }]}
+            label="Product Name"
+            rules={[{ required: true, message: "Please select a product" }]}
           >
-            <Select placeholder="Select a product">
-              {products.map((product) => (
-                <Option key={product.productId} value={product.productId}>
-                  {product.productName}
-                </Option>
-              ))}
+            <Select
+              placeholder="Select a product"
+              disabled={!!editingInventory}
+            >
+              {Array.isArray(products) &&
+                products.map((product) => (
+                  <Option key={product.productId} value={product.productId}>
+                    {product.productName}
+                  </Option>
+                ))}
             </Select>
           </Form.Item>
           <Form.Item
             name="purchaseDate"
             label="Purchase Date"
             rules={[
-              { required: true, message: "Please select the purchase date!" },
+              { required: true, message: "Please select a purchase date" },
             ]}
           >
             <DatePicker format="DD-MM-YYYY" />
@@ -248,19 +250,25 @@ const Inventory = () => {
           <Form.Item
             name="condition"
             label="Condition"
-            rules={[{ required: true, message: "Please input the condition!" }]}
+            rules={[{ required: true, message: "Please enter the condition" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="quantity"
             label="Quantity"
-            rules={[{ required: true, message: "Please input the quantity!" }]}
+            rules={[{ required: true, message: "Please enter the quantity" }]}
           >
-            <Input />
+            <Input type="number" />
           </Form.Item>
-          <Form.Item name="available" valuePropName="checked">
-            <Checkbox>Available</Checkbox>
+          <Form.Item name="available" label="Available" valuePropName="checked">
+            <Switch
+              checked={available}
+              onChange={(checked) => {
+                setAvailable(checked);
+                form.setFieldsValue({ available: checked });
+              }}
+            />
           </Form.Item>
         </Form>
       </Modal>

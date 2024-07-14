@@ -95,6 +95,9 @@ const ManagementDiamondMount = () => {
       message.error("Failed to delete diamond mount.");
     }
   };
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  };
 
   const columns = [
     {
@@ -126,6 +129,7 @@ const ManagementDiamondMount = () => {
       title: "Price",
       dataIndex: "basePrice",
       key: "basePrice",
+      render: (baseprice) => formatCurrency(baseprice),
     },
     {
       title: "Actions",

@@ -14,7 +14,7 @@ const ListProduct = () => {
   const scrollPositionRef = useRef(0);
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
   };
 
   useEffect(() => {

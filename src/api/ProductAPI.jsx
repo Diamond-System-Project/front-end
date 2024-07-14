@@ -1,4 +1,5 @@
 import axiosClient from "./axiosClient";
+
 const ProductAPI = {
   products: () => {
     const url = `product/all`;
@@ -16,10 +17,14 @@ const ProductAPI = {
     const url = `product/delete/${productId}`;
     return axiosClient.delete(url);
   },
-
   getProductById: (id) => {
     const url = `product/showProduct/${id}`;
     return axiosClient.get(url);
   },
+  getProductDescription: (id) => {
+    const url = `product/description/${id}`;
+    return axiosClient.get(url);
+  }
 };
+
 export default ProductAPI;

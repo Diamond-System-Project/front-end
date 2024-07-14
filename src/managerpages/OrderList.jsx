@@ -158,7 +158,9 @@ const OrderList = () => {
       );
     }
   };
-
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  };
   const columns = [
     {
       title: "Order ID",

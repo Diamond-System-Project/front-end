@@ -107,7 +107,7 @@ const CertificateManagement = () => {
       message.error("Failed to retrieve certificate");
     }
   };
-
+  
   const handleViewCancel = () => {
     setViewVisible(false);
     setSelectedCertificate(null);
