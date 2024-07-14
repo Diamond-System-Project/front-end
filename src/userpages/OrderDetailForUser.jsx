@@ -23,15 +23,18 @@ export default function OrderDetails() {
   const { id } = useParams();
   const [orderDetails, setOrderDetails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isCertificateModalVisible, setIsCertificateModalVisible] =
-    useState(false);
+  const [isCertificateModalVisible, setIsCertificateModalVisible] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
   const [isWarrantyModalVisible, setIsWarrantyModalVisible] = useState(false);
   const [warrantyData, setWarrantyData] = useState(null);
 
   const formatCurrency = (amount) => {
     if (amount == null) return "0 VND";
+<<<<<<< HEAD
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+=======
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+>>>>>>> 4176eb8f5b32ac30411723af9c71a0fdde7da4d6
   };
 
   useEffect(() => {
@@ -48,9 +51,7 @@ export default function OrderDetails() {
           }));
           setOrderDetails(formattedDetails);
         } else {
-          message.error(
-            "Failed to fetch order details: " + response.data.message
-          );
+          message.error("Failed to fetch order details: " + response.data.message);
         }
       } catch (error) {
         message.error("Failed to fetch order details: " + error.message);
@@ -131,17 +132,27 @@ export default function OrderDetails() {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
+<<<<<<< HEAD
         <div className="flex space-x-2">
           <Tooltip title="Giấy chứng nhận">
             <Button
               onClick={() => handleSendCertificate(record.key)}
               className="bg-blue-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow hover:shadow-lg transition duration-300"
+=======
+        <div className="flex space-x-2">  
+          <Tooltip title="Giấy chứng nhận">
+            <Button 
+              type="primary"
+              onClick={() => handleSendCertificate(record.key)}
+              className="hover:shadow-lg transition duration-300"
+>>>>>>> 4176eb8f5b32ac30411723af9c71a0fdde7da4d6
             >
               Giấy chứng nhận
             </Button>
           </Tooltip>
           <Tooltip title="Giấy bảo hành">
             <Button
+<<<<<<< HEAD
               onClick={() => handleSendWarranty(record.key)}
               className="bg-blue-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow hover:shadow-lg transition duration-300"
             >
@@ -154,6 +165,22 @@ export default function OrderDetails() {
               target="_blank"
               rel="noopener noreferrer"
               className="bg-blue-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow hover:shadow-lg transition duration-300"
+=======
+              type="default"
+              onClick={() => handleSendWarranty(record.key)}
+              className="bg-blue-500 hover:shadow-lg transition duration-300"
+            >
+              Giấy bảo hành
+            </Button> 
+          </Tooltip>
+          <Tooltip title="Liên hệ qua Zalo">
+            <Button
+              type="primary"
+              href="https://zalo.me/0948704134" // Replace with your actual Zalo link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-500 hover:bg-blue-600 hover:shadow-lg transition duration-300"
+>>>>>>> 4176eb8f5b32ac30411723af9c71a0fdde7da4d6
             >
               Liên hệ
             </Button>
@@ -194,6 +221,7 @@ export default function OrderDetails() {
               bordered={false}
               style={{ background: "#FCE7F3", padding: "20px" }}
             >
+<<<<<<< HEAD
               <Row justify="center" style={{ marginBottom: "20px" }}>
                 <img
                   src={Logo}
@@ -243,11 +271,51 @@ export default function OrderDetails() {
                   <Text>{certificateData?.diamondId?.shape}</Text>
                 </Col>
                 {/* <Col span={12}>
+=======
+              <CheckCircleOutlined
+                style={{ fontSize: "30px", color: "#52c41a" }}
+              />
+              <Title level={3} style={{ marginLeft: "10px" }}>
+                Certificate
+              </Title>
+            </Row>
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Text strong>Diamond Name:</Text>{" "}
+                <Text>{certificateData?.diamondId?.diamondName}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Origin:</Text>{" "}
+                <Text>{certificateData?.diamondId?.origin}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Carat Weight:</Text>{" "}
+                <Text>{certificateData?.diamondId?.caratWeight}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Color:</Text>{" "}
+                <Text>{certificateData?.diamondId?.color}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Clarity:</Text>{" "}
+                <Text>{certificateData?.diamondId?.clarity}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Cut:</Text>{" "}
+                <Text>{certificateData?.diamondId?.cut}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Shape:</Text>{" "}
+                <Text>{certificateData?.diamondId?.shape}</Text>
+              </Col>
+              {/* <Col span={12}>
+>>>>>>> 4176eb8f5b32ac30411723af9c71a0fdde7da4d6
                 <Text strong>Base Price:</Text>{" "}
                 <Text>
                   {formatCurrency(certificateData?.diamondId?.basePrice)}
                 </Text>
               </Col> */}
+<<<<<<< HEAD
                 <Col span={12}>
                   <Text strong>Certificate Number:</Text>{" "}
                   <Text>{certificateData?.number}</Text>
@@ -301,6 +369,73 @@ export default function OrderDetails() {
             <Card
               bordered={false}
               style={{ background: "#E3F2FD", padding: "20px" }}
+=======
+              <Col span={12}>
+                <Text strong>Certificate Number:</Text>{" "}
+                <Text>{certificateData?.number}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Shape Cut:</Text>{" "}
+                <Text>{certificateData?.shapeCut}</Text>
+              </Col>
+              <Col span={24}>
+                <Text strong>Description:</Text>{" "}
+                <Text>{certificateData?.description}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Measurements:</Text>{" "}
+                <Text>{certificateData?.measure}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Polish:</Text>{" "}
+                <Text>{certificateData?.polish}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Symmetry:</Text>{" "}
+                <Text>{certificateData?.symmetry}</Text>
+              </Col>
+              <Col span={12}>
+                <Text strong>Issuer:</Text>{" "}
+                <Text>{certificateData?.issuer}</Text>
+              </Col>
+              <Col span={24}>
+                <Text strong>Issued Date:</Text>{" "}
+                <Text>{certificateData?.issued_date}</Text>
+              </Col>
+            </Row>
+          </Card>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </Modal>
+      <Modal
+        title="Chi tiết bảo hành"
+        visible={isWarrantyModalVisible}
+        onCancel={handleCancelWarranty}
+        width={1000}
+        footer={[
+          <Button key="close" onClick={handleCancelWarranty}>
+            Close
+          </Button>,
+        ]}
+      >
+        {warrantyData ? (
+          <Card
+            bordered={false}
+            style={{ background: "#E3F2FD", padding: "20px" }}
+          >
+            <Row justify="center" style={{ marginBottom: "20px" }}>
+              <img
+                src={Logo}
+                alt="Logo"
+                style={{ width: "100px", marginBottom: "20px" }}
+              />
+            </Row>
+            <Row
+              justify="center"
+              className="flex justify-center items-center"
+              style={{ marginBottom: "20px" }}
+>>>>>>> 4176eb8f5b32ac30411723af9c71a0fdde7da4d6
             >
               <Row justify="center" style={{ marginBottom: "20px" }}>
                 <img
