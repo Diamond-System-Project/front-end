@@ -10,7 +10,7 @@ export default function ListDiamondMount() {
     const fetchDiamondMounts = async () => {
       try {
         const response = await DiamondMountAPI.getAllDiamondMounts();
-        setDataSource(response.data); // Adjust this if response structure is different
+        setDataSource(response.data);
         setLoading(false);
       } catch (error) {
         message.error("Failed to fetch diamond mounts.");

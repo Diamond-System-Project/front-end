@@ -15,7 +15,6 @@ const UserDetail = () => {
         setUser(userData);
         form.setFieldsValue({
           fullName: userData.data.data.fullName,
-          // password: userData.data.data.password,
           phone: userData.data.data.phone,
           dob: userData.data.data.dob,
           email: userData.data.data.email,

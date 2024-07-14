@@ -33,6 +33,9 @@ const OrderAPI = {
       status,
     });
   },
+  updateOrderToProcessing: (id) => {
+    return axiosClient.put(`/order/processing/${id}`);
+  },
 };
 
 export default OrderAPI;

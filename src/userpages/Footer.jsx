@@ -4,10 +4,12 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import ZaloIcon from "@mui/icons-material/Chat";
+import { Link } from "react-router-dom";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import styled from "styled-components";
 import { Input } from "antd";
+import logoImage from '../assets/images/Songlong.png';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -66,11 +68,13 @@ export default function Footer() {
             <span className="font-bold">HOTLINE: 0948704134</span>
           </div>
           <div className="flex justify-center">
+          <Link to="/">
             <img
-              src="src/assets/images/Songlong.png"
+              src={logoImage}   
               alt="Song Long Diamond"
               className="mx-auto max-w-xs"
             />
+          </Link>
           </div>
           <div className="flex items-center space-x-2 self-end">
             <LocationOnIcon className="text-red-500" />

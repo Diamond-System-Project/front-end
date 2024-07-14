@@ -13,17 +13,16 @@ const OrderList = () => {
         const response = await OrderAPI.getAllOrders();
         console.log("API response:", response);
         if (response.data && Array.isArray(response.data.data)) {
-          // Transform and set data
           const orders = response.data.data.map((order) => ({
             orderId: order.orderId,
             customerName: order.cname,
             date: order.order_date,
-            status: order.status.toLowerCase(), // Ensure status is in lowercase for filtering
+            status: order.status.toLowerCase(),
             amount: order.payment,
           }));
           setData(orders);
         } else {
-          console.error("Unexpected data format:", response.data); // Log the unexpected format
+          console.error("Unexpected data format:", response.data);
           throw new Error("Unexpected data format");
         }
 

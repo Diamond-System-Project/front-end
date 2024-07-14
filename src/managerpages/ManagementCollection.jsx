@@ -105,7 +105,6 @@ const Collection = () => {
     }
 
     if (editingCollection) {
-      // Update collection
       try {
         const updatedData = {
           name: values.collectionName,
@@ -128,7 +127,6 @@ const Collection = () => {
         message.error("Failed to update collection");
       }
     } else {
-      // Create new collection
       try {
         const newCollection = {
           name: values.collectionName,

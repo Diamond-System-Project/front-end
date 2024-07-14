@@ -33,7 +33,7 @@ const Quotation = () => {
 
     const timer = setInterval(() => {
       setCurrentDate(new Date());
-    }, 86400000); // 24 giờ trong milliseconds
+    }, 86400000);
 
     return () => {
       clearInterval(timer);
@@ -47,7 +47,7 @@ const Quotation = () => {
 
   const formatCurrency = (amount) => {
     if (amount === null || amount === undefined) return "";
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
   const formatPrices = (prices) => {
     return [

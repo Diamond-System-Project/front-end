@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Card, List, message } from "antd";
 import CollectionApi from "../api/CollectionAPI";
 
@@ -10,8 +10,21 @@ const Collection = () => {
   const [loading, setLoading] = useState(false);
   const productsRef = useRef(null);
 
+  const location = useLocation();
+  const selectedCollectionId = location.state?.selectedCollectionId;
+
+  useEffect(() => {
+    if (selectedCollectionId) {
+      handleCollectionClick(selectedCollectionId);
+      // Scroll to the products section
+      setTimeout(() => {
+        productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [selectedCollectionId]);
+
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
 
   useEffect(() => {
@@ -28,29 +41,51 @@ const Collection = () => {
     fetchCollections();
   }, []);
 
-  const handleCollectionClick = async (collectionId) => {
-    setLoading(true);
-    setSelectedCollection(collectionId);
-    setProducts([]);
+  const styles = `
+  body {
+    background-color: #FFF0F5; /* Màu hồng nhạt */
+  }
 
-    try {
-      const response = await CollectionApi.getProduct(collectionId);
-      setProducts(response.data.data);
-      if (response.data.data.length === 0) {
-        message.info("This collection has no products.");
-      } 
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      
-    } finally {
-      setLoading(false);
-      setTimeout(() => {
-        productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  };
+  .collection-card {
+    border: 2px solid #E6F2FF; 
+    transition: all 0.3s ease;
+  }
+
+  .collection-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+
+  .selected-collection {
+    border: 4px solid #1890ff; 
+  }
+`;
+
+
+const handleCollectionClick = async (collectionId) => {
+  setLoading(true);
+  setSelectedCollection(collectionId);
+  setProducts([]);
+
+  try {
+    const response = await CollectionApi.getProduct(collectionId);
+    setProducts(response.data.data);
+    if (response.data.data.length === 0) {
+      message.info("This collection has no products.");
+    } 
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  } finally {
+    setLoading(false);
+    setTimeout(() => {
+      productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+};
 
   return (
+    <>
+    <style>{styles}</style>
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h2 className="text-3xl font-bold mb-8">Collections</h2>
       {collections.length === 0 ? (
@@ -149,6 +184,7 @@ const Collection = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

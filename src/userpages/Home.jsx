@@ -3,7 +3,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { Link, useNavigate } from "react-router-dom";
 import ProductAPI from "../api/ProductAPI";
-import CollectionAPI from "../api/CollectionAPI"; // Ensure this path is correct
+import CollectionAPI from "../api/CollectionAPI";
 
 export default function Home() {
   const [currentProduct, setCurrentProduct] = useState(0);
@@ -26,7 +26,7 @@ export default function Home() {
   const fetchProducts = async () => {
     try {
       const response = await ProductAPI.products();
-      setProducts(response.data.data); // Adjust this if your API response structure is different
+      setProducts(response.data.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -35,10 +35,14 @@ export default function Home() {
   const fetchCollections = async () => {
     try {
       const response = await CollectionAPI.getAllCollections();
-      setCollections(response.data.data); // Adjust this if your API response structure is different
+      setCollections(response.data.data);
     } catch (error) {
       console.error("Error fetching collections:", error);
     }
+  };
+
+  const handleCollectionClick = (collectionId) => {
+    navigate(`/collection`, { state: { selectedCollectionId: collectionId } });
   };
 
   const nextPageProduct = () => {
@@ -78,7 +82,15 @@ export default function Home() {
   };
 
   const formatPrice = (price) => {
-    return `${parseInt(price).toLocaleString()}₫`;
+    return (
+      parseInt(price)
+        .toLocaleString("vi-VN", {
+          style: "decimal",
+          maximumFractionDigits: 0,
+          minimumFractionDigits: 0,
+        })
+        .replace(/\./g, ".") + " VND"
+    );
   };
 
   return (
@@ -282,7 +294,10 @@ export default function Home() {
                 .map((collection) => (
                   <div
                     key={collection.collectionId}
-                    className="border border-gray-200 p-6 rounded-lg transition duration-300 ease-in-out hover:shadow-lg hover:scale-105"
+                    className="border border-gray-200 p-6 rounded-lg transition duration-300 ease-in-out hover:shadow-lg hover:scale-105 cursor-pointer"
+                    onClick={() =>
+                      handleCollectionClick(collection.collectionId)
+                    }
                   >
                     <img
                       src={collection.url}

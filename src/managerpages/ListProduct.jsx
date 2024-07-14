@@ -97,6 +97,11 @@ const ListProduct = () => {
 
   const columns = [
     {
+      title: "Product ID",
+      dataIndex: "productId",
+      key: "productId",
+    },
+    {
       title: "Image",
       dataIndex: "url",
       key: "url",

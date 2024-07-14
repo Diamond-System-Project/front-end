@@ -56,6 +56,10 @@ export default function ProductDetail() {
     fetchData();
   }, [id]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);  
+  }, []);
+
   const handleAddToCart = () => {
     const price = formatCurrency(product.price)
       ? String(product.price).replace(/[^0-9]/g, "")
@@ -74,7 +78,7 @@ export default function ProductDetail() {
   };
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
 
   const handleBuyNow = () => {
@@ -171,8 +175,8 @@ export default function ProductDetail() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex">
-        <div className="w-1/2 p-4">
+      <div className="flex flex-wrap">
+        <div className="w-full md:w-1/2 p-4">
           <div className="relative flex justify-center">
             <img src={product.url ?? ""} alt="Product" className="w-1/2" />
           </div>

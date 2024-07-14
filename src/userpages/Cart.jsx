@@ -53,6 +53,14 @@ export default function Cart() {
     selectedItems.includes(item.productId)
   );
   const handleProceedToCheckout = async () => {
+    if (selectedItems.length === 0) {
+      message.info({
+        content: 'Bạn hãy chọn 1 sản phẩm để thanh toán nhé ^.^',
+        duration: 2,
+      });
+      return;
+    }
+  
     setLoading(true);
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -77,7 +85,7 @@ export default function Cart() {
   const finalPrice = totalPrice - discount;
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
 
   useEffect(() => {
@@ -264,23 +272,27 @@ export default function Cart() {
                     </Typography>
                   </div>
                   <Button
-                    type="primary"
-                    className="w-full mt-2 bg-blue-500 h-[50px]"
-                    onClick={handleProceedToCheckout}
-                    style={{
-                      transition: 'all 0.3s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.05)';
-                      e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    TIẾN HÀNH ĐẶT HÀNG
-                  </Button>
+  type="primary"
+  className="w-full mt-2 bg-blue-500 h-[50px]"
+  onClick={handleProceedToCheckout}
+  disabled={selectedItems.length === 0}
+  style={{
+    transition: 'all 0.3s ease',
+    opacity: selectedItems.length === 0 ? 0.5 : 1,
+  }}
+  onMouseEnter={(e) => {
+    if (selectedItems.length > 0) {
+      e.currentTarget.style.transform = 'scale(1.05)';
+      e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+    }
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = 'scale(1)';
+    e.currentTarget.style.boxShadow = 'none';
+  }}
+>
+  TIẾN HÀNH ĐẶT HÀNG
+</Button>
                 </div>
               </div>
             ) : (

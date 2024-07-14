@@ -7,6 +7,7 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import { Divider, Dropdown, Menu } from "antd";
+import logoImage from '../assets/images/Songlong.png';
 
 export default function Header() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -111,7 +112,7 @@ export default function Header() {
         <div className="text-center py-4">
           <Link to="/">
             <img
-              src="src/assets/images/Songlong.png"
+              src={logoImage}   
               alt="Song Long Diamond"
               className="mx-auto max-w-xs"
             />

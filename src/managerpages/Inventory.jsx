@@ -130,6 +130,16 @@ const Inventory = () => {
 
   const columns = [
     {
+      title: "Location ID",
+      dataIndex: "locationId",
+      key: "locationId",
+    },
+    {
+      title: "Product ID",
+      dataIndex: ["productId", "productId"],
+      key: "productId",
+    },
+    {
       title: "Product Name",
       dataIndex: ["productId", "productName"],
       key: "productName",
@@ -171,7 +181,6 @@ const Inventory = () => {
       ),
     },
   ];
-
   return (
     <div>
       <div className="flex justify-between items-center p-6">

@@ -58,12 +58,12 @@ const ProductPromotionAPI = {
     }
   },
 
-  updateStatus: async (promotion) => {
+  updateStatus: async (promotionId, productId) => {
     try {
-      const response = await axiosClient.put(
-        "/productpromotion/status",
-        promotion
-      );
+      const response = await axiosClient.put(`/productpromotion/status`, {
+        promotionId,
+        productId,
+      });
       return response.data;
     } catch (error) {
       console.error("Error updating product promotion status", error);

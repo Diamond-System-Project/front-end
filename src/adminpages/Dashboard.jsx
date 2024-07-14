@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
+import PropTypes from 'prop-types'; 
 import { Card } from "antd";
-import { CalendarOutlined } from "@ant-design/icons";
+import { UserOutlined, ShoppingCartOutlined, CheckCircleOutlined, CloseCircleOutlined, DollarCircleOutlined } from "@ant-design/icons";
 import { CardBody, CardHeader, Typography } from "@material-tailwind/react";
-import Chart from "react-apexcharts";
+import { Pie, Chart } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, LineElement, PointElement } from 'chart.js';
 import DashboardAPI from "../api/DashboardAPI";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, LineElement, PointElement, ChartDataLabels);
 
 const Dashboard = () => {
   const [cardData, setCardData] = useState({
@@ -14,10 +19,24 @@ const Dashboard = () => {
     totalRevenue: 0,
   });
 
+  const [revenueTimeframe, setRevenueTimeframe] = useState('weekly');
   const [pieChartData, setPieChartData] = useState({
-    series: [0, 0, 0],
-    labels: ["Active Orders", "Completed Orders", "Return Orders"],
+    series: [],
+    labels: ["Processing Orders", "Completed Orders", "Cancelled Orders"],
   });
+  const [barChartData, setBarChartData] = useState({
+    weekly: [],
+    monthly: [],
+    yearly: [],
+  });
+
+  const formatCurrency = (amount) => {
+    if (amount == null || isNaN(amount)) return "N/A";
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+      .format(amount)
+      .replace('₫', 'VND')
+      .trim();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +47,12 @@ const Dashboard = () => {
           DashboardAPI.totalRevenue(),
           DashboardAPI.countCompleteOrder(),
           DashboardAPI.countCancelOrder(),
+          DashboardAPI.getWeeklyRevenue(),
+          DashboardAPI.getMonthlyRevenue(),
+          DashboardAPI.getYearlyRevenue(),
         ]);
+
+        console.log('API responses:', responses);
 
         setCardData({
           totalMembers: responses[0].data.data,
@@ -44,7 +68,13 @@ const Dashboard = () => {
             responses[3].data.data,
             responses[4].data.data,
           ],
-          labels: ["Active Orders", "Completed Orders", "Return Orders"],
+          labels: ["Processing Orders", "Completed Orders", "Cancelled Orders"],
+        });
+
+        setBarChartData({
+          weekly: responses[5].data.data.map(item => parseFloat(item)), // Ensure data is in float format
+          monthly: responses[6].data.data.map(item => parseFloat(item)),
+          yearly: responses[7].data.data.map(item => parseFloat(item)),
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -58,73 +88,139 @@ const Dashboard = () => {
     {
       title: "Total Members",
       amount: cardData.totalMembers,
-      icon: <CalendarOutlined className="text-xl text-white" />,
+      icon: <UserOutlined className="text-2xl" />,
       bgColor: "bg-blue-500",
+      textColor: "text-blue-700",
     },
     {
-      title: "Active Orders",
+      title: "Processing Orders",
       amount: cardData.activeOrders,
-      icon: <CalendarOutlined className="text-xl text-white" />,
+      icon: <ShoppingCartOutlined className="text-2xl" />,
       bgColor: "bg-green-500",
+      textColor: "text-green-700",
     },
     {
       title: "Completed Orders",
       amount: cardData.completedOrders,
-      icon: <CalendarOutlined className="text-xl text-white" />,
+      icon: <CheckCircleOutlined className="text-2xl" />,
       bgColor: "bg-teal-500",
+      textColor: "text-teal-700",
     },
     {
-      title: "Return Orders",
+      title: "Cancelled Orders",
       amount: cardData.returnOrders,
-      icon: <CalendarOutlined className="text-xl text-white" />,
+      icon: <CloseCircleOutlined className="text-2xl" />,
       bgColor: "bg-red-500",
+      textColor: "text-red-700",
     },
     {
       title: "Total Revenue",
-      amount: `${cardData.totalRevenue.toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}`,
-      icon: <CalendarOutlined className="text-xl text-white" />,
+      amount: formatCurrency(cardData.totalRevenue),
+      icon: <DollarCircleOutlined className="text-2xl" />,
       bgColor: "bg-yellow-500",
+      textColor: "text-yellow-700",
     },
   ];
 
-  const pieChartConfig = {
-    type: "pie",
-    width: 400,
-    height: 400,
-    series: pieChartData.series,
-    options: {
-      chart: {
-        toolbar: {
-          show: false,
-        },
-      },
-      labels: pieChartData.labels,
-      title: {
-        show: false,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      colors: ["#1E3A8A", "#FF8F00", "#00897B"],
-      tooltip: {
-        enabled: true,
-        style: {
-          fontSize: "14px",
-        },
-        y: {
-          formatter: (val) => `${val}`,
-        },
-      },
+  const pieChartOptions = {
+    responsive: true,
+    plugins: {
       legend: {
-        position: "bottom",
+        position: 'bottom',
         labels: {
-          colors: "#000",
+          color: "#000",
         },
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.label || '';
+            if (label) {
+              label += ': ';
+            }
+            label += context.parsed + ' Orders';
+            return label;
+          }
+        }
+      },
+      datalabels: {
+        color: '#ffffff',
+        font: {
+          weight: 'bold',
+          size: 16
+        },
+        formatter: (value, ctx) => {
+          let sum = 0;
+          let dataArr = ctx.chart.data.datasets[0].data;
+          dataArr.map(data => {
+            sum += data;
+          });
+          let percentage = (value * 100 / sum).toFixed(2) + "%";
+          return percentage;
+        },
+      }
+    },
+  };
+
+  const barChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      datalabels : {
+        display: false
+      },
+      title: {
+        display: true,
+        text: `${revenueTimeframe.charAt(0).toUpperCase() + revenueTimeframe.slice(1)} Revenue Overview`,
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== undefined) {
+              label += formatCurrency(context.parsed.y);
+            }
+            return label;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Revenue (VND)',
+        },
+        ticks: {
+          callback: function(value) {
+            return formatCurrency(value);
+          }
+        }
       },
     },
+    
+  };
+
+  const TimeframeButton = ({ label, value }) => (
+    <button
+      className={`px-4 py-2 rounded ${
+        revenueTimeframe === value ? 'bg-blue-500 text-white' : 'bg-gray-200'
+      }`}
+      onClick={() => setRevenueTimeframe(value)}
+    >
+      {label}
+    </button>
+  );
+
+  TimeframeButton.propTypes = {
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
   };
 
   return (
@@ -132,31 +228,29 @@ const Dashboard = () => {
       <div className="flex justify-between items-center p-6">
         <h2 className="text-3xl font-bold ">Dashboard</h2>
       </div>
-      <div className="flex justify-between mx-4 my-6">
-        {cardDetails.map((card, index) => (
-          <div key={index} className="w-full max-w-xs mx-2">
-            <Card className="shadow-lg rounded-lg overflow-hidden w-full">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {card.title}
-                  </h3>
-                </div>
-                <div className="flex items-center">
-                  <div
-                    className={`${card.bgColor} text-white p-4 rounded-lg mr-4`}
-                  >
-                    {card.icon}
-                  </div>
-                  <p className="text-2xl font-bold text-gray-800">
-                    {card.amount}
-                  </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4">
+      {cardDetails.map((card, index) => (
+        <div key={index} className="w-full">
+          <Card className="h-full shadow-lg rounded-lg overflow-hidden">
+            <div className="p-4 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className={`text-lg font-semibold ${card.textColor}`}>
+                  {card.title}
+                </h3>
+                <div className={`${card.bgColor} text-white p-3 rounded-full`}>
+                  {card.icon}
                 </div>
               </div>
-            </Card>
-          </div>
-        ))}
-      </div>
+              <div className="mt-auto">
+                <p className="text-2xl font-bold text-gray-800">
+                  {card.amount}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      ))}
+    </div>
       <div className="my-4 mx-6">
         <Card className="w-full shadow-lg rounded-lg overflow-hidden">
           <CardHeader
@@ -170,7 +264,70 @@ const Dashboard = () => {
             </Typography>
           </CardHeader>
           <CardBody className="px-4 pb-4 grid place-items-center">
-            <Chart {...pieChartConfig} />
+            <div style={{ width: '400px', height: '400px' }}>
+              <Pie data={{
+                labels: pieChartData.labels,
+                datasets: [
+                  {
+                    data: pieChartData.series,
+                    backgroundColor: ["#1E3A8A", "#00897B", "#FF8F00"],
+                    borderColor: ["#1E3A8A", "#00897B", "#FF8F00"],
+                    borderWidth: 1,
+                  },
+                ],
+              }} options={pieChartOptions} plugins={[ChartDataLabels]} />
+            </div>
+          </CardBody>
+        </Card>
+      </div>  
+      <div className="my-4 mx-6">
+        <Card className="w-full shadow-lg rounded-lg overflow-hidden">
+          <CardHeader
+            floated={false}
+            shadow={false}
+            color="transparent"
+            className="flex flex-col gap-4 rounded-none md:flex-row md:items-center p-4"
+          >
+            <Typography variant="h6" color="blue-gray">
+              Revenue Overview
+            </Typography>
+            <div className="flex space-x-2">
+              <TimeframeButton label="Weekly" value="weekly" />
+              <TimeframeButton label="Monthly" value="monthly" />
+              <TimeframeButton label="Yearly" value="yearly" />
+            </div>
+          </CardHeader>
+          <CardBody className="px-4 pb-4">
+            <Chart 
+              type='bar'
+              data={{
+                labels: revenueTimeframe === 'weekly' 
+                  ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                  : revenueTimeframe === 'monthly'
+                    ? ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+                    : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                  {
+                    type: 'bar',
+                    label: `${revenueTimeframe.charAt(0).toUpperCase() + revenueTimeframe.slice(1)} Revenue`,
+                    data: barChartData[revenueTimeframe],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                  },
+                  {
+                    type: 'line',
+                    label: 'Trend',
+                    data: barChartData[revenueTimeframe],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.1
+                  }
+                ],
+              }} 
+              options={barChartOptions} 
+            />
           </CardBody>
         </Card>
       </div>

@@ -19,8 +19,12 @@ const DashboardAPI = {
   },
   countCancelOrder: async () => {
     const url = "/dashboard/countCancelOrder";
-    return axiosClient.get(url);
+    return axiosClient.get(url);  
   },
+
+  getWeeklyRevenue: () => axiosClient.get('/dashboard/weekly'),
+  getMonthlyRevenue: () => axiosClient.get('/dashboard/monthly'),
+  getYearlyRevenue: () => axiosClient.get('/dashboard/yearly'),
 };
 
 export default DashboardAPI;

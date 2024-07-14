@@ -24,7 +24,7 @@ const Warranty = () => {
 
   useEffect(() => {
     fetchWarranties();
-    fetchAllOrderDetails(); // Fetching all order details
+    fetchAllOrderDetails();
   }, []);
 
   const fetchWarranties = async () => {

@@ -17,7 +17,7 @@ import AddProduct from "./managerpages/AddProduct";
 import UpdateProduct from "./managerpages/UpdateProduct";
 import ManagementUser from "./managerpages/ManagementUser";
 import UserDetail from "./managerpages/UserDetail";
-import UserOrders from "./managerpages/UserOrders";
+
 import OrderList from "./managerpages/OrderList";
 import OrderDetail from "./managerpages/OrderDetail";
 import ManagementVoucher from "./managerpages/ManagementVoucher";
@@ -50,7 +50,7 @@ import ProductPromotion from "./managerpages/ProductPromotion";
 import Promotions from "./managerpages/Promotion";
 import ProductDiamond from "./managerpages/ProductDiamond";
 import Inventory from "./managerpages/Inventory";
-import ProtectedRoute from "./Route/ProtectedRoute";
+import ProtectedRoute from "./route/ProtectedRoute";
 
 function App() {
   return (
@@ -310,20 +310,6 @@ function App() {
                 <div className="flex-1">
                   <Headerv2 />
                   <UserDetail />
-                </div>
-              </div>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/manager/management-user/user-orders/:id"
-          element={
-            <ProtectedRoute allowedRoles={["Manager"]}>
-              <div className="flex">
-                <SideBar />
-                <div className="flex-1">
-                  <Headerv2 />
-                  <UserOrders />
                 </div>
               </div>
             </ProtectedRoute>

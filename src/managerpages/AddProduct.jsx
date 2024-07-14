@@ -140,15 +140,6 @@ const AddProduct = ({ onCreate }) => {
                 >
                   <Input placeholder="$" />
                 </Form.Item>
-                {/* <Form.Item
-                  name="price"
-                  label="Sale Price"
-                  rules={[
-                    { required: true, message: "Please input the sale price!" },
-                  ]}
-                >
-                  <Input placeholder="$" />
-                </Form.Item> */}
               </div>
             </div>
             <div>

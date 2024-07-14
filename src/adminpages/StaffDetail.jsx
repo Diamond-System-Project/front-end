@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Button, Select } from "antd";
 import UserAPI from "../api/UserAPI";
-
+//eslint-disable-next-line
 const { Option } = Select;
 
 const StaffDetail = () => {
   const [form] = Form.useForm();
+  //eslint-disable-next-line
   const [loading, setLoading] = useState(false);
+  //eslint-disable-next-line
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     if (userId) {
       fetchUserDetails(userId);
     }
+    //eslint-disable-next-line
   }, [userId]);
 
   const fetchUserDetails = async (userId) => {
