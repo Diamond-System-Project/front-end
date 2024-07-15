@@ -182,7 +182,7 @@ export default function Footer() {
             </p>
             <p>
               <FooterLink
-                href="https://www.youtube.com/watch?v=DgqvwPNpFp4"
+                href="https://www.youtube.com/watch?v=g1h17YVx5ic"
                 target="_blank"
                 rel="noopener noreferrer"
               >
