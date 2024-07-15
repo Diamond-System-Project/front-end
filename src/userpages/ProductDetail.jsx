@@ -132,7 +132,7 @@ export default function ProductDetail() {
   const getStatusMessage = (status) => {
     if (status === "InStock") {
       return "CÒN HÀNG";
-    } else if (status === "Out of Stock") {
+    } else if (status === "OutOfStock") {
       return "HẾT HÀNG";
     } else {
       return "TRẠNG THÁI KHÔNG XÁC ĐỊNH";
