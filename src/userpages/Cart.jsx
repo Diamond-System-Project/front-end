@@ -32,7 +32,6 @@ export default function Cart() {
 
   const handleQuantityChange = (item, quantity) => {
     dispatch(updateCartItemQuantity({ ...item, quantity }));
-    // messageApi.success('Số lượng đã được cập nhật');
   };
 
   const handleCheckboxChange = (item) => {
