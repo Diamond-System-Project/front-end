@@ -127,7 +127,7 @@ export default function Home() {
                       <img
                         src={product.url}
                         alt={product.productName}
-                        className="w-full h-48 object-cover mb-4 rounded"
+                        className="w-full h-45 object-cover mb-4 rounded"
                       />
                       <h3 className="text-lg font-bold text-gray-800">
                         {product.productName}
