@@ -11,6 +11,7 @@ const ProductPrice = () => {
   const [selectedProductPrice, setSelectedProductPrice] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [productIdFilter, setProductIdFilter] = useState(null);
 
   useEffect(() => {
     fetchProductPrices();
@@ -58,9 +59,7 @@ const ProductPrice = () => {
         message.success("Product price deleted successfully");
         fetchProductPrices();
       } else {
-        message.error(
-          response.data.message || "Failed to delete product price"
-        );
+        message.error(response.data.message || "Failed to delete product price");
       }
     } catch (error) {
       console.error("Error deleting product price:", error);
@@ -98,9 +97,19 @@ const ProductPrice = () => {
     setIsModalVisible(false);
     form.resetFields();
   };
-  const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+
+  const handleProductIdFilterChange = (value) => {
+    setProductIdFilter(value);
   };
+
+  const filteredProductPrices = productIdFilter
+    ? productPrices.filter((price) => price.productId.productId === productIdFilter)
+    : productPrices;
+
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  };
+
   const columns = [
     {
       title: "ID",
@@ -132,11 +141,11 @@ const ProductPrice = () => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <span className="space-x-2">
+        <span>
           <Button
             type="primary"
             onClick={() => handleEditProductPrice(record)}
-            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+            style={{ marginRight: 8 }}
           >
             Edit
           </Button>
@@ -144,7 +153,6 @@ const ProductPrice = () => {
             type="primary"
             danger
             onClick={() => handleDeleteProductPrice(record.productPriceId)}
-            className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Delete
           </Button>
@@ -164,9 +172,24 @@ const ProductPrice = () => {
           + ADD PRODUCT PRICE
         </button>
       </div>
+      <div className="p-6 bg-gray-100 rounded-md shadow-md mb-6">
+        <h2 className="text-xl font-bold mb-4">Filter by Product</h2>
+        <Select
+          placeholder="Select a product"
+          onChange={handleProductIdFilterChange}
+          allowClear
+          style={{ width: 200 }}
+        >
+          {products.map((product) => (
+            <Option key={product.productId} value={product.productId}>
+              {product.productName}
+            </Option>
+          ))}
+        </Select>
+      </div>
       <Table
         columns={columns}
-        dataSource={productPrices}
+        dataSource={filteredProductPrices}
         rowKey="productPriceId"
       />
 
@@ -193,9 +216,7 @@ const ProductPrice = () => {
           <Form.Item
             name="markupRate"
             label="Markup Rate"
-            rules={[
-              { required: true, message: "Please input the markup rate!" },
-            ]}
+            rules={[{ required: true, message: "Please input the markup rate!" }]}
           >
             <Input placeholder="Type markup rate here" />
           </Form.Item>

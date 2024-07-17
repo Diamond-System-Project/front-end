@@ -17,9 +17,12 @@ const { Option } = Select;
 
 const ManagementDiamondMount = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [filteredInfo, setFilteredInfo] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingRecord, setEditingRecord] = useState(null);
+  const [filterType, setFilterType] = useState("");
 
   useEffect(() => {
     fetchDiamondMounts();
@@ -47,16 +50,11 @@ const ManagementDiamondMount = () => {
       .validateFields()
       .then(async (values) => {
         form.resetFields();
-        const newData = {
-          ...values,
-        };
+        const newData = { ...values };
 
         try {
           if (editingRecord) {
-            await DiamondMountAPI.updateDiamondMount(
-              editingRecord.mountId,
-              newData
-            );
+            await DiamondMountAPI.updateDiamondMount(editingRecord.mountId, newData);
             message.success("Diamond mount updated successfully!");
           } else {
             await DiamondMountAPI.createDiamondMount(newData);
@@ -95,8 +93,22 @@ const ManagementDiamondMount = () => {
       message.error("Failed to delete diamond mount.");
     }
   };
+
+  const handleChange = (pagination, filters, sorter) => {
+    setSortedInfo(sorter);
+    setFilteredInfo(filters);
+  };
+
+  const handleFilterChange = (value) => {
+    setFilterType(value);
+  };
+
+  const filteredData = filterType
+    ? dataSource.filter((item) => item.type === filterType)
+    : dataSource;
+
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
   };
 
   const columns = [
@@ -119,6 +131,13 @@ const ManagementDiamondMount = () => {
       title: "Type",
       dataIndex: "type",
       key: "type",
+      filters: [
+        { text: "Nhẫn", value: "Nhẫn" },
+        { text: "Vòng cổ", value: "Vòng cổ" },
+        { text: "Vòng đeo tay", value: "Vòng đeo tay" },
+      ],
+      filteredValue: filteredInfo.type || null,
+      onFilter: (value, record) => record.type === value,
     },
     {
       title: "Material",
@@ -137,29 +156,17 @@ const ManagementDiamondMount = () => {
       render: (text, record) => (
         <Dropdown
           overlay={
-            <Menu className="transition duration-300 ease-in-out">
-              <Menu.Item 
-                key="edit" 
-                onClick={() => handleEdit(record)}
-                className="hover:bg-blue-100 transition duration-300 ease-in-out transform hover:scale-105"
-              >
+            <Menu>
+              <Menu.Item key="edit" onClick={() => handleEdit(record)}>
                 Edit
               </Menu.Item>
-              <Menu.Item 
-                key="delete" 
-                onClick={() => handleDelete(record)}
-                className="hover:bg-red-100 transition duration-300 ease-in-out transform hover:scale-105"
-              >
+              <Menu.Item key="delete" onClick={() => handleDelete(record)}>
                 Delete
               </Menu.Item>
             </Menu>
           }
-          trigger={['click']}
         >
-          <Button 
-            icon={<MoreOutlined />} 
-            className="transition duration-300 ease-in-out transform hover:scale-110 hover:bg-gray-100"
-          />
+          <Button icon={<MoreOutlined />} />
         </Dropdown>
       ),
     },
@@ -176,7 +183,26 @@ const ManagementDiamondMount = () => {
           + ADD NEW MOUNT
         </button>
       </div>
-      <Table dataSource={dataSource} columns={columns} />
+      <div className="p-6 bg-gray-100 rounded-md shadow-md">
+        <h2 className="text-xl font-bold mb-4">Filter Options</h2>
+        <Select
+          placeholder="Filter by Type"
+          onChange={handleFilterChange}
+          allowClear
+          style={{ width: 200 }}
+        >
+          <Option value="Nhẫn">Nhẫn</Option>
+          <Option value="Vòng cổ">Vòng cổ</Option>
+          <Option value="Vòng đeo tay">Vòng đeo tay</Option>
+        </Select>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="mountId"
+        onChange={handleChange}
+        className="mt-6"
+      />
       <Modal
         title={editingRecord ? "Edit Diamond Mount" : "Add New Diamond Mount"}
         visible={isModalVisible}
@@ -205,7 +231,11 @@ const ManagementDiamondMount = () => {
             label="Type"
             rules={[{ required: true, message: "Please select the type!" }]}
           >
-            <Input />
+            <Select>
+              <Option value="Nhẫn">Nhẫn</Option>
+              <Option value="Vòng cổ">Vòng cổ</Option>
+              <Option value="Vòng đeo tay">Vòng đeo tay</Option>
+            </Select>
           </Form.Item>
           <Form.Item
             name="material"

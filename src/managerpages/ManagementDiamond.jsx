@@ -1,18 +1,27 @@
-import { Button, Form, Input, Modal, notification, Table } from "antd";
+
+import { Button, Form, Input, Modal, notification, Table, Select } from "antd";
 import { useEffect, useState } from "react";
 import DiamondAPI from "../api/DiamondAPI";
 
+const { Option } = Select;
+
 const ManagementDiamond = () => {
   const [diamonds, setDiamonds] = useState([]);
+  const [filteredDiamonds, setFilteredDiamonds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedDiamond, setSelectedDiamond] = useState(null);
+  const [originFilter, setOriginFilter] = useState(null);
 
   const [form] = Form.useForm();
 
   useEffect(() => {
     fetchDiamonds();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [diamonds, originFilter]);
 
   const fetchDiamonds = async () => {
     setLoading(true);
@@ -27,11 +36,19 @@ const ManagementDiamond = () => {
       }
     } catch (error) {
       notification.error({ message: "Failed to fetch diamonds" });
-      
     }
     setLoading(false);
   };
-  console.log("cc", fetchDiamonds)
+
+  const applyFilters = () => {
+    let filtered = diamonds;
+
+    if (originFilter) {
+      filtered = filtered.filter(diamond => diamond.origin === originFilter);
+    }
+
+    setFilteredDiamonds(filtered);
+  };
 
   const showModal = (diamond) => {
     setSelectedDiamond(diamond);
@@ -55,9 +72,11 @@ const ManagementDiamond = () => {
       notification.error({ message: "Failed to save diamond" });
     }
   };
+
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
   };
+
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -72,7 +91,7 @@ const ManagementDiamond = () => {
     { title: "Clarity", dataIndex: "clarity", key: "clarity" },
     { title: "Cut", dataIndex: "cut", key: "cut" },
     { title: "Shape", dataIndex: "shape", key: "shape" },
-    { title: "Base Price", dataIndex: "basePrice", key: "basePrice",  render: (baseprice) => formatCurrency(baseprice), },
+    { title: "Base Price", dataIndex: "basePrice", key: "basePrice", render: (basePrice) => formatCurrency(basePrice) },
     {
       title: "Action",
       key: "action",
@@ -95,9 +114,18 @@ const ManagementDiamond = () => {
           + ADD DIAMOND
         </button>
       </div>
+      <Select
+        placeholder="Filter by Origin"
+        onChange={setOriginFilter}
+        allowClear
+        style={{ width: 200, marginBottom: 16 }}
+      >
+        <Option value="Natural">Natural</Option>
+        <Option value="Lab-Created">Lab-Created</Option>
+      </Select>
       <Table
         columns={columns}
-        dataSource={diamonds}
+        dataSource={filteredDiamonds.length ? filteredDiamonds : diamonds}
         loading={loading}
         rowKey="diamondId"
       />
@@ -125,9 +153,7 @@ const ManagementDiamond = () => {
           <Form.Item
             name="caratWeight"
             label="Carat Weight"
-            rules={[
-              { required: true, message: "Please input the carat weight!" },
-            ]}
+            rules={[{ required: true, message: "Please input the carat weight!" }]}
           >
             <Input />
           </Form.Item>
@@ -158,9 +184,7 @@ const ManagementDiamond = () => {
           <Form.Item
             name="basePrice"
             label="Base Price"
-            rules={[
-              { required: true, message: "Please input the base price!" },
-            ]}
+            rules={[{ required: true, message: "Please input the base price!" }]}
           >
             <Input />
           </Form.Item>
