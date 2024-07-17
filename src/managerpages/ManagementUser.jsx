@@ -49,7 +49,12 @@ const ManagementUser = () => {
       key: "detail",
       render: (record) => (
         <Link to={`/manager/management-user/user-detail/${record.userId}`}>
-          Detail
+          <Button
+            type="primary"
+            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Detail
+          </Button>
         </Link>
       ),
     },

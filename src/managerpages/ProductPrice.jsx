@@ -132,14 +132,19 @@ const ProductPrice = () => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <span>
-          <Button type="link" onClick={() => handleEditProductPrice(record)}>
+        <span className="space-x-2">
+          <Button
+            type="primary"
+            onClick={() => handleEditProductPrice(record)}
+            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
             Edit
           </Button>
           <Button
-            type="link"
+            type="primary"
             danger
             onClick={() => handleDeleteProductPrice(record.productPriceId)}
+            className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Delete
           </Button>

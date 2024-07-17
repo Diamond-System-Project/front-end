@@ -151,19 +151,25 @@ const ManagementStaff = () => {
       key: "email",
     },
     {
-      title: "Edit",
-      key: "edit",
+      title: "Action",
+      key: "action",
       render: (text, record) => (
-        <Link onClick={() => handleAction(record)}>Edit</Link>
-      ),
-    },
-    {
-      title: "Delete",
-      key: "delete",
-      render: (text, record) => (
-        <Button type="danger" onClick={() => handleDelete(record)}>
-          Delete
-        </Button>
+        <div className="space-x-2">
+          <Button 
+            type="primary" 
+            onClick={() => handleAction(record)}
+            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Edit
+          </Button>
+          <Button 
+            danger
+            onClick={() => handleDelete(record)}
+            className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Delete
+          </Button>
+        </div>
       ),
     },
   ];

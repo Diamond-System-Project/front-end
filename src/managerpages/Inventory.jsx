@@ -137,6 +137,26 @@ const Inventory = () => {
     setIsModalVisible(true);
   };
 
+  const handleAvailableChange = async (record, checked) => {
+    setLoading(true);
+    try {
+      const updatedInventory = { 
+        ...record, 
+        available: checked,
+        productId: record.productId.productId, // Đảm bảo gửi productId đúng định dạng
+        purchaseDate: record.purchaseDate ? moment(record.purchaseDate, "DD-MM-YYYY").format("DD-MM-YYYY") : ""
+      };
+      await InventoryAPI.updateInventory(record.locationId, updatedInventory);
+      message.success("Availability updated successfully");
+      fetchInventory(); // Refresh the data
+    } catch (error) {
+      message.error("Error updating availability");
+      console.error("Error updating availability:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const openEditModal = (record) => {
     setEditingInventory(record);
     setAvailable(record.available);
@@ -177,7 +197,13 @@ const Inventory = () => {
       title: "Available",
       dataIndex: "available",
       key: "available",
-      render: (text) => <Switch checked={text} disabled />,
+      render: (text, record) => (
+        <Switch
+          checked={record.available}
+          onChange={(checked) => handleAvailableChange(record, checked)}
+          className="hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+        />
+      ),
     },
     {
       title: "Actions",

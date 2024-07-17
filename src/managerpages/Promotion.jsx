@@ -154,6 +154,7 @@ function Promotion() {
             <Button
               type="link"
               onClick={() => handleDelete(record.promotionId)}
+              className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-red-600"
             >
               Inactive
             </Button>
@@ -161,11 +162,16 @@ function Promotion() {
             <Button
               type="link"
               onClick={() => activatePromotion(record.promotionId)}
+              className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-green-600"
             >
               Activate
             </Button>
           )}
-          <Button type="link" onClick={() => handleEdit(record)}>
+          <Button 
+            type="link" 
+            onClick={() => handleEdit(record)}
+            className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-blue-600"
+          >
             Edit
           </Button>
         </div>

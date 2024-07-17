@@ -107,7 +107,7 @@ const ListProduct = () => {
 
   const statusFilterOptions = [
     { text: "InStock", value: "InStock" },
-    { text: "Out of Stock", value: "Out of Stock" },
+    { text: "OutOfStock", value: "OutOfStock" },
   ];
   const formatCurrency = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
@@ -166,16 +166,13 @@ const ListProduct = () => {
       key: "action",
       render: (_, product) => (
         <span>
-          <Button type="link" onClick={() => handleUpdateProduct(product)}>
+          <Button
+            type="primary"
+            onClick={() => handleUpdateProduct(product)}
+            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
             Edit
           </Button>
-          {/* <Button
-            type="link"
-            danger
-            onClick={() => handleDeleteProduct(product.productId)}
-          >
-            Delete
-          </Button> */}
         </span>
       ),
     },

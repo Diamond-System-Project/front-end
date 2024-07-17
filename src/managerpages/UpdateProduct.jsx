@@ -142,7 +142,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                 >
                   <Select placeholder="Select status">
                     <Option value="InStock">In Stock</Option>
-                    <Option value="Out of Stock">Out of Stock</Option>
+                    <Option value="OutOfStock">OutOfStock</Option>
                   </Select>
                 </Form.Item>
               </div>
@@ -155,7 +155,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                     placeholder="$"
                     className="mb-4"
                     type="number"
-                    readOnly
+                   
                   />
                 </Form.Item>
               </div>

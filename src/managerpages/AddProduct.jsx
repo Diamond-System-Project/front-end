@@ -1,16 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Input, Upload, message, Form, Select, Card } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { storage, ref, uploadBytes, getDownloadURL } from "../firebase";
+import DiamondMountAPI from "../api/DiamondMountAPI";
 
 const { Option } = Select;
 const { TextArea } = Input;
 const { Dragger } = Upload;
-//eslint-disable-next-line
+
 const AddProduct = ({ onCreate }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [url, setUrl] = useState(null);
   const [form] = Form.useForm();
+  const [diamondMounts, setDiamondMounts] = useState([]);
+
+  useEffect(() => {
+    fetchDiamondMounts();
+  }, []);
+
+  const fetchDiamondMounts = async () => {
+    try {
+      const response = await DiamondMountAPI.getAllDiamondMounts();
+      setDiamondMounts(response.data);
+    } catch (error) {
+      console.error("Failed to fetch diamond mounts:", error);
+      message.error("Failed to fetch diamond mounts.");
+    }
+  };
 
   const handleImageUpload = async (info) => {
     const { file } = info;
@@ -23,9 +39,7 @@ const AddProduct = ({ onCreate }) => {
         };
 
         try {
-          const storageRef = ref(storage, file.name);
-          const snapshot = await uploadBytes(storageRef, file.originFileObj);
-          const downloadURL = await getDownloadURL(snapshot.ref);
+          const downloadURL = await uploadImageAndGetURL(file.originFileObj);
           setUrl(downloadURL);
           message.success("Image uploaded successfully");
         } catch (error) {
@@ -38,6 +52,12 @@ const AddProduct = ({ onCreate }) => {
     } else if (file.status === "error") {
       console.error("Error uploading file:", file.error);
     }
+  };
+
+  const uploadImageAndGetURL = async (file) => {
+    const storageRef = ref(storage, file.name);
+    const snapshot = await uploadBytes(storageRef, file);
+    return await getDownloadURL(snapshot.ref);
   };
 
   const beforeUpload = (file) => {
@@ -55,7 +75,15 @@ const AddProduct = ({ onCreate }) => {
     }
 
     try {
-      const newProduct = { ...values, url };
+      const selectedMount = diamondMounts.find(
+        (mount) => mount.mountName === values.mountName
+      );
+      if (!selectedMount) {
+        message.error("Invalid mount selection!");
+        return;
+      }
+
+      const newProduct = { ...values, mountId: selectedMount.mountId, url };
       await onCreate(newProduct);
       form.resetFields();
       setImagePreview(null);
@@ -92,11 +120,17 @@ const AddProduct = ({ onCreate }) => {
                 <TextArea placeholder="Type description here" rows={2} />
               </Form.Item>
               <Form.Item
-                name="mountId"
+                name="mountName"
                 label="Mount"
-                rules={[{ required: true, message: "Please input the mount!" }]}
+                rules={[{ required: true, message: "Please select the mount!" }]}
               >
-                <Input placeholder="Type mount here" />
+                <Select placeholder="Select a mount">
+                  {diamondMounts.map((mount) => (
+                    <Option key={mount.mountId} value={mount.mountName}>
+                      {mount.mountName}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
@@ -144,7 +178,7 @@ const AddProduct = ({ onCreate }) => {
             </div>
             <div>
               <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-                {imagePreview ? (
+                {url ? (
                   <img
                     src={imagePreview}
                     alt="Product Preview"

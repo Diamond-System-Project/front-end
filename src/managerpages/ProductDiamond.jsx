@@ -109,16 +109,21 @@ const ProductDiamond = () => {
       key: "quantity",
     },
     {
-      title: "Actions",
-      key: "actions",
+      title: "Action",
+      key: "action",
       render: (text, record) => (
-        <div className="flex space-x-2">
-          <Button type="link" onClick={() => handleEdit(record)}>
+        <div className="space-x-2">
+          <Button 
+            type="primary" 
+            onClick={() => handleAction(record)}
+            className="hover:shadow-md transition duration-300"
+          >
             Edit
           </Button>
-          <Button
-            type="danger"
-            onClick={() => handleDelete(record.productDiamondId)}
+          <Button 
+            type="danger" 
+            onClick={() => handleDelete(record)}
+            className="hover:shadow-md transition duration-300"
           >
             Delete
           </Button>
@@ -126,7 +131,6 @@ const ProductDiamond = () => {
       ),
     },
   ];
-  
 
   return (
     <div>

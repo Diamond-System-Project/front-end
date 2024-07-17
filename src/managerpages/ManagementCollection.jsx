@@ -276,21 +276,25 @@ const Collection = () => {
       key: "action",
       render: (text, record) => (
         <span>
-          <Button type="link" onClick={() => handleEdit(record)}>
+          <Button 
+            type="link" 
+            onClick={() => handleAction(record)}
+            className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-blue-600"
+          >
             Edit
           </Button>
           <Button
             type="link"
             danger
-            onClick={() => handleDelete(record.collectionId)}
+            onClick={() => handleDelete(record.key)}
+            className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-red-600"
           >
             Delete
           </Button>
         </span>
       ),
     },
-  ];
-
+  ]
   return (
     <div>
       <div className="flex justify-between w-full p-6">

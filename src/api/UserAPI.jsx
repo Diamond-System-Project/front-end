@@ -16,9 +16,12 @@ const UserAPI = {
     const url = `/user/update/${id}`;
     try {
       const response = await axiosClient.put(url, values);
-      return response.data;
+      return { success: true, data: response.data };
     } catch (error) {
-      throw new Error(error.response.data.message || "Failed to update user");
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to update user"
+      };
     }
   },
   changePassword: async (id, values) => {

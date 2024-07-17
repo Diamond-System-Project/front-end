@@ -224,15 +224,25 @@ function ProductPromotion() {
       key: "actions",
       render: (text, record) => (
         <div className="flex space-x-2">
-          <Button type="link" onClick={() => handleUpdateStatus(record)}>
+          <Button
+            type="primary"
+            onClick={() => handleUpdateStatus(record)}
+            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
             {record.active ? "Inactive" : "Active"}
           </Button>
-          <Button type="link" onClick={() => handleEdit(record)}>
+          <Button
+            type="primary"
+            onClick={() => handleEdit(record)}
+            className="hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
             Edit
           </Button>
           <Button
-            type="danger"
+            type="primary"
+            danger
             onClick={() => handleDelete(record.productPromotionId)}
+            className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Delete
           </Button>

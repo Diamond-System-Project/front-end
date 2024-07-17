@@ -214,16 +214,22 @@ const OrderList = () => {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
+      render: (text) => formatCurrency(parseFloat(text.replace(/[^\d]/g, '')))
     },
     {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <>
+        <div className="space-x-2">
           <Link to={`/manager/order-list/order-detail/${record.orderId}`}>
-            View Detail
+            <Button 
+              type="primary"
+              className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              View Detail
+            </Button>
           </Link>
-
+  
           {["pending", "processing", "shipping"].includes(
             record.status.toLowerCase()
           ) ? (
@@ -233,25 +239,30 @@ const OrderList = () => {
               okText="Yes"
               cancelText="No"
             >
-              <Button type="link" danger>
+              <Button 
+                type="primary" 
+                danger
+                className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
+              >
                 Cancel Order
               </Button>
             </Popconfirm>
           ) : (
-            <Button type="link" disabled>
+            <Button type="primary" disabled>
               Cancel Order
             </Button>
           )}
-
+  
           {record.status.toLowerCase() === "pending" && (
             <Button
-              type="link"
+              type="primary"
               onClick={() => handleUpdateToProcessing(record)}
+              className="hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105"
             >
               Confirm Order
             </Button>
           )}
-        </>
+        </div>
       ),
     },
   ];

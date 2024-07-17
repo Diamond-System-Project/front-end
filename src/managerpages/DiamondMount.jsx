@@ -137,17 +137,29 @@ const ManagementDiamondMount = () => {
       render: (text, record) => (
         <Dropdown
           overlay={
-            <Menu>
-              <Menu.Item key="edit" onClick={() => handleEdit(record)}>
+            <Menu className="transition duration-300 ease-in-out">
+              <Menu.Item 
+                key="edit" 
+                onClick={() => handleEdit(record)}
+                className="hover:bg-blue-100 transition duration-300 ease-in-out transform hover:scale-105"
+              >
                 Edit
               </Menu.Item>
-              <Menu.Item key="delete" onClick={() => handleDelete(record)}>
+              <Menu.Item 
+                key="delete" 
+                onClick={() => handleDelete(record)}
+                className="hover:bg-red-100 transition duration-300 ease-in-out transform hover:scale-105"
+              >
                 Delete
               </Menu.Item>
             </Menu>
           }
+          trigger={['click']}
         >
-          <Button icon={<MoreOutlined />} />
+          <Button 
+            icon={<MoreOutlined />} 
+            className="transition duration-300 ease-in-out transform hover:scale-110 hover:bg-gray-100"
+          />
         </Dropdown>
       ),
     },
