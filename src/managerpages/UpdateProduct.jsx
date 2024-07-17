@@ -3,37 +3,43 @@ import { Button, Input, Card, Upload, message, Form, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { storage, ref, uploadBytes, getDownloadURL } from "../firebase";
 import ProductAPI from "../api/ProductAPI";
+import PropTypes from "prop-types";
+import DiamondMountAPI from "../api/DiamondMountAPI";
 
 const { Option } = Select;
 const { Dragger } = Upload;
 const { TextArea } = Input;
-//eslint-disable-next-line
+
 const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [form] = Form.useForm();
+  const [diamondMounts, setDiamondMounts] = useState([]);
 
   useEffect(() => {
+    fetchDiamondMounts();
     if (product) {
       form.setFieldsValue({
-        //eslint-disable-next-line
         productName: product.productName || "",
-        //eslint-disable-next-line
         description: product.description || "",
-        //eslint-disable-next-line
         mountId: product.mountId?.mountId || "",
-        //eslint-disable-next-line
         laborFee: product.laborFee || undefined,
-        //eslint-disable-next-line
         status: product.status || "",
-        //eslint-disable-next-line
         componentsPrice: product.componentsPrice || undefined,
-        //eslint-disable-next-line
         price: product.price || undefined,
       });
-      //eslint-disable-next-line
       setImagePreview(product?.url || "");
     }
   }, [product, form]);
+
+  const fetchDiamondMounts = async () => {
+    try {
+      const response = await DiamondMountAPI.getAllDiamondMounts();
+      setDiamondMounts(response.data);
+    } catch (error) {
+      console.error("Failed to fetch diamond mounts:", error);
+      message.error("Failed to fetch diamond mounts.");
+    }
+  };
 
   const handleImageUpload = async (info) => {
     const { file } = info;
@@ -49,9 +55,18 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
   };
 
   const handleFinish = async (values) => {
+    const selectedMount = diamondMounts.find(
+      (mount) => mount.mountName === values.mountName
+    );
+    if (!selectedMount) {
+      message.error("Invalid mount selection!");
+      return;
+    }
+
     const updatedProduct = {
       ...product,
       ...values,
+      mountId: selectedMount.mountId,
       url: imagePreview,
     };
 
@@ -64,12 +79,16 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
       message.error("Failed to update product. Please try again later.");
     }
   };
+  const validatePositiveNumber = (_, value) => {
+    if (value && value < 0) {
+      return Promise.reject(new Error("Value cannot be negative!"));
+    }
+    return Promise.resolve();
+  };
 
   const handleDelete = async () => {
     try {
-      //eslint-disable-next-line
       await ProductAPI.deleteProduct(product.productId);
-      //eslint-disable-next-line
       onDelete(product.productId);
       message.success("Product deleted successfully!");
     } catch (error) {
@@ -91,10 +110,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                   { required: true, message: "Please input the product name!" },
                 ]}
               >
-                <Input
-                  placeholder="Type product's name here"
-                  className="mb-4"
-                />
+                <Input placeholder="Type product's name here" />
               </Form.Item>
               <Form.Item
                 name="description"
@@ -103,22 +119,26 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                   { required: true, message: "Please input the description!" },
                 ]}
               >
-                <TextArea
-                  placeholder="Type Description here"
-                  rows={2}
-                  className="mb-4"
-                />
+                <TextArea placeholder="Type Description here" rows={2} />
               </Form.Item>
               <Form.Item
-                name="mountId"
+                name="mountName"
                 label="Mount"
-                rules={[{ required: true, message: "Please input the mount!" }]}
+                rules={[
+                  { required: true, message: "Please select the mount!" },
+                ]}
               >
-                <Input
-                  placeholder="Type mount here"
-                  className="mb-4"
-                  type="number"
-                />
+                <Select
+                  placeholder="Select a mount"
+                  disabled={true}
+                  className="bg-gray-100"
+                >
+                  {diamondMounts.map((mount) => (
+                    <Option key={mount.mountId} value={mount.mountName}>
+                      {mount.mountName}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
@@ -126,9 +146,10 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                   label="Labor Fee"
                   rules={[
                     { required: true, message: "Please input the labor fee!" },
+                    { validator: validatePositiveNumber },
                   ]}
                 >
-                  <Input placeholder="$" className="mb-4" type="number" />
+                  <Input placeholder="VND" type="number" />
                 </Form.Item>
                 <Form.Item
                   name="status"
@@ -142,22 +163,26 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                 >
                   <Select placeholder="Select status">
                     <Option value="InStock">In Stock</Option>
-                    <Option value="OutOfStock">OutOfStock</Option>
+                    <Option value="Out of Stock">Out of Stock</Option>
                   </Select>
                 </Form.Item>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Form.Item name="componentsPrice" label="Components Price">
-                  <Input placeholder="$" className="mb-4" type="number" />
-                </Form.Item>
-                <Form.Item name="price" label="Sale Price">
+                <Form.Item
+                  name="componentsPrice"
+                  label="Components Price"
+                  rules={[{ validator: validatePositiveNumber }]}
+                >
                   <Input
-                    placeholder="$"
-                    className="mb-4"
+                    placeholder="VND"
                     type="number"
-                   
+                    readOnly={true}
+                    className="bg-gray-100"
                   />
                 </Form.Item>
+                {/* <Form.Item name="price" label="Sale Price">
+                  <Input placeholder="VND" type="number" readOnly />
+                </Form.Item> */}
               </div>
             </div>
             <div>
@@ -176,7 +201,6 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                 <Form.Item label="Product Gallery">
                   <Dragger
                     name="files"
-                    className="mb-4"
                     onChange={handleImageUpload}
                     showUploadList={false}
                   >
@@ -208,6 +232,24 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
       </div>
     </Card>
   );
+};
+
+UpdateProduct.propTypes = {
+  product: PropTypes.shape({
+    productId: PropTypes.string.isRequired,
+    productName: PropTypes.string,
+    description: PropTypes.string,
+    mountId: PropTypes.shape({
+      mountId: PropTypes.string,
+    }),
+    laborFee: PropTypes.number,
+    status: PropTypes.string,
+    componentsPrice: PropTypes.number,
+    price: PropTypes.number,
+    url: PropTypes.string,
+  }),
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default UpdateProduct;

@@ -8,6 +8,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Dragger } = Upload;
 
+//eslint-disable-next-line
 const AddProduct = ({ onCreate }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [url, setUrl] = useState(null);
@@ -26,6 +27,13 @@ const AddProduct = ({ onCreate }) => {
       console.error("Failed to fetch diamond mounts:", error);
       message.error("Failed to fetch diamond mounts.");
     }
+  };
+
+  const validatePositiveNumber = (_, value) => {
+    if (value && value < 0) {
+      return Promise.reject(new Error("Value cannot be negative!"));
+    }
+    return Promise.resolve();
   };
 
   const handleImageUpload = async (info) => {
@@ -122,7 +130,9 @@ const AddProduct = ({ onCreate }) => {
               <Form.Item
                 name="mountName"
                 label="Mount"
-                rules={[{ required: true, message: "Please select the mount!" }]}
+                rules={[
+                  { required: true, message: "Please select the mount!" },
+                ]}
               >
                 <Select placeholder="Select a mount">
                   {diamondMounts.map((mount) => (
@@ -137,13 +147,11 @@ const AddProduct = ({ onCreate }) => {
                   name="laborFee"
                   label="Labor Fee"
                   rules={[
-                    {
-                      required: true,
-                      message: "Please input the labor fee!",
-                    },
+                    { required: true, message: "Please input the labor fee!" },
+                    { validator: validatePositiveNumber },
                   ]}
                 >
-                  <Input placeholder="$" />
+                  <Input placeholder="VND" type="number" />
                 </Form.Item>
                 <Form.Item
                   name="status"
@@ -165,14 +173,9 @@ const AddProduct = ({ onCreate }) => {
                 <Form.Item
                   name="componentsPrice"
                   label="Components Price"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input the components price!",
-                    },
-                  ]}
+                  rules={[{ validator: validatePositiveNumber }]}
                 >
-                  <Input placeholder="$" />
+                  <Input placeholder="VND" type="number" />
                 </Form.Item>
               </div>
             </div>

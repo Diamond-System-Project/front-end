@@ -140,11 +140,13 @@ const Inventory = () => {
   const handleAvailableChange = async (record, checked) => {
     setLoading(true);
     try {
-      const updatedInventory = { 
-        ...record, 
+      const updatedInventory = {
+        ...record,
         available: checked,
         productId: record.productId.productId, // Đảm bảo gửi productId đúng định dạng
-        purchaseDate: record.purchaseDate ? moment(record.purchaseDate, "DD-MM-YYYY").format("DD-MM-YYYY") : ""
+        purchaseDate: record.purchaseDate
+          ? moment(record.purchaseDate, "DD-MM-YYYY").format("DD-MM-YYYY")
+          : "",
       };
       await InventoryAPI.updateInventory(record.locationId, updatedInventory);
       message.success("Availability updated successfully");
@@ -230,9 +232,21 @@ const Inventory = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Inventory Management</h2>
-        <Button type="primary" onClick={openCreateModal}>
+        {/* <Button type="primary" onClick={openCreateModal}>
           Add New
-        </Button>
+        </Button> */}
+        <div className="flex justify-between space-x-4 mt-6">
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              onClick={openCreateModal}
+              className="bg-black border-black hover:bg-gray-800 hover:border-gray-800"
+            >
+              ADD NEW Inventory +
+            </Button>
+          </Form.Item>
+        </div>
       </div>
       <Table
         columns={columns}

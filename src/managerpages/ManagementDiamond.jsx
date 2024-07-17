@@ -27,9 +27,11 @@ const ManagementDiamond = () => {
       }
     } catch (error) {
       notification.error({ message: "Failed to fetch diamonds" });
+      
     }
     setLoading(false);
   };
+  console.log("cc", fetchDiamonds)
 
   const showModal = (diamond) => {
     setSelectedDiamond(diamond);
@@ -54,7 +56,7 @@ const ManagementDiamond = () => {
     }
   };
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
   const handleCancel = () => {
     setIsModalVisible(false);

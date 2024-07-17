@@ -59,8 +59,8 @@ function Promotion() {
   const handleEdit = (promotion) => {
     setFormData({
       ...promotion,
-      startDate: promotion.startDate ? moment(promotion.startDate) : null,
-      endDate: promotion.endDate ? moment(promotion.endDate) : null,
+      startDate: promotion.startDate ? moment(promotion.startDate, "DD-MM-YYYY") : null,
+      endDate: promotion.endDate ? moment(promotion.endDate, "DD-MM-YYYY") : null,
     });
     setEditingPromotion(promotion);
     setShowModal(true);
@@ -82,10 +82,10 @@ function Promotion() {
       const formattedFormData = {
         ...formData,
         startDate: formData.startDate
-          ? formData.startDate.format("YYYY-MM-DD")
+          ? formData.startDate.format("DD-MM-YYYY")
           : null,
         endDate: formData.endDate
-          ? formData.endDate.format("YYYY-MM-DD")
+          ? formData.endDate.format("DD-MM-YYYY")
           : null,
       };
       if (editingPromotion) {
@@ -130,14 +130,14 @@ function Promotion() {
       dataIndex: "startDate",
       key: "startDate",
       render: (startDate) =>
-        startDate ? moment(startDate).format("DD-MM-YYYY") : "",
+        startDate ? moment(startDate, "DD-MM-YYYY").format("DD-MM-YYYY") : "",
     },
     {
       title: "End Date",
       dataIndex: "endDate",
       key: "endDate",
       render: (endDate) =>
-        endDate ? moment(endDate).format("DD-MM-YYYY") : "",
+        endDate ? moment(endDate, "DD-MM-YYYY").format("DD-MM-YYYY") : "",
     },
     {
       title: "Status",

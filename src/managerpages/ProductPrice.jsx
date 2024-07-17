@@ -99,7 +99,7 @@ const ProductPrice = () => {
     form.resetFields();
   };
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
   const columns = [
     {

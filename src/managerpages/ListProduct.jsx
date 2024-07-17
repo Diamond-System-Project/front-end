@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { Table, Button, Modal, message } from "antd";
 import AddProduct from "./AddProduct";
@@ -110,7 +111,7 @@ const ListProduct = () => {
     { text: "OutOfStock", value: "OutOfStock" },
   ];
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
   const columns = [
     {

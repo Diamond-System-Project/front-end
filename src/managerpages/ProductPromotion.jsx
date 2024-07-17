@@ -321,7 +321,7 @@ function ProductPromotion() {
               name="startDate"
               value={formData.startDate}
               onChange={(date) => setFormData({ ...formData, startDate: date })}
-              format="YYYY-MM-DD"
+              format="DD-MM-YYYY"
             />
           </Form.Item>
           <Form.Item label="End Date">
@@ -329,7 +329,7 @@ function ProductPromotion() {
               name="endDate"
               value={formData.endDate}
               onChange={(date) => setFormData({ ...formData, endDate: date })}
-              format="YYYY-MM-DD"
+              format="DD-MM-YYYY"
             />
           </Form.Item>
         </Form>

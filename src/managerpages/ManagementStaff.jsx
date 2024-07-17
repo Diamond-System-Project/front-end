@@ -162,13 +162,13 @@ const ManagementStaff = () => {
           >
             Edit
           </Button>
-          <Button 
+          {/* <Button 
             danger
             onClick={() => handleDelete(record)}
             className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Delete
-          </Button>
+          </Button> */}
         </div>
       ),
     },

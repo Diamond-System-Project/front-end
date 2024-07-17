@@ -116,14 +116,14 @@ const ProductDiamond = () => {
           <Button 
             type="primary" 
             onClick={() => handleAction(record)}
-            className="hover:shadow-md transition duration-300"
+            className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Edit
           </Button>
           <Button 
             type="danger" 
             onClick={() => handleDelete(record)}
-            className="hover:shadow-md transition duration-300"
+            className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Delete
           </Button>
