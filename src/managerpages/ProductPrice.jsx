@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, Select, message } from "antd";
 import ProductPriceAPI from "../api/ProductPriceAPI";
@@ -106,9 +108,9 @@ const ProductPrice = () => {
     ? productPrices.filter((price) => price.productId.productId === productIdFilter)
     : productPrices;
 
-  const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
-  };
+    const formatCurrency = (amount) => {
+      return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    };
 
   const columns = [
     {

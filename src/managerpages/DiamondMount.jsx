@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from "react";
 import {
   Button,
@@ -107,9 +109,9 @@ const ManagementDiamondMount = () => {
     ? dataSource.filter((item) => item.type === filterType)
     : dataSource;
 
-  const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
-  };
+    const formatCurrency = (amount) => {
+      return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    };
 
   const columns = [
     {

@@ -1,4 +1,5 @@
 
+
 import { Button, Form, Input, Modal, notification, Table, Select } from "antd";
 import { useEffect, useState } from "react";
 import DiamondAPI from "../api/DiamondAPI";
@@ -74,7 +75,7 @@ const ManagementDiamond = () => {
   };
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
 
   const handleCancel = () => {
@@ -195,3 +196,4 @@ const ManagementDiamond = () => {
 };
 
 export default ManagementDiamond;
+

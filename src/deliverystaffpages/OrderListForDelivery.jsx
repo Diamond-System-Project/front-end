@@ -33,7 +33,7 @@ const OrderList = () => {
   };
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " vnđ";
   };
 
   const handleChangeStatus = async (value, record) => {
@@ -120,5 +120,3 @@ const OrderList = () => {
     </div>
   );
 };
-
-export default OrderList;
