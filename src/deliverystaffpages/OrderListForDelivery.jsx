@@ -1,5 +1,5 @@
-import { Select, Table, message } from "antd";
 import { useEffect, useState } from "react";
+import { Table, Select, message } from "antd";
 import { Link } from "react-router-dom";
 import OrderAPI from "../api/OrderAPI";
 
@@ -16,14 +16,16 @@ const OrderList = () => {
   const fetchOrders = async () => {
     try {
       const deliveryStaffId = localStorage.getItem("userId");
-      const response = await OrderAPI.getOrdersByDeliveryStaffId(deliveryStaffId);
+      const response = await OrderAPI.getOrdersByDeliveryStaffId(
+        deliveryStaffId
+      );
       const orders = response.data.data.map((order) => ({
         key: order.orderId,
         orderId: order.orderId,
         date: order.status === "Delivered" ? order.delivery : order.order_date,
         customerName: order.cname,
         status: order.status,
-        amount: formatCurrency(order.payment),
+        amount: order.payment.toFixed(2), // Giữ giá trị số nguyên gốc
       }));
       setData(orders);
     } catch (error) {
@@ -32,19 +34,20 @@ const OrderList = () => {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " vnđ";
-  };
-
   const handleChangeStatus = async (value, record) => {
     setLoading(true);
     try {
-      const response = await OrderAPI.updateOrderStatusByDelivery(record.orderId, value);
+      const response = await OrderAPI.updateOrderStatusByDelivery(
+        record.orderId,
+        value
+      );
       if (response.data.success) {
         message.success(`Order ${record.orderId} status updated successfully`);
         fetchOrders();
       } else {
-        message.error(`Failed to update order ${record.orderId} status: ${response.data.message}`);
+        message.error(
+          `Failed to update order ${record.orderId} status: ${response.data.message}`
+        );
       }
     } catch (error) {
       console.error("Error updating order status:", error);
@@ -52,6 +55,12 @@ const OrderList = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatCurrency = (amount) => {
+    // Chuyển đổi số tiền sang đơn vị VNĐ và có dấu phân cách hàng nghìn bằng dấu ','
+    const formattedAmount = parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&.');
+    return formattedAmount + "VND"; // Thêm đơn vị tiền tệ VNĐ vào sau chuỗi đã format
   };
 
   const columns = [
@@ -99,6 +108,7 @@ const OrderList = () => {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
+      render: (amount) => formatCurrency(amount), // Sử dụng hàm formatCurrency để format giá tiền
     },
     {
       title: "Action",
@@ -120,3 +130,5 @@ const OrderList = () => {
     </div>
   );
 };
+
+export default OrderList;
