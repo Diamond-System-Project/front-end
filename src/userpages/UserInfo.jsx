@@ -31,6 +31,9 @@ export default function UserInfo() {
   const [form] = Form.useForm();
   const userId = localStorage.getItem("userId");
 
+  // New state for address
+  const [address, setAddress] = useState("");
+
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -51,6 +54,9 @@ export default function UserInfo() {
           }
 
           setPoint(userData.point);
+          
+          // Set address from user data
+          setAddress(userData.address || "");
         } else {
           openNotificationWithIcon("error", "Failed to fetch user details");
         }
@@ -92,6 +98,7 @@ export default function UserInfo() {
       phone,
       dob: dob ? dob.format("DD-MM-YYYY") : null,
       gender,
+      address, // Include address in user data
     };
   
     try {
@@ -231,6 +238,14 @@ export default function UserInfo() {
               onChange={(date) => setDob(date)}
               className="w-full"
               format="DD-MM-YYYY"
+            />
+          </div>
+          <div className="flex items-center">
+            <label className="w-32">Địa chỉ:</label>
+            <Input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full"
             />
           </div>
           <div className="flex items-center">
