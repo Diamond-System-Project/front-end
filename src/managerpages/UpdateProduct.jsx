@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { Button, Input, Card, Upload, message, Form, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { storage, ref, uploadBytes, getDownloadURL } from "../firebase";
-import ProductAPI from "../api/ProductAPI";
+import { Button, Card, Form, Input, Select, Upload, message } from "antd";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import DiamondMountAPI from "../api/DiamondMountAPI";
+import ProductAPI from "../api/ProductAPI";
+import { getDownloadURL, ref, storage, uploadBytes } from "../firebase";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -22,6 +22,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
         productName: product.productName || "",
         description: product.description || "",
         mountId: product.mountId?.mountId || "",
+        mountName: product.mountId?.mountName || "",
         laborFee: product.laborFee || undefined,
         status: product.status || "",
         componentsPrice: product.componentsPrice || undefined,
@@ -73,12 +74,13 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
     try {
       await ProductAPI.updateProduct(updatedProduct);
       onUpdate(updatedProduct);
-      message.success("Product updated successfully!");
+      // message.success("Product updated successfully!");
     } catch (error) {
       console.error("Error updating product:", error);
       message.error("Failed to update product. Please try again later.");
     }
   };
+
   const validatePositiveNumber = (_, value) => {
     if (value && value < 0) {
       return Promise.reject(new Error("Value cannot be negative!"));
@@ -124,13 +126,11 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
               <Form.Item
                 name="mountName"
                 label="Mount"
-                rules={[
-                  { required: true, message: "Please select the mount!" },
-                ]}
+                rules={[{ required: true, message: "Please select the mount!" }]}
               >
                 <Select
-                  placeholder="Select a mount"
                   disabled={true}
+                  placeholder="Select a mount"
                   className="bg-gray-100"
                 >
                   {diamondMounts.map((mount) => (
@@ -161,7 +161,7 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                     },
                   ]}
                 >
-                  <Select placeholder="Select status">
+                  <Select placeholder="Select status" disabled={true}>
                     <Option value="InStock">In Stock</Option>
                     <Option value="Out of Stock">Out of Stock</Option>
                   </Select>
@@ -180,9 +180,6 @@ const UpdateProduct = ({ product, onUpdate, onDelete }) => {
                     className="bg-gray-100"
                   />
                 </Form.Item>
-                {/* <Form.Item name="price" label="Sale Price">
-                  <Input placeholder="VND" type="number" readOnly />
-                </Form.Item> */}
               </div>
             </div>
             <div>

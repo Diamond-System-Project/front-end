@@ -50,54 +50,55 @@ const UserDetail = () => {
 
   return (
     <Form
-      form={form}
-      className="my-10 mx-10"
-      onFinish={onFinish}
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      layout="horizontal"
+    form={form}
+    className="my-10 mx-10"
+    onFinish={onFinish}
+    labelCol={{ span: 8 }}
+    wrapperCol={{ span: 16 }}
+    layout="horizontal"
+    disabled={true} // This will disable the entire form
+  >
+    <Form.Item
+      label="Full Name"
+      name="fullName"
+      rules={[{ required: true, message: "Please enter your full name" }]}
     >
-      <Form.Item
-        label="Full Name"
-        name="fullName"
-        rules={[{ required: true, message: "Please enter your full name" }]}
-      >
-        <Input className="w-1/2" />
-      </Form.Item>
-      <Form.Item
-        label="Phone"
-        name="phone"
-        rules={[{ required: true, message: "Please enter your phone number" }]}
-      >
-        <Input className="w-1/2" />
-      </Form.Item>
-      <Form.Item
-        label="Date of Birth"
-        name="dob"
-        rules={[{ required: true, message: "Please enter your date of birth" }]}
-      >
-        <Input className="w-1/2" />
-      </Form.Item>
-      <Form.Item
-        label="Email"
-        name="email"
-        rules={[{ required: true, message: "Please enter your email" }]}
-      >
-        <Input className="w-1/2" />
-      </Form.Item>
-      <Form.Item
-        label="Gender"
-        name="gender"
-        rules={[{ required: true, message: "Please select your gender" }]}
-      >
-        <Input className="w-1/2" />
-      </Form.Item>
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit" className="w-1/2">
-          Submit
-        </Button>
-      </Form.Item>
-    </Form>
+      <Input className="w-1/2" disabled={true} />
+    </Form.Item>
+    <Form.Item
+      label="Phone"
+      name="phone"
+      rules={[{ required: true, message: "Please enter your phone number" }]}
+    >
+      <Input className="w-1/2" disabled={true} />
+    </Form.Item>
+    <Form.Item
+      label="Date of Birth"
+      name="dob"
+      rules={[{ required: true, message: "Please enter your date of birth" }]}
+    >
+      <Input className="w-1/2" disabled={true} />
+    </Form.Item>
+    <Form.Item
+      label="Email"
+      name="email"
+      rules={[{ required: true, message: "Please enter your email" }]}
+    >
+      <Input className="w-1/2" disabled={true} />
+    </Form.Item>
+    <Form.Item
+      label="Gender"
+      name="gender"
+      rules={[{ required: true, message: "Please select your gender" }]}
+    >
+      <Input className="w-1/2" disabled={true} />
+    </Form.Item>
+    {/* <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+      <Button type="primary" htmlType="submit" className="w-1/2">
+        Submit
+      </Button>
+    </Form.Item> */}
+  </Form>
   );
 };
 

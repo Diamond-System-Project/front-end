@@ -155,12 +155,12 @@ const ManagementStaff = () => {
       key: "action",
       render: (text, record) => (
         <div className="space-x-2">
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             onClick={() => handleAction(record)}
             className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
-            Edit
+            View Detail
           </Button>
           {/* <Button 
             danger
@@ -183,7 +183,7 @@ const ManagementStaff = () => {
       </div>
       <Table dataSource={dataSource} columns={columns} loading={loading} />
       <Modal
-        title={editingRecord ? "Edit Staff" : "Add New Staff"}
+        title={editingRecord ? "Staff Detail" : "Add New Staff"}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -194,35 +194,31 @@ const ManagementStaff = () => {
             label="User Name"
             rules={[{ required: true, message: "Please input the user name!" }]}
           >
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item
             name="phoneNumber"
             label="Phone Number"
-            rules={[
-              { required: true, message: "Please input the phone number!" },
-            ]}
+            rules={[{ required: true, message: "Please input the phone number!" }]}
           >
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item
             name="role"
             label="Role"
             rules={[{ required: true, message: "Please select the role!" }]}
           >
-            <Select>
-              <Option value="Sale Staff">Sale Staff</Option>
-              <Option value="Delivery Staff">Delivery Staff</Option>
+            <Select disabled>
+              <Select.Option value="Sale Staff">Sale Staff</Select.Option>
+              <Select.Option value="Delivery Staff">Delivery Staff</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item
             name="dob"
             label="Date of Birth"
-            rules={[
-              { required: true, message: "Please select the date of birth!" },
-            ]}
+            rules={[{ required: true, message: "Please select the date of birth!" }]}
           >
-            <DatePicker className="w-full" format="DD/MM/YYYY" />
+            <DatePicker className="w-full" format="DD/MM/YYYY" disabled />
           </Form.Item>
           <Form.Item
             name="email"
@@ -232,16 +228,16 @@ const ManagementStaff = () => {
               { type: "email", message: "The input is not valid email!" },
             ]}
           >
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item
             name="gender"
             label="Gender"
             rules={[{ required: true, message: "Please select the gender!" }]}
           >
-            <Select>
-              <Option value="Male">Male</Option>
-              <Option value="Female">Female</Option>
+            <Select disabled>
+              <Select.Option value="Male">Male</Select.Option>
+              <Select.Option value="Female">Female</Select.Option>
             </Select>
           </Form.Item>
         </Form>

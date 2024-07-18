@@ -13,22 +13,23 @@ import ProductPromotionAPI from "../api/ProductPromotionAPI";
 import ProductAPI from "../api/ProductAPI";
 import PromotionAPI from "../api/PromotionAPI";
 import moment from "moment";
-//eslint-disable-next-line
+
 const { TextArea } = Input;
+
+const validatePositiveNumber = (_, value) => {
+  if (value && value < 0) {
+    return Promise.reject(new Error("Value cannot be negative!"));
+  }
+  return Promise.resolve();
+};
 
 function ProductPromotion() {
   const [productPromotions, setProductPromotions] = useState([]);
   const [products, setProducts] = useState([]);
   const [promotions, setPromotions] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    promotionId: 0,
-    productId: "",
-    discount: 0,
-    startDate: "",
-    endDate: "",
-  });
   const [editingPromotion, setEditingPromotion] = useState(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     async function fetchData() {
@@ -40,35 +41,22 @@ function ProductPromotion() {
             PromotionAPI.getAll(),
           ]);
 
-        console.log("Promotions response:", promotionResponse);
-        console.log("Products response:", productResponse);
-        console.log("All Promotions response:", promotionsResponse);
-
         if (Array.isArray(promotionResponse.data)) {
           setProductPromotions(promotionResponse.data);
         } else {
-          console.error(
-            "Promotions response data is not an array:",
-            promotionResponse.data
-          );
+          console.error("Promotions response data is not an array:", promotionResponse.data);
         }
 
         if (Array.isArray(productResponse.data.data)) {
           setProducts(productResponse.data.data);
         } else {
-          console.error(
-            "Products response data is not an array:",
-            productResponse.data.data
-          );
+          console.error("Products response data is not an array:", productResponse.data.data);
         }
 
         if (Array.isArray(promotionsResponse.data)) {
           setPromotions(promotionsResponse.data);
         } else {
-          console.error(
-            "All Promotions response data is not an array:",
-            promotionsResponse.data
-          );
+          console.error("All Promotions response data is not an array:", promotionsResponse.data);
         }
       } catch (error) {
         console.error("Error fetching data", error);
@@ -93,44 +81,33 @@ function ProductPromotion() {
   };
 
   const handleEdit = (promotion) => {
-    setFormData({
+    form.setFieldsValue({
       promotionId: promotion.promotionId.promotionId,
       productId: promotion.productId.productId,
-      discount: promotion.discount.toString(),
-      startDate: promotion.startDate
-        ? moment(promotion.startDate, "DD-MM-YYYY")
-        : null,
-      endDate: promotion.endDate
-        ? moment(promotion.endDate, "DD-MM-YYYY")
-        : null,
+      discount: promotion.discount,
+      startDate: promotion.startDate ? moment(promotion.startDate, "DD-MM-YYYY") : null,
+      endDate: promotion.endDate ? moment(promotion.endDate, "DD-MM-YYYY") : null,
     });
     setEditingPromotion(promotion);
     setShowModal(true);
   };
 
   const handleCreate = () => {
-    setFormData({
-      promotionId: 0,
-      productId: "",
-      discount: 0,
-      startDate: "",
-      endDate: "",
-    });
+    form.resetFields();
     setEditingPromotion(null);
     setShowModal(true);
   };
 
   const handleSubmit = async () => {
     try {
+      const values = await form.validateFields();
       const formattedFormData = {
-        ...formData,
-        discount: parseFloat(formData.discount),
-        startDate: formData.startDate
-          ? formData.startDate.format("DD-MM-YYYY")
-          : "",
-        endDate: formData.endDate ? formData.endDate.format("DD-MM-YYYY") : "",
+        ...values,
+        discount: parseFloat(values.discount),
+        startDate: values.startDate ? values.startDate.format("DD-MM-YYYY") : "",
+        endDate: values.endDate ? values.endDate.format("DD-MM-YYYY") : "",
       };
-      console.log("Submitting form data:", formattedFormData);
+
       let response;
       if (editingPromotion) {
         response = await ProductPromotionAPI.update(
@@ -142,43 +119,13 @@ function ProductPromotion() {
         response = await ProductPromotionAPI.create(formattedFormData);
         message.success("Product promotion created successfully");
       }
-      console.log("API response:", response);
+
       const fetchResponse = await ProductPromotionAPI.getAll();
       setProductPromotions(fetchResponse.data);
       setShowModal(false);
     } catch (error) {
       console.error("Error submitting form", error);
       message.error("Failed to submit form");
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleProductChange = (value) => {
-    setFormData({ ...formData, productId: value });
-  };
-
-  const handlePromotionChange = (value) => {
-    setFormData({ ...formData, promotionId: value });
-  };
-
-  const handleUpdateStatus = async (promotion) => {
-    try {
-      const { promotionId, productId } = promotion;
-      const statusUpdateResponse = await ProductPromotionAPI.updateStatus(
-        promotionId.promotionId,
-        productId.productId
-      );
-      console.log("Status update response:", statusUpdateResponse);
-      message.success("Product promotion status updated successfully");
-      const fetchResponse = await ProductPromotionAPI.getAll();
-      setProductPromotions(fetchResponse.data);
-    } catch (error) {
-      console.error("Error updating promotion status:", error);
-      message.error("Failed to update promotion status");
     }
   };
 
@@ -229,7 +176,7 @@ function ProductPromotion() {
             onClick={() => handleUpdateStatus(record)}
             className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
-            {record.active ? "Inactive" : "Active"}
+            {record.active ? "Deactivate" : "Activate"}
           </Button>
           <Button
             type="primary"
@@ -250,6 +197,36 @@ function ProductPromotion() {
       ),
     },
   ];
+
+  const handleProductChange = (value) => {
+    form.setFieldsValue({ productId: value });
+  };
+
+  const handlePromotionChange = (value) => {
+    form.setFieldsValue({ promotionId: value });
+  };
+
+  const handleUpdateStatus = async (promotion) => {
+    try {
+      const { promotionId, productId } = promotion;
+      const newStatus = !promotion.active; // Toggle status
+      const statusUpdateResponse = await ProductPromotionAPI.updateStatus(
+        promotionId.promotionId,
+        productId.productId,
+        newStatus
+      );
+      if (statusUpdateResponse.status === 200) {
+        message.success(`Product promotion ${newStatus ? "activated" : "deactivated"} successfully`);
+      } else {
+        message.error("Failed to update product promotion status");
+      }
+      const fetchResponse = await ProductPromotionAPI.getAll();
+      setProductPromotions(fetchResponse.data);
+    } catch (error) {
+      console.error("Error updating promotion status:", error);
+      message.error("Failed to update promotion status");
+    }
+  };
 
   return (
     <div>
@@ -275,12 +252,15 @@ function ProductPromotion() {
         onOk={handleSubmit}
         okText={editingPromotion ? "Update Promotion" : "Create Promotion"}
       >
-        <Form layout="vertical">
-          <Form.Item label="Promotion">
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="Promotion"
+            name="promotionId"
+            rules={[{ required: true, message: "Please select a promotion" }]}
+          >
             <Select
-              value={formData.promotionId}
-              onChange={handlePromotionChange}
               placeholder="Select a promotion"
+              onChange={handlePromotionChange}
             >
               {promotions.map((promotion) => (
                 <Select.Option
@@ -292,11 +272,14 @@ function ProductPromotion() {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Product">
+          <Form.Item
+            label="Product"
+            name="productId"
+            rules={[{ required: true, message: "Please select a product" }]}
+          >
             <Select
-              value={formData.productId}
-              onChange={handleProductChange}
               placeholder="Select a product"
+              onChange={handleProductChange}
             >
               {products.map((product) => (
                 <Select.Option
@@ -308,27 +291,23 @@ function ProductPromotion() {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Discount">
-            <Input
-              type="number"
-              name="discount"
-              value={formData.discount}
-              onChange={handleInputChange}
-            />
+          <Form.Item
+            label="Discount"
+            name="discount"
+            rules={[
+              { required: true, message: "Please input the discount" },
+              { validator: validatePositiveNumber }
+            ]}
+          >
+            <Input type="number" />
           </Form.Item>
-          <Form.Item label="Start Date">
+          <Form.Item label="Start Date" name="startDate">
             <DatePicker
-              name="startDate"
-              value={formData.startDate}
-              onChange={(date) => setFormData({ ...formData, startDate: date })}
               format="DD-MM-YYYY"
             />
           </Form.Item>
-          <Form.Item label="End Date">
+          <Form.Item label="End Date" name="endDate">
             <DatePicker
-              name="endDate"
-              value={formData.endDate}
-              onChange={(date) => setFormData({ ...formData, endDate: date })}
               format="DD-MM-YYYY"
             />
           </Form.Item>
