@@ -3,6 +3,10 @@ import { Table, Tag, Spin, message } from "antd";
 import { Link } from "react-router-dom";
 import OrderAPI from "../api/OrderAPI";
 
+const formatCurrency = (amount) => {
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+};
+
 const OrderList = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,11 +90,12 @@ const OrderList = () => {
       ],
       onFilter: (value, record) => record.status.indexOf(value) === 0,
     },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
+    // {
+    //   title: "Amount",
+    //   dataIndex: "amount",
+    //   key: "amount",
+    //   render: (text) => formatCurrency(text),
+    // },
     {
       title: "Action",
       key: "action",

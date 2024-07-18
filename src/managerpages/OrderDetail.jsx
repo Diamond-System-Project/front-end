@@ -5,6 +5,10 @@ import OrderDetailAPI from "../api/OrderDetailAPI";
 
 const { Title, Text } = Typography;
 
+const formatCurrency = (amount) => {
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+};
+
 const OrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
@@ -64,6 +68,7 @@ const OrderDetail = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (text) => formatCurrency(text),
     },
   ];
 
@@ -116,10 +121,10 @@ const OrderDetail = () => {
         <Table columns={columns} dataSource={products} pagination={false} />
         <div className="flex justify-end mt-4">
           <div className="w-full md:w-1/4">
-            <div className="flex justify-between font-semibold text-lg py-1">
+            {/* <div className="flex justify-between font-semibold text-lg py-1">
               <span>Total:</span>
-              <span>{orderInfo.payment}</span>
-            </div>
+              <span>{formatCurrency(orderInfo.payment)}</span>
+            </div> */}
           </div>
         </div>
       </Card>

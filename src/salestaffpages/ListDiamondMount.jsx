@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { Table, Spin, message } from "antd";
 import DiamondMountAPI from "../api/DiamondMountAPI";
 
+const formatCurrency = (amount) => {
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+};
+
 export default function ListDiamondMount() {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +50,7 @@ export default function ListDiamondMount() {
       title: "Base Price",
       dataIndex: "basePrice",
       key: "basePrice",
+      render: (text) => formatCurrency(text),
     },
   ];
 
