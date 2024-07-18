@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Table, Spin, message } from "antd";
 import DiamondAPI from "../api/DiamondAPI";
+
+const formatCurrency = (amount) => {
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+};
+
 export default function ListDiamond() {
   const [diamonds, setDiamonds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +65,7 @@ export default function ListDiamond() {
       title: "Base Price",
       dataIndex: "basePrice",
       key: "basePrice",
+      render: (text) => formatCurrency(text),
     },
   ];
 
