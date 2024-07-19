@@ -1,10 +1,18 @@
+import { Button, Popconfirm, Select, Table, message } from "antd";
 import { useEffect, useState } from "react";
-import { Table, message, Button, Popconfirm, Select } from "antd";
 import { Link } from "react-router-dom";
-import OrderAPI from "../api/OrderAPI";
 import GetUserByRoleAPI from "../api/GetUserByRoleAPI";
+import OrderAPI from "../api/OrderAPI";
 
 const { Option } = Select;
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return dateString;
+  }
+  return date.toLocaleDateString();
+};
 
 const OrderList = () => {
   const [data, setData] = useState([]);
@@ -19,7 +27,7 @@ const OrderList = () => {
         const response = await OrderAPI.getAllOrders();
         const orders = response.data.data.map((order) => ({
           orderId: order.orderId,
-          date: new Date(order.order_date).toLocaleDateString(),
+          date: formatDate(order.order_date),
           customerName: order.cname,
           status: order.status,
           deliveryStaff: order.deliveryStaff

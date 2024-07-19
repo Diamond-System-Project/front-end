@@ -278,7 +278,7 @@ const Collection = () => {
         <span>
           <Button 
             type="link" 
-            onClick={() => handleAction(record)}
+            onClick={() => handleEdit(record)}
             className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-blue-600"
           >
             Edit
@@ -286,7 +286,7 @@ const Collection = () => {
           <Button
             type="link"
             danger
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record.collectionId)}
             className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-red-600"
           >
             Delete

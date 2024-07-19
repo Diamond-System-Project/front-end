@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
-import { Pagination, Radio } from "antd";
+import { Pagination, Radio } from "antd"; // Import Button from Ant Design
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductAPI from "../api/ProductAPI";
 
@@ -14,7 +14,7 @@ const ListProduct = () => {
   const scrollPositionRef = useRef(0);
 
   const formatCurrency = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
 
   useEffect(() => {
@@ -155,6 +155,12 @@ const ListProduct = () => {
             onChange={handlePageChange}
           />
         </div>
+        
+        {/* <div className="flex justify-center mt-4">
+          <Button type="primary">
+            <Link to="/register" className="text-white">Register</Link>
+          </Button>
+        </div> */}
       </div>
     </div>
   );

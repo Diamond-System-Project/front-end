@@ -1,6 +1,6 @@
 
 
-import { Button, Form, Input, Modal, notification, Table, Select } from "antd";
+import { Button, Form, Input, Modal, notification, Select, Table } from "antd";
 import { useEffect, useState } from "react";
 import DiamondAPI from "../api/DiamondAPI";
 
@@ -55,6 +55,13 @@ const ManagementDiamond = () => {
     setSelectedDiamond(diamond);
     setIsModalVisible(true);
     form.setFieldsValue(diamond);
+  };
+
+  const validatePositiveNumber = (_, value) => {
+    if (value && value < 0) {
+      return Promise.reject(new Error("Value cannot be negative!"));
+    }
+    return Promise.resolve();
   };
 
   const handleOk = async () => {
@@ -185,7 +192,7 @@ const ManagementDiamond = () => {
           <Form.Item
             name="basePrice"
             label="Base Price"
-            rules={[{ required: true, message: "Please input the base price!" }]}
+            rules={[{ required: true, message: "Please input the base price!" } , { validator: validatePositiveNumber }]}
           >
             <Input />
           </Form.Item>

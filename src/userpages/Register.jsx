@@ -1,22 +1,22 @@
 import {
-  Button,
-  Form,
-  Input,
-  Radio,
-  Checkbox,
-  message,
-  DatePicker,
-} from "antd";
-import {
+  HomeOutlined,
   LockOutlined,
   MailOutlined,
-  UserOutlined,
   PhoneOutlined,
-  HomeOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Radio,
+} from "antd";
+import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import AuthAPI from "../api/AuthAPI";
-import dayjs from "dayjs";
 import openNotificationWithIcon from "../notification";
 
 export default function Register() {
@@ -188,8 +188,9 @@ export default function Register() {
               },
             ]}
           >
-            <DatePicker style={{ width: "100%" }} />
+            <DatePicker format="DD-MM-YYYY" style={{ width: "100%" }} />
           </Form.Item>
+
 
           <Form.Item
             className="mb-4"
@@ -254,12 +255,12 @@ export default function Register() {
                   value
                     ? Promise.resolve()
                     : Promise.reject(
-                        new Error("You must accept the terms and conditions")
-                      ),
+                      new Error("You must accept the terms and conditions")
+                    ),
               },
             ]}
           >
-            <Checkbox>I have read and agree to DOJI's terms of use</Checkbox>
+            <Checkbox>I have read and agree to Song Long's terms of use</Checkbox>
           </Form.Item>
 
           <Form.Item className="mb-0">

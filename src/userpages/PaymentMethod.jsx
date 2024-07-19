@@ -413,7 +413,7 @@ export default function PaymentMethod() {
           </div>
           <div className="flex justify-between mb-2">
             <p>Giảm giá</p>
-            <p>{formatCurrency(discount)}</p>
+            <p>{formatCurrency(discount)} VND</p>
           </div>
           <div className="flex justify-between mb-2">
             <p>Phí vận chuyển</p>

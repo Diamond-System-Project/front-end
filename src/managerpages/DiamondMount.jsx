@@ -14,6 +14,7 @@ import {
 } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import DiamondMountAPI from "../api/DiamondMountAPI";
+import { PriceChange } from "@mui/icons-material";
 
 const { Option } = Select;
 
@@ -112,7 +113,12 @@ const ManagementDiamondMount = () => {
     const formatCurrency = (amount) => {
       return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
     };
-
+    const validatePositiveNumber = (_, value) => {
+      if (value && value < 0) {
+        return Promise.reject(new Error("Value cannot be negative!"));
+      }
+      return Promise.resolve();
+    };
   const columns = [
     {
       title: "ID",
@@ -151,6 +157,7 @@ const ManagementDiamondMount = () => {
       dataIndex: "basePrice",
       key: "basePrice",
       render: (baseprice) => formatCurrency(baseprice),
+      
     },
     {
       title: "Actions",
@@ -254,7 +261,8 @@ const ManagementDiamondMount = () => {
           <Form.Item
             name="basePrice"
             label="Price"
-            rules={[{ required: true, message: "Please input the price!" }]}
+            rules={[{ required: true, message: "Please input the price!" }, {validator: validatePositiveNumber} ]}
+
           >
             <Input />
           </Form.Item>
