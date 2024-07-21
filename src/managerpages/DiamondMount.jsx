@@ -1,20 +1,17 @@
-
-
-import { useState, useEffect } from "react";
+import { MoreOutlined } from "@ant-design/icons";
 import {
   Button,
-  Table,
-  Modal,
+  Dropdown,
   Form,
   Input,
-  Select,
-  Dropdown,
   Menu,
   message,
+  Modal,
+  Select,
+  Table,
 } from "antd";
-import { MoreOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
 import DiamondMountAPI from "../api/DiamondMountAPI";
-import { PriceChange } from "@mui/icons-material";
 
 const { Option } = Select;
 
@@ -110,15 +107,17 @@ const ManagementDiamondMount = () => {
     ? dataSource.filter((item) => item.type === filterType)
     : dataSource;
 
-    const formatCurrency = (amount) => {
-      return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
-    };
-    const validatePositiveNumber = (_, value) => {
-      if (value && value < 0) {
-        return Promise.reject(new Error("Value cannot be negative!"));
-      }
-      return Promise.resolve();
-    };
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+  };
+
+  const validatePositiveNumber = (_, value) => {
+    if (value && value < 0) {
+      return Promise.reject(new Error("Price cannot be negative!"));
+    }
+    return Promise.resolve();
+  };
+
   const columns = [
     {
       title: "ID",
@@ -156,8 +155,7 @@ const ManagementDiamondMount = () => {
       title: "Price",
       dataIndex: "basePrice",
       key: "basePrice",
-      render: (baseprice) => formatCurrency(baseprice),
-      
+      render: (basePrice) => formatCurrency(basePrice),
     },
     {
       title: "Actions",
@@ -261,10 +259,12 @@ const ManagementDiamondMount = () => {
           <Form.Item
             name="basePrice"
             label="Price"
-            rules={[{ required: true, message: "Please input the price!" }, {validator: validatePositiveNumber} ]}
-
+            rules={[
+              { required: true, message: "Please input the price!" },
+              { validator: validatePositiveNumber }
+            ]}
           >
-            <Input />
+            <Input type="number" />
           </Form.Item>
         </Form>
       </Modal>

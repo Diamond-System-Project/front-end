@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
 import {
-  Table,
   Button,
-  Modal,
+  DatePicker,
   Form,
   Input,
-  Select,
-  DatePicker,
   message,
+  Modal,
+  Popconfirm,
+  Select,
   Switch,
+  Table,
+  InputNumber
 } from "antd";
 import moment from "moment";
+import { useEffect, useState } from "react";
 import InventoryAPI from "../api/InventoryAPI";
 import ProductAPI from "../api/ProductAPI";
 
@@ -45,7 +47,6 @@ const Inventory = () => {
   const fetchProducts = async () => {
     try {
       const response = await ProductAPI.products();
-      console.log("Products data:", response.data); // Log to console
       setProducts(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
       message.error("Error fetching product list");
@@ -54,8 +55,11 @@ const Inventory = () => {
 
   const handleCreate = () => {
     form.validateFields().then(async (values) => {
-      const { productId, purchaseDate, condition, quantity, available } =
-        values;
+      const { productId, purchaseDate, condition, quantity, available } = values;
+      if (quantity < 1) {
+        message.error("Quantity can't be negative or Equal to 0!!");
+        return;
+      }
       setLoading(true);
       const formattedData = {
         productId: parseInt(productId, 10),
@@ -84,6 +88,10 @@ const Inventory = () => {
     form.validateFields().then(async (values) => {
       const { productId, purchaseDate, condition, quantity, available } =
         values;
+      if (quantity < 1) {
+        message.error("Quantity can't be negative or Equal to 0!!");
+        return;
+      }
       setLoading(true);
       const formattedData = {
         productId: parseInt(productId, 10),
@@ -172,6 +180,18 @@ const Inventory = () => {
     setIsModalVisible(true);
   };
 
+  const handleQuantityChange = (value, record) => {
+    if (value < 1) {
+      message.error("Quantity cannot be negative or equal to 0");
+      return 1;
+    }
+    const newData = data.map(item =>
+      item.locationId === record.locationId ? { ...item, quantity: value } : item
+    );
+    setData(newData);
+    return value;
+  };
+
   const columns = [
     {
       title: "Product Name",
@@ -194,6 +214,18 @@ const Inventory = () => {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
+      render: (text, record) => (
+        <InputNumber
+          min={1}
+          value={text}
+          onChange={(value) => handleQuantityChange(value, record)}
+          onBlur={() => {
+            if (record.quantity < 1) {
+              handleQuantityChange(1, record);
+            }
+          }}
+        />
+      ),
     },
     {
       title: "Available",
@@ -211,18 +243,28 @@ const Inventory = () => {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <div>
-          <Button type="link" onClick={() => openEditModal(record)}>
+        <div className="space-x-2">
+          <Button
+            type="primary"
+            onClick={() => openEditModal(record)}
+            className="bg-blue-500 hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
+          >
             Edit
           </Button>
-
-          <Button
-            type="link"
-            onClick={() => handleDelete(record.locationId)}
-            danger
+          <Popconfirm
+            title="Are you sure you want to delete this item?"
+            onConfirm={() => handleDelete(record.locationId)}
+            okText="Yes"
+            cancelText="No"
           >
-            Delete
-          </Button>
+            <Button
+              type="primary"
+              danger
+              className="bg-red-500 hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Delete
+            </Button>
+          </Popconfirm>
         </div>
       ),
     },

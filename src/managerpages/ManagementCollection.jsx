@@ -233,32 +233,38 @@ const Collection = () => {
 
   const handleImageUpload = async (info) => {
     const { file } = info;
-    if (file.status === "done" || file.status === "uploading") {
+    if (file.status === "uploading") {
+      message.loading({ content: "Uploading...", key: "uploadStatus" });
+      return;
+    }
+    if (file.status === "done") {
+      message.destroy();
       if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.readAsDataURL(file.originFileObj);
         reader.onload = () => {
           setImagePreview(reader.result);
         };
-
+  
         try {
-          const storageRef = ref(storage, file.name);
+          const storageRef = ref(storage, `collections/${file.name}`);
           const snapshot = await uploadBytes(storageRef, file.originFileObj);
           const downloadURL = await getDownloadURL(snapshot.ref);
           setUrl(downloadURL);
-          message.success("Image uploaded successfully");
+          message.success({ content: "Image uploaded successfully", key: "uploadStatus" });
         } catch (error) {
           console.error("Error uploading file:", error);
-          message.error("Failed to upload image. Please try again.");
+          message.error({ content: "Failed to upload image. Please try again.", key: "uploadStatus" });
         }
       } else {
-        message.error("You can only upload image files!");
+        message.error({ content: "You can only upload image files!", key: "uploadStatus" });
       }
     } else if (file.status === "error") {
+      message.destroy();
       console.error("Error uploading file:", file.error);
+      message.error({ content: "Failed to upload image. Please try again.", key: "uploadStatus" });
     }
   };
-
   const beforeUpload = (file) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {

@@ -58,9 +58,7 @@ const OrderList = () => {
   };
 
   const formatCurrency = (amount) => {
-    // Chuyển đổi số tiền sang đơn vị VNĐ và có dấu phân cách hàng nghìn bằng dấu ','
-    const formattedAmount = parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&.');
-    return formattedAmount + " VND"; // Thêm đơn vị tiền tệ VNĐ vào sau chuỗi đã format
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
   };
 
   const columns = [

@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { Card, Col, Row, Spin, Table, Typography, message } from "antd";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Col, Row, Table, Typography, Spin, message } from "antd";
 import OrderDetailAPI from "../api/OrderDetailAPI";
 
 const { Title, Text } = Typography;
 
 const formatCurrency = (amount) => {
-  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
 };
 
 const OrderDetail = () => {
@@ -46,11 +46,19 @@ const OrderDetail = () => {
   }, [id]);
 
   if (loading) {
-    return <Spin tip="Loading..." />;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" tip="Loading..." />
+      </div>
+    );
   }
 
   if (!order) {
-    return <p>No order details found.</p>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Text className="text-xl">No order details found.</Text>
+      </div>
+    );
   }
 
   const columns = [
@@ -83,48 +91,89 @@ const OrderDetail = () => {
   ];
 
   return (
-    <div className="p-6 bg-gray-100">
-      <Card className="mb-6 shadow">
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <Card className="mb-6 shadow-lg rounded-lg">
         <Row gutter={16} justify="space-between" align="middle">
           <Col>
-            <Title level={4}>Order ID: {orderInfo.orderId}</Title>
-            <Text>Date: {orderInfo.order_date}</Text>
+            <Title level={3} className="mb-0">
+              Order ID: {orderInfo.orderId}
+            </Title>
+            <Text className="text-gray-500">Date: {orderInfo.order_date}</Text>
           </Col>
           <Col>
-            <Text>Status: {orderInfo.status}</Text>
+            <Text className="text-lg font-semibold">
+              Status: <span className="text-blue-600">{orderInfo.status}</span>
+            </Text>
           </Col>
         </Row>
       </Card>
 
-      <Row gutter={16} className="mb-6 h-fit">
+      <Row gutter={16} className="mb-6">
         <Col span={8}>
-          <Card title="Customer" className="shadow">
-            <p>Full Name: {orderInfo.cname}</p>
-            <p>Email: {orderInfo.email}</p>
-            <p>Phone: {orderInfo.phone}</p>
+          <Card
+            title={<span className="text-lg font-bold">Customer</span>}
+            className="shadow-md rounded-lg h-full"
+          >
+            <p className="mb-2">
+              <strong className="text-gray-700">Full Name:</strong>{" "}
+              <span className="text-black">{orderInfo.cname}</span>
+            </p>
+            <p className="mb-2">
+              <strong className="text-gray-700">Email:</strong>{" "}
+              <span className="text-black">{orderInfo.email}</span>
+            </p>
+            <p className="mb-2">
+              <strong className="text-gray-700">Phone:</strong>{" "}
+              <span className="text-black">{orderInfo.phone}</span>
+            </p>
           </Card>
         </Col>
         <Col span={8}>
-          <Card title="Order Info" className="shadow">
-            <p>Payment Method: {orderInfo.payment_method}</p>
-            <p>Status: {orderInfo.status}</p>
+          <Card
+            title={<span className="text-lg font-bold">Order Info</span>}
+            className="shadow-md rounded-lg h-full"
+          >
+            <p className="mb-2">
+              <strong className="text-gray-700">Payment Method:</strong>{" "}
+              <span className="text-black">{orderInfo.payment_method}</span>
+            </p>
+            <p className="mb-2">
+              <strong className="text-gray-700">Status:</strong>{" "}
+              <span className="text-blue-600 font-medium">{orderInfo.status}</span>
+            </p>
           </Card>
         </Col>
         <Col span={8}>
-          <Card title="Deliver to" className="shadow h-fit">
-            <p>Address: {orderInfo.address}</p>
+          <Card
+            title={<span className="text-lg font-bold">Deliver to</span>}
+            className="shadow-md rounded-lg h-full"
+          >
+            <p className="mb-2">
+              <strong className="text-gray-700">Address:</strong>{" "}
+              <span className="text-black">{orderInfo.address}</span>
+            </p>
           </Card>
         </Col>
       </Row>
 
-      <Card title="Products" className="shadow">
-        <Table columns={columns} dataSource={products} pagination={false} />
+      <Card
+        title={<span className="text-lg font-bold">Products</span>}
+        className="shadow-lg rounded-lg"
+      >
+        <Table
+          columns={columns}
+          dataSource={products}
+          pagination={false}
+          className="mb-4"
+        />
         <div className="flex justify-end mt-4">
           <div className="w-full md:w-1/4">
-            {/* <div className="flex justify-between font-semibold text-lg py-1">
+            <div className="flex justify-between font-semibold text-lg py-1">
               <span>Total:</span>
-              <span>{formatCurrency(orderInfo.payment)}</span>
-            </div> */}
+              <span className="text-green-600">
+                {formatCurrency(orderInfo.payment)}
+              </span>
+            </div>
           </div>
         </div>
       </Card>

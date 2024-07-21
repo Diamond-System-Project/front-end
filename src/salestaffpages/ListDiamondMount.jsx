@@ -3,8 +3,9 @@ import { Table, Spin, message } from "antd";
 import DiamondMountAPI from "../api/DiamondMountAPI";
 
 const formatCurrency = (amount) => {
-  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "₫";
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
 };
+
 
 export default function ListDiamondMount() {
   const [dataSource, setDataSource] = useState([]);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Button, Form, Input, Table, DatePicker } from "antd";
+import { Modal, Button, Form, Input, Table, DatePicker, message } from "antd";
 import PromotionAPI from "../api/PromotionAPI";
 import moment from "moment";
 
@@ -93,14 +93,17 @@ function Promotion() {
           editingPromotion.promotionId,
           formattedFormData
         );
+        message.success("Promotion updated successfully");
       } else {
         await PromotionAPI.create(formattedFormData);
+        message.success("Promotion created successfully");
       }
       const data = await PromotionAPI.getAll();
       setPromotions(data.data);
       setShowModal(false);
     } catch (error) {
       console.error("Error submitting form", error);
+      message.error(editingPromotion ? "Failed to update promotion" : "Failed to create promotion");
     }
   };
 
@@ -152,25 +155,26 @@ function Promotion() {
         <div className="flex space-x-2">
           {record.active ? (
             <Button
-              type="link"
-              onClick={() => handleDelete(record.promotionId)}
-              className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-red-600"
+              type="primary"
+              danger
+              onClick={() => handleDelete(record.productPromotionId)}
+              className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
             >
-              Inactive
+              Deactivate
             </Button>
           ) : (
             <Button
-              type="link"
-              onClick={() => activatePromotion(record.promotionId)}
-              className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-green-600"
+              type="primary"
+              onClick={() => activatePromotion(record.productPromotionId)}
+              className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
             >
               Activate
             </Button>
           )}
-          <Button 
-            type="link" 
+          <Button
+            type="primary"
             onClick={() => handleEdit(record)}
-            className="transition duration-300 ease-in-out transform hover:scale-105 hover:text-blue-600"
+            className="hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Edit
           </Button>

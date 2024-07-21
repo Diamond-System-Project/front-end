@@ -1,16 +1,14 @@
-import { useEffect } from "react";
-import { Button, Divider, Card } from "antd";
 import CheckCircleOutlineTwoToneIcon from "@mui/icons-material/CheckCircleOutlineTwoTone";
-import { useLocation, Link } from "react-router-dom";
+import { Button, Card, Divider } from "antd";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 export default function PaymentSuccess() {
   const location = useLocation();
-  const {
-    orderData,
-    items = [],
-    discount = 0,
-    finalPrice = 0,
-  } = location.state || {};
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [orderInfo, setOrderInfo] = useState(null);
 
   const formatCurrency = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
@@ -18,15 +16,39 @@ export default function PaymentSuccess() {
 
   useEffect(() => {
     if (location.state) {
-      const { orderData, cartItems, discount, finalPrice } = location.state;
-      console.log(orderData);
-      console.log(cartItems);
-      console.log(discount);
-      console.log(finalPrice);
+      const { orderData, items, discount, finalPrice } = location.state;
+      setOrderInfo({ orderData, items, discount, finalPrice });
+    } else {
+      const orderId = searchParams.get('orderId');
+      if (orderId) {
+        setLoading(true);
+        fetchOrderDetails(orderId)
+          .then(data => {
+            setOrderInfo(data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error("Error fetching order details:", err);
+            setError("Không thể tải thông tin đơn hàng. Vui lòng thử lại sau.");
+            setLoading(false);
+          });
+      } else {
+        setError("Không tìm thấy thông tin đơn hàng.");
+      }
     }
-  }, [location.state]);
+  }, [location.state, searchParams]);
 
-  if (!orderData || !items.length) {
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center p-6">
+        <div className="w-full max-w-6xl bg-white p-6 shadow-lg rounded-lg">
+          <h2 className="text-2xl font-semibold mt-4">Đang tải thông tin đơn hàng...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !orderInfo) {
     return (
       <div className="flex flex-col items-center p-6">
         <div className="w-full max-w-6xl bg-white p-6 shadow-lg rounded-lg">
@@ -34,7 +56,7 @@ export default function PaymentSuccess() {
             Lỗi khi hoàn tất thanh toán
           </h2>
           <p className="text-gray-500">
-            Không thể tải thông tin đơn hàng. Vui lòng thử lại sau.
+            {error || "Không thể tải thông tin đơn hàng. Vui lòng thử lại sau."}
           </p>
           <Link to="/">
             <Button type="primary">Tiếp tục mua hàng</Button>
@@ -43,6 +65,8 @@ export default function PaymentSuccess() {
       </div>
     );
   }
+
+  const { orderData, items = [], discount = 0, finalPrice = 0 } = orderInfo;
 
   return (
     <div className="flex flex-col items-center p-6">

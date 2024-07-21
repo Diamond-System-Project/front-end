@@ -103,7 +103,7 @@ function ProductPromotion() {
       const values = await form.validateFields();
       const formattedFormData = {
         ...values,
-        discount: parseFloat(values.discount),
+        discount: parseFloat(values.discount).toFixed(2), // Ensures two decimal places
         startDate: values.startDate ? values.startDate.format("DD-MM-YYYY") : "",
         endDate: values.endDate ? values.endDate.format("DD-MM-YYYY") : "",
       };
@@ -296,10 +296,14 @@ function ProductPromotion() {
             name="discount"
             rules={[
               { required: true, message: "Please input the discount" },
-              { validator: validatePositiveNumber }
+              { validator: validatePositiveNumber },
+              {
+                validator: (_, value) =>
+                  value < 1 ? Promise.resolve() : Promise.reject(new Error("Discount must be less than 1"))
+              }
             ]}
           >
-            <Input type="number" />
+            <Input type="number" step="0.01" min="0" max="0.99" />
           </Form.Item>
           <Form.Item label="Start Date" name="startDate">
             <DatePicker

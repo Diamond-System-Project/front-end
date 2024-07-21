@@ -1,5 +1,5 @@
+import { Input, message, Modal, Switch, Table } from "antd";
 import { useEffect, useState } from "react";
-import { Table, Button, Modal, Input, message, Switch } from "antd";
 import VoucherTypeAPI from "../api/VoucherTypeAPI";
 
 const ManagementVoucher = () => {
@@ -63,16 +63,19 @@ const ManagementVoucher = () => {
       title: "Actions",
       key: "actions",
       render: (record) => (
-        <div>
-          <Button type="link" onClick={() => showModal(record, false)}>
+        <div className="space-x-2">
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300"
+            onClick={() => showModal(record, false)}
+          >
             Edit
-          </Button>
-          <Button
-            type="danger"
+          </button>
+          <button
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300"
             onClick={() => handleDelete(record.voucherTypeId)}
           >
             Delete
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -85,6 +88,10 @@ const ManagementVoucher = () => {
   };
 
   const handleOk = async () => {
+    if (selectedVoucher.discount < 0 || selectedVoucher.discount >= 1) {
+      message.error("Please enter a valid discount (0-0.99) before saving.");
+      return;
+    }
     setIsModalVisible(false);
     if (selectedVoucher) {
       if (isCreate) {
@@ -195,8 +202,19 @@ const ManagementVoucher = () => {
               <Input
                 value={selectedVoucher.discount}
                 type="number"
+                min="0"
+                max="0.99"
                 step="0.01"
-                onChange={(e) => handleInputChange(e, "discount")}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value >= 0 && value < 1) {
+                    handleInputChange(e, "discount");
+                  } else if (value < 0) {
+                    message.error("Discount cannot be negative.");
+                  } else if (value >= 1) {
+                    message.error("Discount must be less than 1 (100%).");
+                  }
+                }}
               />
             </p>
             <p>
