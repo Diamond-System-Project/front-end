@@ -21,9 +21,9 @@ const PromotionAPI = {
     }
   },
 
-  updateStatus: async (id) => {
+  updateStatus: async (id, status) => {
     try {
-      const response = await axiosClient.put(`/promotion/status/${id}`);
+      const response = await axiosClient.put(`/promotion/status/${id}`, { active: status });
       return response.data;
     } catch (error) {
       console.error(`Error updating promotion status with id ${id}`, error);

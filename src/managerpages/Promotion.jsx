@@ -30,7 +30,7 @@ function Promotion() {
 
   const handleDelete = async (promotionId) => {
     try {
-      await PromotionAPI.updateStatus(promotionId, false);
+      await PromotionAPI.updateStatus(promotionId);
       setPromotions(
         promotions.map((promo) =>
           promo.promotionId === promotionId
@@ -38,21 +38,25 @@ function Promotion() {
             : promo
         )
       );
+      message.success("Promotion deactivated successfully");
     } catch (error) {
       console.error("Error updating promotion status", error);
+      message.error("Failed to deactivate promotion");
     }
   };
 
   const activatePromotion = async (promotionId) => {
     try {
-      await PromotionAPI.updateStatus(promotionId, true);
+      await PromotionAPI.updateStatus(promotionId);
       setPromotions(
         promotions.map((promo) =>
           promo.promotionId === promotionId ? { ...promo, active: true } : promo
         )
       );
+      message.success("Promotion activated successfully");
     } catch (error) {
       console.error("Error activating promotion", error);
+      message.error("Failed to activate promotion");
     }
   };
 
@@ -103,7 +107,7 @@ function Promotion() {
       setShowModal(false);
     } catch (error) {
       console.error("Error submitting form", error);
-      message.error(editingPromotion ? "Failed to update promotion" : "Failed to create promotion");
+      message.error("Failed to save promotion");
     }
   };
 
@@ -157,7 +161,7 @@ function Promotion() {
             <Button
               type="primary"
               danger
-              onClick={() => handleDelete(record.productPromotionId)}
+              onClick={() => handleDelete(record.promotionId)}
               className="hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105"
             >
               Deactivate
@@ -165,7 +169,7 @@ function Promotion() {
           ) : (
             <Button
               type="primary"
-              onClick={() => activatePromotion(record.productPromotionId)}
+              onClick={() => activatePromotion(record.promotionId)}
               className="hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
             >
               Activate
