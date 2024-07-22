@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
+import { EditOutlined } from "@ant-design/icons";
 import {
-  Table,
   Button,
-  Modal,
+  DatePicker,
   Form,
   Input,
-  DatePicker,
+  Modal,
   notification,
   Select,
+  Table,
 } from "antd";
-import { EditOutlined } from "@ant-design/icons";
-import WarrantyAPI from "../api/WarrantyAPI";
-import OrderDetailAPI from "../api/OrderDetailAPI";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import OrderDetailAPI from "../api/OrderDetailAPI";
+import WarrantyAPI from "../api/WarrantyAPI";
 
 const Warranty = () => {
   const [warranties, setWarranties] = useState([]);
@@ -59,33 +59,22 @@ const Warranty = () => {
     }
   };
 
-  const handleCreate = () => {
-    setIsEditing(false);
-    setSelectedWarranty(null);
-    setIsModalVisible(true);
-  };
-
-  const handleEdit = (warranty) => {
-    setIsEditing(true);
-    setSelectedWarranty(warranty);
-    form.setFieldsValue({
-      orderDetailId: warranty.orderDetailId.orderDetailId,
-      warrantyLength: warranty.warrantyLength,
-      startDate: moment(warranty.startDate, "DD-MM-YYYY"),
-      endDate: moment(warranty.endDate, "DD-MM-YYYY"),
-    });
-
-    setIsModalVisible(true);
-  };
-
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
+      const startDate = values.startDate;
+      const endDate = values.endDate;
+
+      if (endDate.isBefore(startDate)) {
+        notification.error({ message: "End date cannot be before start date" });
+        return;
+      }
+
       const data = {
         orderDetailId: values.orderDetailId,
         warrantyLength: values.warrantyLength,
-        startDate: values.startDate.format("DD-MM-YYYY"),
-        endDate: values.endDate.format("DD-MM-YYYY"),
+        startDate: startDate.format("DD-MM-YYYY"),
+        endDate: endDate.format("DD-MM-YYYY"),
       };
 
       if (isEditing) {
@@ -104,10 +93,59 @@ const Warranty = () => {
     }
   };
 
+  const handleCreate = () => {
+    setIsEditing(false);
+    setSelectedWarranty(null);
+    setIsModalVisible(true);
+  };
+
+  const handleEdit = (warranty) => {
+    setIsEditing(true);
+    setSelectedWarranty(warranty);
+    form.setFieldsValue({
+      orderDetailId: warranty.orderDetailId.orderDetailId,
+      warrantyLength: warranty.warrantyLength,
+      startDate: moment(warranty.startDate, "DD-MM-YYYY"),
+      endDate: moment(warranty.endDate, "DD-MM-YYYY"),
+    });
+    setIsModalVisible(true);
+  };
+
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
   };
+
+  const calculateWarrantyLength = (start, end) => {
+    if (!start || !end) return '';
+
+    const duration = moment.duration(end.diff(start));
+    const years = duration.years();
+    const months = duration.months();
+    const days = duration.days();
+
+    let result = [];
+    if (years > 0) {
+      result.push(`${years} year${years > 1 ? 's' : ''}`);
+    }
+    if (months > 0) {
+      result.push(`${months} month${months > 1 ? 's' : ''}`);
+    }
+    if (days > 0 || (years === 0 && months === 0)) {
+      result.push(`${days} day${days !== 1 ? 's' : ''}`);
+    }
+
+    return result.join(' ') || '0 days';
+  };
+
+  useEffect(() => {
+    const startDate = form.getFieldValue('startDate');
+    const endDate = form.getFieldValue('endDate');
+    if (startDate && endDate) {
+      const length = calculateWarrantyLength(startDate, endDate);
+      form.setFieldsValue({ warrantyLength: length });
+    }
+  }, [form]);
 
   const columns = [
     {
@@ -159,46 +197,82 @@ const Warranty = () => {
         <Form form={form} layout="vertical">
           <Form.Item
             name="orderDetailId"
-            label="Order Detail ID"
-            rules={[
-              { required: true, message: "Please select the order detail!" },
-            ]}
+            label="Order Detail"
+            rules={[{ required: true, message: "Please select an order detail!" }]}
           >
-            <Select disabled={isEditing} placeholder="Select Order Detail">
-              {orderDetails.map((orderDetail) => (
-                <Select.Option
-                  key={orderDetail.orderDetailId}
-                  value={orderDetail.orderDetailId}
-                >
-                  {orderDetail.orderDetailId}
+            <Select>
+              {orderDetails.map((detail) => (
+                <Select.Option key={detail.orderDetailId} value={detail.orderDetailId}>
+                  {detail.orderDetailName}
                 </Select.Option>
               ))}
             </Select>
-          </Form.Item>
-          <Form.Item
-            name="warrantyLength"
-            label="Warranty Length"
-            rules={[
-              { required: true, message: "Please input the warranty length!" },
-            ]}
-          >
-            <Input />
           </Form.Item>
           <Form.Item
             name="startDate"
             label="Start Date"
             rules={[
               { required: true, message: "Please select the start date!" },
+              {
+                validator: (_, value) => {
+                  if (value && form.getFieldValue('endDate') && value.isAfter(form.getFieldValue('endDate'))) {
+                    return Promise.reject(new Error('Start date cannot be after end date'));
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
-            <DatePicker format="DD-MM-YYYY" />
+            <DatePicker
+              format="DD-MM-YYYY"
+              onChange={(date) => {
+                const endDate = form.getFieldValue('endDate');
+                if (endDate && date && date.isAfter(endDate)) {
+                  notification.error({ message: "Start date cannot be after end date" });
+                  return;
+                }
+                if (endDate) {
+                  const length = calculateWarrantyLength(date, endDate);
+                  form.setFieldsValue({ warrantyLength: length });
+                }
+              }}
+            />
           </Form.Item>
           <Form.Item
             name="endDate"
             label="End Date"
-            rules={[{ required: true, message: "Please select the end date!" }]}
+            rules={[
+              { required: true, message: "Please select the end date!" },
+              {
+                validator: (_, value) => {
+                  if (value && form.getFieldValue('startDate') && value.isBefore(form.getFieldValue('startDate'))) {
+                    return Promise.reject(new Error('End date cannot be before start date'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
-            <DatePicker format="DD-MM-YYYY" />
+            <DatePicker
+              format="DD-MM-YYYY"
+              onChange={(date) => {
+                const startDate = form.getFieldValue('startDate');
+                if (startDate && date && date.isBefore(startDate)) {
+                  notification.error({ message: "End date cannot be before start date" });
+                  return;
+                }
+                if (startDate) {
+                  const length = calculateWarrantyLength(startDate, date);
+                  form.setFieldsValue({ warrantyLength: length });
+                }
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="warrantyLength"
+            label="Warranty Length"
+          >
+            <Input readOnly />
           </Form.Item>
         </Form>
       </Modal>

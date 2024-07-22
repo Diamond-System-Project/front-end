@@ -127,33 +127,30 @@ export default function UserInfo() {
       openNotificationWithIcon("warning", "Please select a voucher type");
       return;
     }
-
+  
     const voucherData = {
       voucherTypeId: selectedVoucherType.voucherTypeId,
     };
-
+  
     try {
       const response = await VoucherAPI.create(userId, voucherData);
-      if (response.status === 200) {
-        openNotificationWithIcon("success", "Voucher created successfully");
+      console.log("API Response:", response);
+  
+      if (response.success) {
+        openNotificationWithIcon("success", "Add voucher successfully");
         setIsModalVisible(false);
       } else {
-        if (response.data && response.data.message) {
-          openNotificationWithIcon(
-            "error",
-            `Failed to create voucher: ${response.data.message}`
-          );
-        }
+        openNotificationWithIcon("error", "Add voucher failed: " + (response.message || "Unknown error"));
       }
     } catch (error) {
+      console.error("Error in voucher creation:", error);
       openNotificationWithIcon(
         "error",
-        "Failed to create voucher",
+        "Add voucher failed",
         error.message || "Unknown error"
       );
     }
   };
-
   const handleCancel = () => {
     setIsModalVisible(false);
   };

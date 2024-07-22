@@ -12,6 +12,7 @@ const formatCurrency = (amount) => {
 const OrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,12 +25,19 @@ const OrderDetail = () => {
       try {
         const response = await OrderDetailAPI.getOrderDetailsByOrderId(id);
         console.log("API response:", response);
-        if (
-          response.data &&
-          response.data.data &&
-          response.data.data.length > 0
-        ) {
-          setOrder(response.data.data[0]);
+        if (response.data && response.data.data) {
+          const orderDetails = response.data.data;
+          setOrder(orderDetails[0].orderId);
+
+          const productsData = orderDetails.map((detail, index) => ({
+            key: index,
+            orderDetailId: detail.orderDetailId,
+            productName: detail.productId.productName,
+            quantity: detail.quantity,
+            price: detail.price * detail.quantity,
+          }));
+
+          setProducts(productsData);
         } else {
           console.error("Unexpected data format:", response.data);
           message.error("Failed to fetch order details.");
@@ -63,6 +71,11 @@ const OrderDetail = () => {
 
   const columns = [
     {
+      title: "Order Detail ID",
+      dataIndex: "orderDetailId",
+      key: "orderDetailId",
+    },
+    {
       title: "Product Name",
       dataIndex: "productName",
       key: "productName",
@@ -80,29 +93,19 @@ const OrderDetail = () => {
     },
   ];
 
-  const orderInfo = order.orderId;
-  const products = [
-    {
-      key: 1,
-      productName: order.productId.productName,
-      quantity: order.quantity,
-      price: order.productId.price * order.quantity,
-    },
-  ];
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <Card className="mb-6 shadow-lg rounded-lg">
         <Row gutter={16} justify="space-between" align="middle">
           <Col>
             <Title level={3} className="mb-0">
-              Order ID: {orderInfo.orderId}
+              Order ID: {order.orderId}
             </Title>
-            <Text className="text-gray-500">Date: {orderInfo.order_date}</Text>
+            <Text className="text-gray-500">Date: {order.order_date}</Text>
           </Col>
           <Col>
             <Text className="text-lg font-semibold">
-              Status: <span className="text-blue-600">{orderInfo.status}</span>
+              Status: <span className="text-blue-600">{order.status}</span>
             </Text>
           </Col>
         </Row>
@@ -116,15 +119,15 @@ const OrderDetail = () => {
           >
             <p className="mb-2">
               <strong className="text-gray-700">Full Name:</strong>{" "}
-              <span className="text-black">{orderInfo.cname}</span>
+              <span className="text-black">{order.cname}</span>
             </p>
             <p className="mb-2">
               <strong className="text-gray-700">Email:</strong>{" "}
-              <span className="text-black">{orderInfo.email}</span>
+              <span className="text-black">{order.email}</span>
             </p>
             <p className="mb-2">
               <strong className="text-gray-700">Phone:</strong>{" "}
-              <span className="text-black">{orderInfo.phone}</span>
+              <span className="text-black">{order.phone}</span>
             </p>
           </Card>
         </Col>
@@ -135,11 +138,11 @@ const OrderDetail = () => {
           >
             <p className="mb-2">
               <strong className="text-gray-700">Payment Method:</strong>{" "}
-              <span className="text-black">{orderInfo.payment_method}</span>
+              <span className="text-black">{order.payment_method}</span>
             </p>
             <p className="mb-2">
               <strong className="text-gray-700">Status:</strong>{" "}
-              <span className="text-blue-600 font-medium">{orderInfo.status}</span>
+              <span className="text-blue-600 font-medium">{order.status}</span>
             </p>
           </Card>
         </Col>
@@ -150,7 +153,7 @@ const OrderDetail = () => {
           >
             <p className="mb-2">
               <strong className="text-gray-700">Address:</strong>{" "}
-              <span className="text-black">{orderInfo.address}</span>
+              <span className="text-black">{order.address}</span>
             </p>
           </Card>
         </Col>
@@ -171,7 +174,7 @@ const OrderDetail = () => {
             <div className="flex justify-between font-semibold text-lg py-1">
               <span>Total:</span>
               <span className="text-green-600">
-                {formatCurrency(orderInfo.payment)}
+                {formatCurrency(order.payment)}
               </span>
             </div>
           </div>
