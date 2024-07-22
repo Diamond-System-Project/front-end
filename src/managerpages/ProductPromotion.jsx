@@ -210,21 +210,45 @@ function ProductPromotion() {
     try {
       const { promotionId, productId } = promotion;
       const newStatus = !promotion.active; // Toggle status
+      console.log(`Attempting to update status to: ${newStatus} for promotion ID: ${promotionId.promotionId}, product ID: ${productId.productId}`);
+      
       const statusUpdateResponse = await ProductPromotionAPI.updateStatus(
         promotionId.promotionId,
         productId.productId,
         newStatus
       );
-      if (statusUpdateResponse.status === 200) {
-        message.success(`Product promotion ${newStatus ? "activated" : "deactivated"} successfully`);
+      
+      console.log('Status update response:', statusUpdateResponse);
+      
+      // Check the structure of the response
+      if (statusUpdateResponse && statusUpdateResponse.data) {
+        if (statusUpdateResponse.data.success) {
+          message.success(`Product promotion ${newStatus ? "activated" : "deactivated"} successfully`);
+        } else if (statusUpdateResponse.data.message) {
+          // If there's an error message in the response, display it
+          message.error(statusUpdateResponse.data.message);
+        } else {
+          // If there's no success flag or message, log the response for debugging
+          console.error('Unexpected response structure:', statusUpdateResponse.data);
+          message.error('Unexpected response from server');
+        }
       } else {
-        message.error("Failed to update product promotion status");
+        throw new Error('Invalid response from server');
       }
+      
+      // Fetch updated data regardless of the update result
       const fetchResponse = await ProductPromotionAPI.getAll();
-      setProductPromotions(fetchResponse.data);
+      console.log('Fetched updated promotions:', fetchResponse);
+      
+      if (Array.isArray(fetchResponse.data)) {
+        setProductPromotions(fetchResponse.data);
+      } else {
+        console.error('Fetched data is not an array:', fetchResponse.data);
+        message.error('Error updating promotion list');
+      }
     } catch (error) {
       console.error("Error updating promotion status:", error);
-      message.error("Failed to update promotion status");
+      message.error("Failed to update product promotion status");
     }
   };
 

@@ -71,19 +71,15 @@ const ProductPromotionAPI = {
     }
   },
 
-  update: async (id, promotion) => {
+  update: async (id, productPromotionDTO) => {
     try {
-      const response = await axiosClient.put(
-        `/productpromotion/update/${id}`,
-        promotion
-      );
+      const response = await axiosClient.put(`/productpromotion/update/${id}`, productPromotionDTO);
       return response.data;
     } catch (error) {
       console.error(`Error updating product promotion with id ${id}`, error);
       throw error;
     }
   },
-
   getProductPromotion: async (id) => {
     try {
       const response = await axiosClient.get(`/productpromotion/${id}`);
