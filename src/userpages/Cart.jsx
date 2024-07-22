@@ -23,7 +23,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
-  console.log("dm", cc);
+  console.log("hello", cc);
 
   const handleRemoveFromCart = (item) => {
     dispatch(removeFromCart(item));

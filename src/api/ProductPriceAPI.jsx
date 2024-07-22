@@ -21,6 +21,10 @@ const ProductPriceAPI = {
     const url = `/productprice/${id}`;
     return axiosClient.get(url);
   },
+  update: (productPrice) => {
+    const url = `/productprice/update/${productPrice.productPriceId}`;
+    return axiosClient.put(url, productPrice);
+  },
 };
 
 export default ProductPriceAPI;

@@ -1,9 +1,9 @@
-import { Button, Form, Input, Checkbox } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { HomeOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input } from "antd";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthAPI from "../api/AuthAPI";
 import openNotificationWithIcon from "../notification";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 const roleRoutes = {
   1: "/admin/dashboard",
@@ -16,6 +16,10 @@ const roleRoutes = {
 export default function Login() {
   const navigate = useNavigate();
   const [redirectTo] = useState(null);
+
+  const gotoHome =  () => {
+    navigate('/');
+  }
 
   const onFinish = async (values) => {
     console.log("Received values of form: ", values);
@@ -146,6 +150,13 @@ export default function Login() {
             </div>
           </Form.Item>
         </Form>
+        <Button 
+          icon={<HomeOutlined />}
+          onClick={gotoHome}
+          className="mt-6 w-full h-12 flex items-center justify-center text-blue-500 border-blue-500 hover:text-white hover:bg-blue-500 transition-colors duration-300"
+        >
+          Back To Home
+        </Button>
       </div>
     </section>
   );

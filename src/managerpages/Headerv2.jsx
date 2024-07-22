@@ -1,5 +1,5 @@
-import { Input, Dropdown, Menu, Button } from "antd";
-import { SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Input, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;

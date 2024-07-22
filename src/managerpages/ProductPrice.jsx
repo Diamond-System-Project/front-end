@@ -144,13 +144,13 @@ const ProductPrice = () => {
       key: "action",
       render: (text, record) => (
         <span>
-          <Button
+          {/* <Button
             type="primary"
             onClick={() => handleEditProductPrice(record)}
             style={{ marginRight: 8 }}
           >
             Edit
-          </Button>
+          </Button> */}
           <Button
             type="primary"
             danger

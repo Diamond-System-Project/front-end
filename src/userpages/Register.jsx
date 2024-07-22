@@ -195,6 +195,7 @@ export default function Register() {
           <Form.Item
             className="mb-4"
             name="address"
+            label="Address"
             rules={[
               {
                 required: true,

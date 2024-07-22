@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import PropTypes from 'prop-types'; 
-import { Card } from "antd";
-import { UserOutlined, ShoppingCartOutlined, CheckCircleOutlined, CloseCircleOutlined, DollarCircleOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined, DollarCircleOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import { CardBody, CardHeader, Typography } from "@material-tailwind/react";
-import { Pie, Chart } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, LineElement, PointElement } from 'chart.js';
-import DashboardAPI from "../api/DashboardAPI";
+import { Card } from "antd";
+import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from "react";
+import { Chart, Pie } from 'react-chartjs-2';
+import DashboardAPI from "../api/DashboardAPI";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, LineElement, PointElement, ChartDataLabels);
 
@@ -210,7 +210,7 @@ const Dashboard = () => {
   const TimeframeButton = ({ label, value }) => (
     <button
       className={`px-4 py-2 rounded ${
-        revenueTimeframe === value ? 'bg-blue-500 text-white' : 'bg-gray-200'
+        revenueTimeframe === value ? 'bg-green-500 text-white' : 'bg-gray-200'
       }`}
       onClick={() => setRevenueTimeframe(value)}
     >

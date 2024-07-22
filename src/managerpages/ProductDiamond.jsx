@@ -200,9 +200,9 @@ const ProductDiamond = () => {
 export default ProductDiamond;*/
 import { Button, Form, Input, Modal, notification, Select, Table } from "antd";
 import { useEffect, useState } from "react";
-import ProductDiamondAPI from "../api/ProductDiamondAPI";
-import ProductAPI from "../api/ProductAPI";
 import DiamondAPI from "../api/DiamondAPI";
+import ProductAPI from "../api/ProductAPI";
+import ProductDiamondAPI from "../api/ProductDiamondAPI";
 
 const { Option } = Select;
 
@@ -383,7 +383,9 @@ const ProductDiamond = () => {
         pagination={{ pageSize: 5 }}
       />
       <Modal
-        title={selectedProductDiamond ? "Update Product Diamond" : "Create Product Diamond"}
+        title={selectedProductDiamond
+          ? `Update Product Diamond for ${selectedProductDiamond.productId.productName}`
+          : "Create Product Diamond"}
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         onOk={handleSubmit}
@@ -395,7 +397,10 @@ const ProductDiamond = () => {
             label="Product"
             rules={[{ required: true, message: "Please select a product" }]}
           >
-            <Select placeholder="Select a product">
+            <Select
+              placeholder="Select a product"
+              disabled={!!selectedProductDiamond}
+            >
               {products.map((product) => (
                 <Option key={product.productId} value={product.productId}>
                   {product.productName}
@@ -408,7 +413,7 @@ const ProductDiamond = () => {
             label="Diamond"
             rules={[{ required: true, message: "Please select a diamond" }]}
           >
-            <Select placeholder="Select a diamond">
+            <Select placeholder="Select a diamond" disabled = {true}>
               {diamonds.map((diamond) => (
                 <Option key={diamond.diamondId} value={diamond.diamondId}>
                   {diamond.diamondName}

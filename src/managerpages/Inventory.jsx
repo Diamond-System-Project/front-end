@@ -8,8 +8,7 @@ import {
   Popconfirm,
   Select,
   Switch,
-  Table,
-  InputNumber
+  Table
 } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -214,18 +213,18 @@ const Inventory = () => {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      render: (text, record) => (
-        <InputNumber
-          min={1}
-          value={text}
-          onChange={(value) => handleQuantityChange(value, record)}
-          onBlur={() => {
-            if (record.quantity < 1) {
-              handleQuantityChange(1, record);
-            }
-          }}
-        />
-      ),
+      // render: (text, record) => (
+      //   <InputNumber
+      //     min={1}
+      //     value={text}
+      //     onChange={(value) => handleQuantityChange(value, record)}
+      //     onBlur={() => {
+      //       if (record.quantity < 1) {
+      //         handleQuantityChange(1, record);
+      //       }
+      //     }}
+      //   />
+      // ),
     },
     {
       title: "Available",

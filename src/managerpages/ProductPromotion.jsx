@@ -346,21 +346,21 @@ function ProductPromotion() {
 }
 
 export default ProductPromotion;*/
-import { useState, useEffect } from "react";
 import {
-  Modal,
   Button,
+  DatePicker,
   Form,
   Input,
-  Table,
-  DatePicker,
   message,
+  Modal,
   Select,
+  Table,
 } from "antd";
-import ProductPromotionAPI from "../api/ProductPromotionAPI";
-import ProductAPI from "../api/ProductAPI";
-import PromotionAPI from "../api/PromotionAPI";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import ProductAPI from "../api/ProductAPI";
+import ProductPromotionAPI from "../api/ProductPromotionAPI";
+import PromotionAPI from "../api/PromotionAPI";
 
 const { TextArea } = Input;
 
@@ -526,13 +526,13 @@ function ProductPromotion() {
           >
             {record.active ? "Deactivate" : "Activate"}
           </Button>
-          <Button
+          {/* <Button
             type="primary"
             onClick={() => handleEdit(record)}
             className="hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             Edit
-          </Button>
+          </Button> */}
           <Button
             type="primary"
             danger

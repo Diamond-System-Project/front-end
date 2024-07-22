@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
 import {
-  Table,
   Button,
-  Modal,
+  DatePicker,
+  Descriptions,
   Form,
   Input,
   message,
-  DatePicker,
-  Descriptions,
+  Modal,
   Select,
+  Table,
 } from "antd";
+import { useEffect, useState } from "react";
 import CertificateAPI from "../api/CertificateAPI";
 import DiamondAPI from "../api/DiamondAPI";
 
@@ -137,11 +137,11 @@ const CertificateManagement = () => {
           render={(text, record) => record.diamondId.diamondName}
         />
         <Column title="Certificate Number" dataIndex="number" key="number" />
-        <Column title="Shape Cut" dataIndex="shapeCut" key="shapeCut" />
+        {/* <Column title="Shape Cut" dataIndex="shapeCut" key="shapeCut" />
         <Column title="Measure" dataIndex="measure" key="measure" />
         <Column title="Polish" dataIndex="polish" key="polish" />
         <Column title="Symmetry" dataIndex="symmetry" key="symmetry" />
-        <Column title="Issuer" dataIndex="issuer" key="issuer" />
+        <Column title="Issuer" dataIndex="issuer" key="issuer" /> */}
         <Column title="Issued Date" dataIndex="issued_date" key="issued_date" />
         <Column title="Description" dataIndex="description" key="description" />
         <Column
