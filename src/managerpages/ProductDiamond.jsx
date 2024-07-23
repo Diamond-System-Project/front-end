@@ -413,7 +413,7 @@ const ProductDiamond = () => {
             label="Diamond"
             rules={[{ required: true, message: "Please select a diamond" }]}
           >
-            <Select placeholder="Select a diamond" disabled = {true}>
+            <Select placeholder="Select a diamond">
               {diamonds.map((diamond) => (
                 <Option key={diamond.diamondId} value={diamond.diamondId}>
                   {diamond.diamondName}

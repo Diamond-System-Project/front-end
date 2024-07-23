@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import CertificateAPI from "../api/CertificateAPI";
 import DiamondAPI from "../api/DiamondAPI";
 
+
 const { Column } = Table;
 const { confirm } = Modal;
 const { Option } = Select;
@@ -25,6 +26,7 @@ const CertificateManagement = () => {
   const [viewVisible, setViewVisible] = useState(false);
   const [form] = Form.useForm();
   const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false); // Add this line
 
   const fetchData = async () => {
     setLoading(true);
@@ -34,12 +36,12 @@ const CertificateManagement = () => {
       setCertificates(response.data.data || []);
     } catch (error) {
       console.error("Error fetching certificates:", error);
+      console.error("Error details:", error.response?.data);
       message.error("Failed to fetch certificates");
     } finally {
       setLoading(false);
     }
   };
-
   const fetchDiamonds = async () => {
     try {
       const response = await DiamondAPI.getAllDiamonds();
@@ -63,13 +65,19 @@ const CertificateManagement = () => {
       okType: "danger",
       cancelText: "No",
       onOk: async () => {
+        setIsDeleting(true);
         try {
-          await CertificateAPI.delete(certificateId);
+          console.log("Attempting to delete certificate with ID:", certificateId);
+          const response = await CertificateAPI.delete(certificateId);
+          console.log("Delete response:", response);
           message.success("Certificate deleted successfully");
-          fetchData();
+          await fetchData();  // Use await here
         } catch (error) {
           console.error("Error deleting certificate:", error);
-          message.error("Failed to delete certificate");
+          console.error("Error details:", error.response?.data);
+          message.error(`Failed to delete certificate: ${error.message}`);
+        } finally {
+          setIsDeleting(false);
         }
       },
     });
@@ -77,7 +85,14 @@ const CertificateManagement = () => {
 
   const handleCreate = async (values) => {
     try {
-      await CertificateAPI.create(values);
+      const formattedValues = {
+        ...values,
+        issued_date: values.issued_date
+          ? formatDate(values.issued_date)
+          : null,
+      };
+
+      await CertificateAPI.create(formattedValues);
       message.success("Certificate created successfully");
       setVisible(false);
       form.resetFields();
@@ -86,6 +101,13 @@ const CertificateManagement = () => {
       console.error("Error creating certificate:", error);
       message.error("Failed to create certificate");
     }
+  };
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   const showCreateModal = () => {
@@ -107,7 +129,7 @@ const CertificateManagement = () => {
       message.error("Failed to retrieve certificate");
     }
   };
-  
+
   const handleViewCancel = () => {
     setViewVisible(false);
     setSelectedCertificate(null);
@@ -156,6 +178,7 @@ const CertificateManagement = () => {
                 type="link"
                 danger
                 onClick={() => handleDelete(record.cerId)}
+                loading={isDeleting}
               >
                 Delete
               </Button>
@@ -245,7 +268,7 @@ const CertificateManagement = () => {
             label="Issued Date"
             rules={[{ required: true, message: "Please select Issued Date" }]}
           >
-            <DatePicker />
+            <DatePicker format="DD-MM-YYYY" />
           </Form.Item>
 
           <Form.Item
