@@ -8,7 +8,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Dragger } = Upload;
 
-//eslint-disable-next-line
 const AddProduct = ({ onCreate }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [url, setUrl] = useState(null);
@@ -91,7 +90,10 @@ const AddProduct = ({ onCreate }) => {
         return;
       }
 
-      const newProduct = { ...values, mountId: selectedMount.mountId, url };
+      // Remove componentsPrice and status from the newProduct object
+      const { componentsPrice, status, ...productData } = values;
+      const newProduct = { ...productData, mountId: selectedMount.mountId, url };
+
       await onCreate(newProduct);
       form.resetFields();
       setImagePreview(null);
@@ -153,21 +155,6 @@ const AddProduct = ({ onCreate }) => {
                 >
                   <Input placeholder="VND" type="number" />
                 </Form.Item>
-                <Form.Item
-                  name="status"
-                  label="Status"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please select the product status!",
-                    },
-                  ]}
-                >
-                  <Select placeholder="Select status">
-                    <Option value="InStock">In Stock</Option>
-                    <Option value="OutOfStock">OutOfStock</Option>
-                  </Select>
-                </Form.Item>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Form.Item
@@ -175,7 +162,7 @@ const AddProduct = ({ onCreate }) => {
                   label="Components Price"
                   rules={[{ validator: validatePositiveNumber }]}
                 >
-                  <Input placeholder="VND" type="number" />
+                  <Input placeholder="VND" type="number" disabled />
                 </Form.Item>
               </div>
             </div>
