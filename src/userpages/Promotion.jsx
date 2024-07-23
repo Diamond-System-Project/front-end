@@ -1,59 +1,89 @@
-// import React from "react";
+import React, { useState, useEffect } from 'react';
+import { Table, Typography, Space, Tag } from 'antd';
+import PromotionAPI from '../api/PromotionAPI';
 
-const promotions = [
-  {
-    image:
-      "https://file.hstatic.net/1000381168/file/z5534076148156_f2cbfd8394021ce05ed5b345fee70777_b0ee26082bff414680f27699e8f6d6f6.jpg",
-  },
-  {
-    image:
-      "https://file.hstatic.net/1000381168/file/z5534076148156_f2cbfd8394021ce05ed5b345fee70777_b0ee26082bff414680f27699e8f6d6f6.jpg",
-  },
-  {
-    image:
-      "https://file.hstatic.net/1000381168/file/z5534076148156_f2cbfd8394021ce05ed5b345fee70777_b0ee26082bff414680f27699e8f6d6f6.jpg",
-  },
-  {
-    image:
-      "https://file.hstatic.net/1000381168/file/z5534076148156_f2cbfd8394021ce05ed5b345fee70777_b0ee26082bff414680f27699e8f6d6f6.jpg",
-  },
-];
+const { Title } = Typography;
 
-export default function Promotions() {
+const Promotions = () => {
+  const [promotions, setPromotions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPromotions();
+  }, []);
+
+  const fetchPromotions = async () => {
+    try {
+      setLoading(true);
+      const response = await PromotionAPI.getAll();
+      console.log('API response:', response);
+      if (response.success && Array.isArray(response.data)) {
+        setPromotions(response.data);
+      } else {
+        console.error('Dữ liệu không hợp lệ:', response);
+        setError('Dữ liệu không hợp lệ');
+      }
+    } catch (err) {
+      console.error('Lỗi khi tải danh sách khuyến mãi:', err);
+      setError('Có lỗi xảy ra khi tải danh sách khuyến mãi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'promotionId',
+      key: 'promotionId',
+    },
+    {
+      title: 'Tên khuyến mãi',
+      dataIndex: 'promotionName',
+      key: 'promotionName',
+    },
+    {
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
+      title: 'Ngày bắt đầu',
+      dataIndex: 'startDate',
+      key: 'startDate',
+    },
+    {
+      title: 'Ngày kết thúc',
+      dataIndex: 'endDate',
+      key: 'endDate',
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      render: (isActive) => (
+        <Tag color={isActive ? 'green' : 'red'}>
+          {isActive ? 'Hoạt động' : 'Không hoạt động'}
+        </Tag>
+      ),
+    },
+  ];
+
+  if (error) return <Typography.Text type="danger">{error}</Typography.Text>;
+
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-bold mb-4">
-        KHUYẾN MÃI TRONG THÁNG
-      </h2>
-      <div className="text-center mb-4">
-        <a
-          href="https://thegioikimcuong.vn/pages/destination/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <button className="bg-black text-white px-4 py-2 rounded-full transition duration-300 ease-in-out hover:bg-green-500 hover:text-black">
-            TOÀN HỆ THỐNG CỬA HÀNG
-          </button>
-        </a>
-      </div>
-      <div className="mb-8">
-        <img
-          src="https://file.hstatic.net/1000381168/file/km-nam-nang_5dca301f73ff458a86a55206c31d6c79.png"
-          alt="Main Promotion"
-          className="w-full mb-4"
-        />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {promotions.map((promotion, index) => (
-          <div key={index} className="relative overflow-hidden group">
-            <img
-              src={promotion.image}
-              alt={`Promotion ${index + 1}`}
-              className="w-full mb-4 transition-transform duration-300 ease-in-out transform group-hover:scale-110"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Title level={2}>Danh sách Khuyến mãi</Title>
+      <Table
+        columns={columns}
+        dataSource={promotions}
+        rowKey="promotionId"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+      />
+    </Space>
   );
-}
+};
+
+export default Promotions;
