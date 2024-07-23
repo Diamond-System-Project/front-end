@@ -53,6 +53,15 @@ const PromotionAPI = {
       throw error;
     }
   },
+  getActivePromotion: async () => {
+    try {
+      const response = await axiosClient.get("/promotion/active");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching active promotion", error);
+      throw error;
+    }
+  },
 };
 
 export default PromotionAPI;
