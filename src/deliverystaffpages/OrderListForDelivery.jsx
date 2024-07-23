@@ -88,15 +88,13 @@ const OrderList = () => {
           style={{ width: 120 }}
           disabled={loading}
         >
-          <Option value="Pending">Pending</Option>
-          <Option value="Processing">Processing</Option>
+         
           <Option value="Shipping">Shipping</Option>
           <Option value="Delivered">Delivered</Option>
         </Select>
       ),
       filters: [
-        { text: "Pending", value: "Pending" },
-        { text: "Processing", value: "Processing" },
+       
         { text: "Shipping", value: "Shipping" },
         { text: "Delivered", value: "Delivered" },
       ],
