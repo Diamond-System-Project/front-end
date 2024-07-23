@@ -174,14 +174,14 @@ const CertificateManagement = () => {
               <Button type="link" onClick={() => handleView(record.cerId)}>
                 View
               </Button>
-              <Button
+              {/* <Button
                 type="link"
                 danger
                 onClick={() => handleDelete(record.cerId)}
                 loading={isDeleting}
               >
                 Delete
-              </Button>
+              </Button> */}
             </span>
           )}
         />
