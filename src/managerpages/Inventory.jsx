@@ -55,10 +55,6 @@ const Inventory = () => {
   const handleCreate = () => {
     form.validateFields().then(async (values) => {
       const { productId, purchaseDate, condition, quantity, available } = values;
-      if (quantity < 1) {
-        message.error("Quantity can't be negative or Equal to 0!!");
-        return;
-      }
       setLoading(true);
       const formattedData = {
         productId: parseInt(productId, 10),
@@ -85,12 +81,7 @@ const Inventory = () => {
 
   const handleUpdate = () => {
     form.validateFields().then(async (values) => {
-      const { productId, purchaseDate, condition, quantity, available } =
-        values;
-      if (quantity < 1) {
-        message.error("Quantity can't be negative or Equal to 0!!");
-        return;
-      }
+      const { productId, purchaseDate, condition, quantity, available } = values;
       setLoading(true);
       const formattedData = {
         productId: parseInt(productId, 10),
@@ -140,7 +131,7 @@ const Inventory = () => {
   const openCreateModal = () => {
     setEditingInventory(null);
     setAvailable(false);
-    form.resetFields(); // Reset form fields
+    form.resetFields();
     setIsModalVisible(true);
   };
 
@@ -150,14 +141,14 @@ const Inventory = () => {
       const updatedInventory = {
         ...record,
         available: checked,
-        productId: record.productId.productId, // Đảm bảo gửi productId đúng định dạng
+        productId: record.productId.productId,
         purchaseDate: record.purchaseDate
           ? moment(record.purchaseDate, "DD-MM-YYYY").format("DD-MM-YYYY")
           : "",
       };
       await InventoryAPI.updateInventory(record.locationId, updatedInventory);
       message.success("Availability updated successfully");
-      fetchInventory(); // Refresh the data
+      fetchInventory();
     } catch (error) {
       message.error("Error updating availability");
       console.error("Error updating availability:", error);
@@ -175,20 +166,15 @@ const Inventory = () => {
       purchaseDate: record.purchaseDate
         ? moment(record.purchaseDate, "DD-MM-YYYY")
         : null,
-    }); // Set form fields value
+    });
     setIsModalVisible(true);
   };
 
-  const handleQuantityChange = (value, record) => {
-    if (value < 1) {
-      message.error("Quantity cannot be negative or equal to 0");
-      return 1;
+  const validatePositiveNumber = (_, value) => {
+    if (value && value >= 0) {
+      return Promise.resolve();
     }
-    const newData = data.map(item =>
-      item.locationId === record.locationId ? { ...item, quantity: value } : item
-    );
-    setData(newData);
-    return value;
+    return Promise.reject(new Error('Quantity must be a positive number'));
   };
 
   const columns = [
@@ -213,18 +199,6 @@ const Inventory = () => {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      // render: (text, record) => (
-      //   <InputNumber
-      //     min={1}
-      //     value={text}
-      //     onChange={(value) => handleQuantityChange(value, record)}
-      //     onBlur={() => {
-      //       if (record.quantity < 1) {
-      //         handleQuantityChange(1, record);
-      //       }
-      //     }}
-      //   />
-      // ),
     },
     {
       title: "Available",
@@ -250,7 +224,7 @@ const Inventory = () => {
           >
             Edit
           </Button>
-          <Popconfirm
+          {/* <Popconfirm
             title="Are you sure you want to delete this item?"
             onConfirm={() => handleDelete(record.locationId)}
             okText="Yes"
@@ -263,7 +237,7 @@ const Inventory = () => {
             >
               Delete
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </div>
       ),
     },
@@ -273,9 +247,6 @@ const Inventory = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Inventory Management</h2>
-        {/* <Button type="primary" onClick={openCreateModal}>
-          Add New
-        </Button> */}
         <div className="flex justify-between space-x-4 mt-6">
           <Form.Item>
             <Button
@@ -338,7 +309,10 @@ const Inventory = () => {
           <Form.Item
             name="quantity"
             label="Quantity"
-            rules={[{ required: true, message: "Please enter the quantity" }]}
+            rules={[
+              { required: true, message: "Please enter the quantity" },
+              { validator: validatePositiveNumber }
+            ]}
           >
             <Input type="number" />
           </Form.Item>
