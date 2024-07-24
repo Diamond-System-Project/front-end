@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import ProductAPI from "../api/ProductAPI";
 import CollectionAPI from "../api/CollectionAPI";
+import ProductAPI from "../api/ProductAPI";
 
 export default function Home() {
   const [currentProduct, setCurrentProduct] = useState(0);
@@ -127,7 +127,7 @@ export default function Home() {
                       <img
                         src={product.url}
                         alt={product.productName}
-                        className="w-full h-45 object-cover mb-4 rounded"
+                        className="w-full h-48 object-cover mb-4 rounded"
                       />
                       <h3 className="text-lg font-bold text-gray-800">
                         {product.productName}

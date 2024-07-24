@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AuthAPI from "../api/AuthAPI";
 import openNotificationWithIcon from "../notification";
 
+
 const roleRoutes = {
   1: "/admin/dashboard",
   2: "/manager/list-products",

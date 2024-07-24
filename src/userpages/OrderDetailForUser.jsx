@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { CheckCircleOutlined } from "@ant-design/icons";
 import {
-  Table,
   Button,
+  Card,
+  Col,
   message,
   Modal,
   Row,
-  Col,
-  Typography,
-  Card,
+  Table,
   Tooltip,
+  Typography,
 } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
-import OrderDetailAPI from "../api/OrderDetailAPI";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import CertificateAPI from "../api/CertificateAPI";
+import OrderDetailAPI from "../api/OrderDetailAPI";
 import WarrantyAPI from "../api/WarrantyAPI";
 import Logo from "../assets/images/Songlong.png";
 
@@ -391,9 +391,7 @@ export default function OrderDetails() {
                 <Col span={12}>
                   <Text strong>Payment Status:</Text>{" "}
                   <Text>
-                    {warrantyData?.orderDetailId?.orderId?.paymentStatus
-                      ? "Paid"
-                      : "Unpaid"}
+                    Paid
                   </Text>
                 </Col>
               </Row>

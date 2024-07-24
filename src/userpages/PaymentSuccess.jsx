@@ -22,7 +22,6 @@ export default function PaymentSuccess() {
       const orderId = searchParams.get('orderId');
       if (orderId) {
         setLoading(true);
-        // Giả sử bạn có một hàm fetchOrderDetails để lấy thông tin đơn hàng từ backend
         fetchOrderDetails(orderId)
           .then(data => {
             setOrderInfo(data);

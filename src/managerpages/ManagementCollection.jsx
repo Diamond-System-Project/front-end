@@ -56,7 +56,7 @@ const Collection = () => {
       const response = await CollectionAPI.getProduct(collectionId);
       return response.data.data;
     } catch (error) {
-      message.error("Failed to fetch products");
+      // message.error("Failed to fetch products");
       return [];
     }
   };
